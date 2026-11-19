@@ -9,9 +9,11 @@ extends Node3D
 @export var enemies_per_wave: Array[int] = [4, 5, 3]
 @export var wave_delay: float = 2.5
 @export var completion_bonus: int = 50
+@export var zone_id: String = "zona_1"
 
 var current_wave: int = 0
 var _alive_enemies: int = 0
+var _completed: bool = false
 
 
 func _ready() -> void:
@@ -24,10 +26,10 @@ func _ready() -> void:
 
 
 func _start_wave() -> void:
-	if not GameState.is_run_active or current_wave >= enemies_per_wave.size():
+	if _completed or not GameState.is_run_active or current_wave >= enemies_per_wave.size():
 		return
 	if enemy_scene == null or spawn_points.is_empty():
-		push_warning("Zone01: falta enemy_scene o spawn_points")
+		push_warning("Zone: falta enemy_scene o spawn_points")
 		return
 
 	current_wave += 1
@@ -70,7 +72,7 @@ func _spawn_elite() -> void:
 
 
 func _on_enemy_killed(_enemy: Node, _hit_zone: String) -> void:
-	if not GameState.is_run_active:
+	if _completed or not GameState.is_run_active:
 		return
 
 	_alive_enemies = maxi(_alive_enemies - 1, 0)
@@ -84,13 +86,16 @@ func _on_enemy_killed(_enemy: Node, _hit_zone: String) -> void:
 		return
 
 	await get_tree().create_timer(wave_delay).timeout
-	if GameState.is_run_active:
+	if GameState.is_run_active and not _completed:
 		_start_wave()
 
 
 func _finish_zone() -> void:
+	if _completed:
+		return
+	_completed = true
 	GameState.add_money(completion_bonus)
-	GameState.end_run("completed")
+	EventBus.zone_completed.emit(zone_id)
 
 
 func _collect_spawn_points() -> void:

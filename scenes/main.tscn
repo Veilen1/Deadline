@@ -1,8 +1,7 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/actors/player/player.tscn" id="2_player"]
-[ext_resource type="PackedScene" path="res://scenes/levels/zone_01.tscn" id="3_zone"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="4_pause"]
 [ext_resource type="PackedScene" path="res://scenes/ui/crosshair.tscn" id="5_crosshair"]
 [ext_resource type="PackedScene" path="res://scenes/ui/game_over_menu.tscn" id="6_game_over"]
@@ -32,7 +31,7 @@ script = ExtResource("1_main")
 [node name="Player" parent="." instance=ExtResource("2_player")]
 transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, -15, 0, -15)
 
-[node name="Zone01" parent="." instance=ExtResource("3_zone")]
+[node name="Zones" type="Node3D" parent="."]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -44,6 +43,15 @@ offset_bottom = 48.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 24
 text = "$0"
+
+[node name="ZoneLabel" type="Label" parent="CanvasLayer"]
+offset_left = 24.0
+offset_top = 52.0
+offset_right = 224.0
+offset_bottom = 76.0
+theme_override_colors/font_color = Color(0.35, 0.35, 0.35, 1)
+theme_override_font_sizes/font_size = 18
+text = "Zona 1"
 
 [node name="TimerLabel" type="Label" parent="CanvasLayer"]
 anchor_left = 0.5
@@ -127,6 +135,27 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 24
 text = "HP 100/100"
 horizontal_alignment = 2
+
+[node name="ZoneBanner" type="Label" parent="CanvasLayer"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -60.0
+offset_right = 400.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 56
+text = "ZONA 1"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Crosshair" parent="CanvasLayer" instance=ExtResource("5_crosshair")]
 

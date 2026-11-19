@@ -1,0 +1,102 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scenes/actors/enemies/guard_enemy.gd" id="1_guard"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_head"]
+size = Vector3(0.42, 0.42, 0.42)
+
+[sub_resource type="BoxMesh" id="BoxMesh_torso"]
+size = Vector3(0.8, 0.9, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_leg"]
+size = Vector3(0.25, 0.7, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_head"]
+albedo_color = Color(0.45, 1, 0.55, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_torso"]
+albedo_color = Color(0.1, 0.65, 0.25, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_legs"]
+albedo_color = Color(0.05, 0.38, 0.14, 1)
+roughness = 1.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_head"]
+size = Vector3(0.46, 0.46, 0.46)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_torso"]
+size = Vector3(0.85, 0.9, 0.55)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_legs"]
+size = Vector3(0.85, 0.75, 0.4)
+
+[sub_resource type="SphereMesh" id="SphereMesh_shield"]
+radius = 0.8
+height = 1.9
+radial_segments = 24
+rings = 12
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_shield"]
+transparency = 1
+shading_mode = 0
+cull_mode = 2
+albedo_color = Color(0.25, 1, 0.6, 0.22)
+emission_enabled = true
+emission = Color(0.2, 1, 0.5, 1)
+emission_energy_multiplier = 1.6
+
+[node name="GuardEnemy" type="CharacterBody3D" groups=["enemies"]]
+script = ExtResource("1_guard")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Torso" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+mesh = SubResource("BoxMesh_torso")
+surface_material_override/0 = SubResource("StandardMaterial3D_torso")
+
+[node name="Head" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.68, 0)
+mesh = SubResource("BoxMesh_head")
+surface_material_override/0 = SubResource("StandardMaterial3D_head")
+
+[node name="LegLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, -0.55, 0)
+mesh = SubResource("BoxMesh_leg")
+surface_material_override/0 = SubResource("StandardMaterial3D_legs")
+
+[node name="LegRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.55, 0)
+mesh = SubResource("BoxMesh_leg")
+surface_material_override/0 = SubResource("StandardMaterial3D_legs")
+
+[node name="HeadHitbox" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.68, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HeadHitbox"]
+shape = SubResource("BoxShape3D_head")
+
+[node name="TorsoHitbox" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TorsoHitbox"]
+shape = SubResource("BoxShape3D_torso")
+
+[node name="LegsHitbox" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.55, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LegsHitbox"]
+shape = SubResource("BoxShape3D_legs")
+
+[node name="Shield" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+mesh = SubResource("SphereMesh_shield")
+material_override = SubResource("StandardMaterial3D_shield")
