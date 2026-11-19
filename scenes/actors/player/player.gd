@@ -1,5 +1,7 @@
 extends CharacterBody3D
 
+const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
+
 @export_group("Health")
 @export var max_health: float = 100.0
 
@@ -98,23 +100,28 @@ func shoot() -> void:
 
 	var space_state: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 	var result: Dictionary = space_state.intersect_ray(query)
-	if result.is_empty():
-		return
 
-	var collider: Node = result.get("collider") as Node
-	if collider == null:
-		return
+	# El tracer llega hasta el impacto o hasta el alcance máximo si falla.
+	var end_point: Vector3 = origin + direction * shoot_range
+	if not result.is_empty():
+		end_point = result.get("position", end_point)
 
-	var hit_zone: String = _hit_zone_from_collider(collider)
-	if hit_zone.is_empty():
-		return
+		var collider: Node = result.get("collider") as Node
+		if collider != null:
+			var hit_zone: String = _hit_zone_from_collider(collider)
+			if not hit_zone.is_empty():
+				var enemy: Node = collider.get_parent()
+				if enemy != null and enemy.has_method("take_hit"):
+					enemy.call("take_hit", hit_zone, weapon_damage, weapon_money)
 
-	var enemy: Node = collider.get_parent()
-	if enemy == null or not enemy.has_method("take_hit"):
-		return
+	_spawn_tracer(end_point)
+	# TODO: Fase 1.4 — cooldown y retroceso del arma.
 
-	enemy.call("take_hit", hit_zone, weapon_damage, weapon_money)
-	# TODO: Fase 1.4 — cooldown, retroceso y VFX desde shoot_origin.
+
+func _spawn_tracer(to: Vector3) -> void:
+	var tracer: Node3D = TRACER_SCENE.instantiate()
+	get_parent().add_child(tracer)
+	tracer.call("fire", shoot_origin.global_position, to)
 
 
 func _build_ray_exclude_list() -> Array[RID]:
