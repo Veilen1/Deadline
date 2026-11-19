@@ -1,9 +1,11 @@
 extends Control
 
 const MAIN_MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
+const HUB_SCENE: String = "res://scenes/ui/hub.tscn"
 
 @onready var resume_button: Button = $CenterContainer/Menu/ResumeButton
 @onready var restart_button: Button = $CenterContainer/Menu/RestartButton
+@onready var hub_button: Button = $CenterContainer/Menu/HubButton
 @onready var main_menu_button: Button = $CenterContainer/Menu/MainMenuButton
 
 
@@ -12,6 +14,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	resume_button.pressed.connect(_on_resume_pressed)
 	restart_button.pressed.connect(_on_restart_pressed)
+	hub_button.pressed.connect(_on_hub_pressed)
 	main_menu_button.pressed.connect(_on_main_menu_pressed)
 
 
@@ -47,6 +50,12 @@ func _on_resume_pressed() -> void:
 func _on_restart_pressed() -> void:
 	get_tree().paused = false
 	get_tree().reload_current_scene()
+
+
+func _on_hub_pressed() -> void:
+	get_tree().paused = false
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	get_tree().change_scene_to_file(HUB_SCENE)
 
 
 func _on_main_menu_pressed() -> void:
