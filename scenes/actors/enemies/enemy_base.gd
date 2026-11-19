@@ -8,6 +8,11 @@ extends CharacterBody3D
 @export_group("Health")
 @export var max_health: float = 100.0
 
+@export_group("Attack")
+@export var attack_range: float = 2.0
+@export var attack_damage: float = 10.0
+@export var attack_cooldown: float = 1.0
+
 @export_group("Zone Multipliers")
 @export var damage_mult_head: float = 2.5
 @export var damage_mult_torso: float = 1.0
@@ -17,6 +22,7 @@ extends CharacterBody3D
 @export var money_mult_legs: float = 0.5
 
 var current_health: float
+var _attack_timer: float = 0.0
 
 
 func _ready() -> void:
@@ -46,7 +52,12 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-	# TODO: Fase 1.4 — atacar al jugador (aún no hace daño).
+	_attack_timer = maxf(_attack_timer - delta, 0.0)
+	if to_player.length() <= attack_range and _attack_timer <= 0.0:
+		_attack_timer = attack_cooldown
+		if player.has_method("take_damage"):
+			player.call("take_damage", attack_damage)
+
 	# TODO: Fase 4 — comportamiento por zona (élites, composición de oleadas).
 
 
