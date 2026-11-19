@@ -4,8 +4,9 @@ extends Node3D
 # al limpiar la última oleada se completa la zona.
 
 @export var enemy_scene: PackedScene
+@export var elite_scene: PackedScene
 @export var spawn_points: Array[Marker3D] = []
-@export var enemies_per_wave: Array[int] = [4, 5, 6]
+@export var enemies_per_wave: Array[int] = [4, 5, 3]
 @export var wave_delay: float = 2.5
 @export var completion_bonus: int = 50
 
@@ -30,11 +31,18 @@ func _start_wave() -> void:
 		return
 
 	current_wave += 1
-	_alive_enemies = enemies_per_wave[current_wave - 1]
+
+	# La última oleada suma al élite de la zona.
+	var regular_count: int = enemies_per_wave[current_wave - 1]
+	var spawn_elite: bool = elite_scene != null and current_wave == enemies_per_wave.size()
+	_alive_enemies = regular_count + (1 if spawn_elite else 0)
 	EventBus.wave_started.emit(current_wave)
 
-	for index in _alive_enemies:
+	for index in regular_count:
 		_spawn_enemy(index)
+
+	if spawn_elite:
+		_spawn_elite()
 
 
 func _spawn_enemy(index: int) -> void:
@@ -46,7 +54,19 @@ func _spawn_enemy(index: int) -> void:
 	var ring: int = int(floor(float(index) / float(spawn_points.size())))
 	var angle: float = float(index) * TAU / float(spawn_points.size())
 	var offset: Vector3 = Vector3(cos(angle), 0.0, sin(angle)) * (0.8 * float(ring))
-	enemy.global_position = point.global_position + offset
+	# Compensa el origen de la cápsula cuando el enemigo tiene escala distinta de 1.
+	var height_offset: float = (enemy.scale.y - 1.0) * 0.9
+	enemy.global_position = point.global_position + offset + Vector3(0.0, height_offset, 0.0)
+
+
+func _spawn_elite() -> void:
+	if elite_scene == null or spawn_points.is_empty():
+		return
+
+	var elite: Node3D = elite_scene.instantiate()
+	add_child(elite)
+	var height_offset: float = (elite.scale.y - 1.0) * 0.9
+	elite.global_position = spawn_points[0].global_position + Vector3(0.0, height_offset, 0.0)
 
 
 func _on_enemy_killed(_enemy: Node, _hit_zone: String) -> void:

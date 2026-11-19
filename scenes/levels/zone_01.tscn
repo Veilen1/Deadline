@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scenes/levels/zone_01.gd" id="1_zone"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/enemy_base.tscn" id="2_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/actors/enemies/elite_enemy.tscn" id="3_elite"]
 
 [sub_resource type="Environment" id="Environment_white"]
 background_mode = 1
@@ -23,6 +24,7 @@ size = Vector3(40, 0.2, 40)
 [node name="Zone01" type="Node3D"]
 script = ExtResource("1_zone")
 enemy_scene = ExtResource("2_enemy")
+elite_scene = ExtResource("3_elite")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_white")
