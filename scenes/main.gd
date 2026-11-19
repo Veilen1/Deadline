@@ -3,6 +3,7 @@ extends Node3D
 @onready var player: Node = $Player
 @onready var money_label: Label = $CanvasLayer/MoneyLabel
 @onready var timer_label: Label = $CanvasLayer/TimerLabel
+@onready var wave_label: Label = $CanvasLayer/WaveLabel
 @onready var health_label: Label = $CanvasLayer/HealthLabel
 @onready var pause_menu: Control = $CanvasLayer/PauseMenu
 @onready var game_over_menu: Control = $CanvasLayer/GameOverMenu
@@ -15,6 +16,7 @@ func _ready() -> void:
 	EventBus.enemy_hit.connect(_on_enemy_hit)
 	EventBus.player_damaged.connect(_on_player_damaged)
 	EventBus.player_died.connect(_on_player_died)
+	EventBus.wave_started.connect(_on_wave_started)
 	_update_money_label(GameState.money)
 	_update_health_label()
 	GameState.start_run()
@@ -34,6 +36,10 @@ func _on_enemy_hit(_enemy: Node, _hit_zone: String, _damage: float, money_value:
 
 func _on_timer_changed(remaining: float) -> void:
 	timer_label.text = "%.1f s" % remaining
+
+
+func _on_wave_started(wave_number: int) -> void:
+	wave_label.text = "Oleada %d" % wave_number
 
 
 func _on_player_damaged(_amount: float) -> void:
