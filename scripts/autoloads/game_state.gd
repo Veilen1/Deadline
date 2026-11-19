@@ -9,9 +9,19 @@ signal run_started
 signal run_ended(reason: String)
 
 const VALID_END_REASONS: PackedStringArray = ["timer", "death", "completed"]
+const DEFAULT_SAVE_PATH: String = "user://deadline_progress.cfg"
+const SAVE_VERSION: int = 1
+const SAVE_DEBOUNCE: float = 0.5
+
+# Tiempo base por defecto, antes de mejoras.
+@export var default_run_time: float = 60.0
+
+# Ruta y switch de persistencia. Los tests pueden usar una ruta temporal.
+var save_path: String = DEFAULT_SAVE_PATH
+var persistence_enabled: bool = true
 
 # Tiempo base de la run, ampliable desde el hub.
-@export var base_run_time: float = 60.0
+var base_run_time: float = 60.0
 
 # Plata persistente entre runs. El setter emite la señal al cambiar.
 var money: int = 0:
@@ -21,6 +31,7 @@ var money: int = 0:
 			return
 		money = clamped_value
 		money_changed.emit(money)
+		_queue_save()
 
 # True mientras la run está en curso. Evita emitir run_ended más de una vez.
 var is_run_active: bool = false
@@ -31,9 +42,26 @@ var run_timer: float = 0.0
 # Mejoras compradas. Persisten entre runs.
 var upgrades: Dictionary = {}
 
+var _save_timer: Timer
+var _is_loading: bool = false
+
+
+func _ready() -> void:
+	base_run_time = default_run_time
+
+	_save_timer = Timer.new()
+	_save_timer.one_shot = true
+	_save_timer.wait_time = SAVE_DEBOUNCE
+	_save_timer.process_mode = Node.PROCESS_MODE_ALWAYS
+	_save_timer.timeout.connect(save_game)
+	add_child(_save_timer)
+
+	load_game()
+
 
 func add_run_time(seconds: float) -> void:
 	base_run_time += seconds
+	_queue_save()
 
 
 func register_upgrade(upgrade_id: String, bonus: float) -> void:
@@ -42,6 +70,7 @@ func register_upgrade(upgrade_id: String, bonus: float) -> void:
 	var bonus_key: String = upgrade_id + "_bonus"
 	upgrades[level_key] = int(upgrades.get(level_key, 0)) + 1
 	upgrades[bonus_key] = float(upgrades.get(bonus_key, 0.0)) + bonus
+	_queue_save()
 
 
 func get_upgrade_level(upgrade_id: String) -> int:
@@ -90,6 +119,7 @@ func end_run(reason: String) -> void:
 	if not VALID_END_REASONS.has(reason):
 		push_warning("GameState.end_run: motivo desconocido '%s'" % reason)
 	run_ended.emit(reason)
+	save_game()
 
 
 func reset_run() -> void:
@@ -97,3 +127,61 @@ func reset_run() -> void:
 	is_run_active = false
 	run_timer = base_run_time
 	timer_changed.emit(run_timer)
+
+
+func reset_progress() -> void:
+	# Borra plata, mejoras y tiempo comprado. Deja el guardado en cero.
+	_is_loading = true
+	money = 0
+	upgrades.clear()
+	base_run_time = default_run_time
+	is_run_active = false
+	run_timer = base_run_time
+	_is_loading = false
+	save_game()
+
+
+func save_game() -> void:
+	if not persistence_enabled:
+		return
+
+	var config := ConfigFile.new()
+	config.set_value("progress", "version", SAVE_VERSION)
+	config.set_value("progress", "money", money)
+	config.set_value("progress", "base_run_time", base_run_time)
+	config.set_value("progress", "upgrades", upgrades)
+
+	var error: int = config.save(save_path)
+	if error != OK:
+		push_warning("GameState: no se pudo guardar el progreso (%s)" % error)
+
+
+func load_game() -> void:
+	if not persistence_enabled:
+		return
+
+	var config := ConfigFile.new()
+	var error: int = config.load(save_path)
+	if error != OK:
+		return
+
+	_is_loading = true
+	money = int(config.get_value("progress", "money", 0))
+
+	var saved_time: float = float(config.get_value("progress", "base_run_time", default_run_time))
+	base_run_time = saved_time if saved_time > 0.0 else default_run_time
+
+	var saved_upgrades = config.get_value("progress", "upgrades", {})
+	upgrades = saved_upgrades.duplicate() if saved_upgrades is Dictionary else {}
+	_is_loading = false
+
+
+func _queue_save() -> void:
+	if not persistence_enabled or _is_loading or _save_timer == null:
+		return
+	_save_timer.start()
+
+
+func _exit_tree() -> void:
+	# Último intento de guardado al cerrar el juego.
+	save_game()

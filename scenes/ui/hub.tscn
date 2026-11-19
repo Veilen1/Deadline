@@ -91,3 +91,15 @@ text = "Jugar"
 custom_minimum_size = Vector2(340, 40)
 layout_mode = 2
 text = "Menú principal"
+
+[node name="ResetButton" type="Button" parent="CenterContainer/Menu"]
+custom_minimum_size = Vector2(340, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.15, 0.15, 1)
+text = "Borrar progreso"
+
+[node name="ResetDialog" type="ConfirmationDialog" parent="."]
+title = "Borrar progreso"
+dialog_text = "¿Estás seguro que quieres borrar todo tu progreso?"
+ok_button_text = "Sí, borrar"
+cancel_button_text = "Cancelar"
