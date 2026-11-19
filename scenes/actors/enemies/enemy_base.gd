@@ -61,7 +61,7 @@ func _physics_process(delta: float) -> void:
 	# TODO: Fase 4 — comportamiento por zona (élites, composición de oleadas).
 
 
-func take_hit(hit_zone: String, base_damage: float, base_money: int) -> void:
+func take_hit(hit_zone: String, base_damage: float, base_money: int, hit_position: Vector3 = Vector3.INF) -> void:
 	# base_damage y base_money los define el arma; acá solo se aplica el multiplicador de zona.
 	var damage_mult: float = 1.0
 	var money_mult: float = 1.0
@@ -74,7 +74,26 @@ func take_hit(hit_zone: String, base_damage: float, base_money: int) -> void:
 	var final_damage: float = base_damage * damage_mult
 	var final_money: int = int(base_money * money_mult)
 	current_health -= final_damage
+
+	var effect_position: Vector3 = hit_position
+	if effect_position == Vector3.INF:
+		effect_position = _hitbox_position(hit_zone)
 	EventBus.enemy_hit.emit(self, hit_zone, final_damage, final_money)
+	EventBus.damage_number_requested.emit(effect_position, final_damage)
+
 	if current_health <= 0.0:
 		EventBus.enemy_killed.emit(self, hit_zone)
 		queue_free()
+
+
+func _hitbox_position(hit_zone: String) -> Vector3:
+	var hitbox_name: String = ""
+	match hit_zone:
+		"head": hitbox_name = "HeadHitbox"
+		"torso": hitbox_name = "TorsoHitbox"
+		"legs": hitbox_name = "LegsHitbox"
+
+	var hitbox: Node3D = get_node_or_null(hitbox_name) as Node3D
+	if hitbox != null:
+		return hitbox.global_position + Vector3.UP * 0.2
+	return global_position + Vector3.UP * 2.0

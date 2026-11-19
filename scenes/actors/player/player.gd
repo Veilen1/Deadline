@@ -20,10 +20,17 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 @export var weapon_damage: float = 20.0
 @export var weapon_money: int = 10
 
+@export_group("Audio")
+@export var footstep_interval: float = 0.42
+@export var footstep_min_speed: float = 0.5
+
 @onready var camera: Camera3D = $Camera3D
 @onready var shoot_origin: Marker3D = $Camera3D/ShootOrigin
+@onready var shoot_player: AudioStreamPlayer = $ShootPlayer
+@onready var footstep_player: AudioStreamPlayer = $FootstepPlayer
 
 var current_health: float
+var _footstep_timer: float = 0.0
 
 
 func _ready() -> void:
@@ -76,6 +83,23 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+	_update_footsteps(delta)
+
+
+func _update_footsteps(delta: float) -> void:
+	var horizontal_speed: float = Vector2(velocity.x, velocity.z).length()
+	if not is_on_floor() or horizontal_speed < footstep_min_speed:
+		_footstep_timer = 0.0
+		return
+
+	_footstep_timer -= delta
+	if _footstep_timer > 0.0:
+		return
+
+	_footstep_timer = footstep_interval
+	footstep_player.pitch_scale = randf_range(0.9, 1.1)
+	footstep_player.play()
+
 
 func take_damage(amount: float) -> void:
 	# Ignora daño si ya está muerto.
@@ -116,9 +140,12 @@ func shoot() -> void:
 			if not hit_zone.is_empty():
 				var enemy: Node = collider.get_parent()
 				if enemy != null and enemy.has_method("take_hit"):
-					enemy.call("take_hit", hit_zone, weapon_damage, weapon_money)
+					var hit_position: Vector3 = result.get("position", Vector3.INF)
+					enemy.call("take_hit", hit_zone, weapon_damage, weapon_money, hit_position)
 
 	_spawn_tracer(end_point)
+	shoot_player.pitch_scale = randf_range(0.95, 1.05)
+	shoot_player.play()
 	# TODO: Fase 1.4 — cooldown y retroceso del arma.
 
 

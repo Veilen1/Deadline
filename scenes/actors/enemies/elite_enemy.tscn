@@ -6,7 +6,7 @@
 [node name="EliteEnemy" instance=ExtResource("1_base")]
 scale = Vector3(1.6, 1.6, 1.6)
 script = ExtResource("2_elite")
-max_health = 400.0
+max_health = 800.0
 move_speed = 1.8
 
 [node name="Aura" type="OmniLight3D" parent="."]
