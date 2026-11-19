@@ -26,8 +26,6 @@ const GAME_SCENE: String = "res://scenes/main.tscn"
 @onready var buy_health_button: Button = $CenterContainer/Menu/BuyHealthButton
 @onready var play_button: Button = $CenterContainer/Menu/PlayButton
 @onready var main_menu_button: Button = $CenterContainer/Menu/MainMenuButton
-@onready var reset_button: Button = $CenterContainer/Menu/ResetButton
-@onready var reset_dialog: ConfirmationDialog = $ResetDialog
 
 
 func _ready() -> void:
@@ -38,8 +36,6 @@ func _ready() -> void:
 	buy_health_button.pressed.connect(_on_buy_health_pressed)
 	play_button.pressed.connect(_on_play_pressed)
 	main_menu_button.pressed.connect(_on_main_menu_pressed)
-	reset_button.pressed.connect(_on_reset_pressed)
-	reset_dialog.confirmed.connect(_on_reset_confirmed)
 	_update_ui()
 	if buy_time_button.disabled:
 		play_button.grab_focus()
@@ -87,15 +83,6 @@ func _on_play_pressed() -> void:
 func _on_main_menu_pressed() -> void:
 	GameState.save_game()
 	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
-
-
-func _on_reset_pressed() -> void:
-	reset_dialog.popup_centered(Vector2i(460, 150))
-
-
-func _on_reset_confirmed() -> void:
-	GameState.reset_progress()
-	_update_ui()
 
 
 func _update_ui() -> void:

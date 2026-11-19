@@ -1,0 +1,280 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/settings.gd" id="1_settings"]
+
+[node name="Settings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_settings")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.94, 0.94, 0.94, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Menu" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/Menu"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 36
+text = "CONFIGURACIÓN"
+horizontal_alignment = 1
+
+[node name="OptionsScroll" type="ScrollContainer" parent="CenterContainer/Menu"]
+custom_minimum_size = Vector2(660, 300)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Options" type="VBoxContainer" parent="CenterContainer/Menu/OptionsScroll"]
+custom_minimum_size = Vector2(620, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="FovRow" type="HBoxContainer" parent="CenterContainer/Menu/OptionsScroll/Options"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/FovRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "Campo de visión (FOV)"
+
+[node name="FovSlider" type="HSlider" parent="CenterContainer/Menu/OptionsScroll/Options/FovRow"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 60.0
+max_value = 110.0
+step = 1.0
+value = 75.0
+
+[node name="FovValue" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/FovRow"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.35, 0.35, 1)
+theme_override_font_sizes/font_size = 16
+text = "75°"
+horizontal_alignment = 2
+
+[node name="SensitivityRow" type="HBoxContainer" parent="CenterContainer/Menu/OptionsScroll/Options"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/SensitivityRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "Sensibilidad del mouse"
+
+[node name="SensitivitySlider" type="HSlider" parent="CenterContainer/Menu/OptionsScroll/Options/SensitivityRow"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.0005
+max_value = 0.01
+step = 0.0001
+value = 0.003
+
+[node name="SensitivityValue" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/SensitivityRow"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.35, 0.35, 1)
+theme_override_font_sizes/font_size = 16
+text = "0.0030"
+horizontal_alignment = 2
+
+[node name="UIScaleRow" type="HBoxContainer" parent="CenterContainer/Menu/OptionsScroll/Options"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/UIScaleRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "Tamaño de la interfaz"
+
+[node name="UIScaleSlider" type="HSlider" parent="CenterContainer/Menu/OptionsScroll/Options/UIScaleRow"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.8
+max_value = 1.4
+step = 0.05
+value = 1.0
+
+[node name="UIScaleValue" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/UIScaleRow"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.35, 0.35, 1)
+theme_override_font_sizes/font_size = 16
+text = "100%"
+horizontal_alignment = 2
+
+[node name="VolumeRow" type="HBoxContainer" parent="CenterContainer/Menu/OptionsScroll/Options"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/VolumeRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "Volumen general"
+
+[node name="VolumeSlider" type="HSlider" parent="CenterContainer/Menu/OptionsScroll/Options/VolumeRow"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.0
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="VolumeValue" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/VolumeRow"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.35, 0.35, 1)
+theme_override_font_sizes/font_size = 16
+text = "100%"
+horizontal_alignment = 2
+
+[node name="InvertRow" type="HBoxContainer" parent="CenterContainer/Menu/OptionsScroll/Options"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/InvertRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "Invertir eje Y"
+
+[node name="InvertCheck" type="CheckButton" parent="CenterContainer/Menu/OptionsScroll/Options/InvertRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FullscreenRow" type="HBoxContainer" parent="CenterContainer/Menu/OptionsScroll/Options"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/FullscreenRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "Pantalla completa"
+
+[node name="FullscreenCheck" type="CheckButton" parent="CenterContainer/Menu/OptionsScroll/Options/FullscreenRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VsyncRow" type="HBoxContainer" parent="CenterContainer/Menu/OptionsScroll/Options"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/VsyncRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "V-Sync"
+
+[node name="VsyncCheck" type="CheckButton" parent="CenterContainer/Menu/OptionsScroll/Options/VsyncRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MinimapRow" type="HBoxContainer" parent="CenterContainer/Menu/OptionsScroll/Options"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/MinimapRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "Mostrar minimapa"
+
+[node name="MinimapCheck" type="CheckButton" parent="CenterContainer/Menu/OptionsScroll/Options/MinimapRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DifficultyRow" type="HBoxContainer" parent="CenterContainer/Menu/OptionsScroll/Options"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/DifficultyRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "Dificultad (balance)"
+
+[node name="DifficultyOption" type="OptionButton" parent="CenterContainer/Menu/OptionsScroll/Options/DifficultyRow"]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HintLabel" type="Label" parent="CenterContainer/Menu"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 14
+text = "FOV, sensibilidad, dificultad y minimapa se aplican en la próxima run."
+horizontal_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="CenterContainer/Menu"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="DefaultsButton" type="Button" parent="CenterContainer/Menu/Buttons"]
+custom_minimum_size = Vector2(180, 40)
+layout_mode = 2
+text = "Restablecer ajustes"
+
+[node name="ResetButton" type="Button" parent="CenterContainer/Menu/Buttons"]
+custom_minimum_size = Vector2(180, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.15, 0.15, 1)
+text = "Borrar progreso"
+
+[node name="BackButton" type="Button" parent="CenterContainer/Menu/Buttons"]
+custom_minimum_size = Vector2(180, 40)
+layout_mode = 2
+text = "Volver"
+
+[node name="StatusLabel" type="Label" parent="CenterContainer/Menu"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 14
+text = "Los cambios se guardan automáticamente."
+horizontal_alignment = 1
+
+[node name="ResetDialog" type="ConfirmationDialog" parent="."]
+title = "Borrar progreso"
+dialog_text = "¿Estás seguro que quieres borrar todo tu progreso?"
+ok_button_text = "Sí, borrar"
+cancel_button_text = "Cancelar"
