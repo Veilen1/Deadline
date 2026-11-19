@@ -85,7 +85,7 @@ func _on_enemy_killed(_enemy: Node, _hit_zone: String) -> void:
 		_finish_zone()
 		return
 
-	await get_tree().create_timer(wave_delay).timeout
+	await get_tree().create_timer(wave_delay, false).timeout
 	if GameState.is_run_active and not _completed:
 		_start_wave()
 

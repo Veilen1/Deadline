@@ -35,11 +35,17 @@ var _footstep_timer: float = 0.0
 
 func _ready() -> void:
 	current_health = max_health
-	mouse_sensitivity = Settings.mouse_sensitivity
-	camera.fov = Settings.fov
+	Settings.settings_changed.connect(_apply_live_settings)
+	_apply_live_settings()
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	camera.position.y = camera_height
 	# TODO: Fase 1.3 — viewmodel/brazos en primera persona (el mesh del cuerpo está oculto).
+
+
+func _apply_live_settings() -> void:
+	if is_instance_valid(camera):
+		camera.fov = Settings.fov
+	mouse_sensitivity = Settings.mouse_sensitivity
 
 
 func _unhandled_input(event: InputEvent) -> void:

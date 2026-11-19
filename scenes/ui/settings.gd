@@ -1,6 +1,10 @@
 extends Control
 
+signal closed
+
 const MAIN_MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
+
+@export var overlay_mode: bool = false
 
 @onready var fov_slider: HSlider = $CenterContainer/Menu/OptionsScroll/Options/FovRow/FovSlider
 @onready var fov_value: Label = $CenterContainer/Menu/OptionsScroll/Options/FovRow/FovValue
@@ -25,6 +29,7 @@ var _updating: bool = false
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	_populate_difficulty()
 	_load_controls()
@@ -163,4 +168,18 @@ func _on_reset_confirmed() -> void:
 
 func _on_back_pressed() -> void:
 	Settings.save_settings()
+	if overlay_mode:
+		hide()
+		closed.emit()
+		return
 	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not overlay_mode:
+		return
+	if not event.is_action_pressed("ui_cancel"):
+		return
+
+	_on_back_pressed()
+	get_viewport().set_input_as_handled()
