@@ -33,9 +33,19 @@ var upgrades: Dictionary = {}
 
 
 func add_run_time(seconds: float) -> void:
-	# Registra la mejora (para persistirla/serializarla) y amplía el timer base.
 	base_run_time += seconds
-	upgrades["run_time_bonus"] = float(upgrades.get("run_time_bonus", 0.0)) + seconds
+
+
+func register_upgrade(upgrade_id: String, bonus: float) -> void:
+	# Guarda nivel y bonus acumulado para aplicarlo en cada run.
+	var level_key: String = upgrade_id + "_level"
+	var bonus_key: String = upgrade_id + "_bonus"
+	upgrades[level_key] = int(upgrades.get(level_key, 0)) + 1
+	upgrades[bonus_key] = float(upgrades.get(bonus_key, 0.0)) + bonus
+
+
+func get_upgrade_level(upgrade_id: String) -> int:
+	return int(upgrades.get(upgrade_id + "_level", 0))
 
 
 func add_money(amount: int) -> void:

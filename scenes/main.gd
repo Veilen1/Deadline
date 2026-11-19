@@ -26,6 +26,7 @@ func _ready() -> void:
 	EventBus.boss_spawned.connect(_on_boss_spawned)
 	EventBus.boss_health_changed.connect(_on_boss_health_changed)
 	EventBus.boss_defeated.connect(_on_boss_defeated)
+	player.call("apply_meta_upgrades", GameState.upgrades)
 	_update_money_label(GameState.money)
 	_update_health_label()
 	GameState.start_run()
