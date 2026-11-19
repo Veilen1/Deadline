@@ -51,6 +51,11 @@ custom_minimum_size = Vector2(240, 48)
 layout_mode = 2
 text = "Reiniciar"
 
+[node name="HubButton" type="Button" parent="CenterContainer/Menu"]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+text = "Volver al hub"
+
 [node name="MainMenuButton" type="Button" parent="CenterContainer/Menu"]
 custom_minimum_size = Vector2(240, 48)
 layout_mode = 2

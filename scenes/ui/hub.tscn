@@ -46,6 +46,13 @@ theme_override_font_sizes/font_size = 24
 text = "$0"
 horizontal_alignment = 1
 
+[node name="TimerLabel" type="Label" parent="CenterContainer/Menu"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.35, 0.35, 1)
+theme_override_font_sizes/font_size = 18
+text = "Timer inicial: 60 s"
+horizontal_alignment = 1
+
 [node name="BuyTimeButton" type="Button" parent="CenterContainer/Menu"]
 layout_mode = 2
 text = "Comprar: +10s timer inicial ($50)"
@@ -53,3 +60,7 @@ text = "Comprar: +10s timer inicial ($50)"
 [node name="PlayButton" type="Button" parent="CenterContainer/Menu"]
 layout_mode = 2
 text = "Jugar"
+
+[node name="MainMenuButton" type="Button" parent="CenterContainer/Menu"]
+layout_mode = 2
+text = "Menú principal"

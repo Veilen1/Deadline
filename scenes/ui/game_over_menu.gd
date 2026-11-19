@@ -1,18 +1,18 @@
 extends Control
 
-const MAIN_MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
+const HUB_SCENE: String = "res://scenes/ui/hub.tscn"
 
 @onready var reason_label: Label = $CenterContainer/Menu/ReasonLabel
 @onready var money_label: Label = $CenterContainer/Menu/MoneyLabel
 @onready var retry_button: Button = $CenterContainer/Menu/RetryButton
-@onready var main_menu_button: Button = $CenterContainer/Menu/MainMenuButton
+@onready var hub_button: Button = $CenterContainer/Menu/HubButton
 
 
 func _ready() -> void:
 	hide()
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	retry_button.pressed.connect(_on_retry_pressed)
-	main_menu_button.pressed.connect(_on_main_menu_pressed)
+	hub_button.pressed.connect(_on_hub_pressed)
 
 
 func show_result(reason: String, money: int) -> void:
@@ -40,7 +40,7 @@ func _on_retry_pressed() -> void:
 	get_tree().reload_current_scene()
 
 
-func _on_main_menu_pressed() -> void:
+func _on_hub_pressed() -> void:
 	get_tree().paused = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+	get_tree().change_scene_to_file(HUB_SCENE)

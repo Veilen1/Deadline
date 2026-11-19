@@ -10,8 +10,8 @@ extends CharacterBody3D
 
 @export_group("Attack")
 @export var attack_range: float = 2.0
-@export var attack_damage: float = 10.0
-@export var attack_cooldown: float = 1.0
+@export var attack_damage: float = 15.0
+@export var attack_cooldown: float = 0.7
 
 @export_group("Zone Multipliers")
 @export var damage_mult_head: float = 2.5

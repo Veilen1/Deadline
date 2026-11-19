@@ -1,6 +1,6 @@
 extends Control
 
-const GAME_SCENE: String = "res://scenes/main.tscn"
+const GAME_SCENE: String = "res://scenes/ui/hub.tscn"
 
 @onready var play_button: Button = $CenterContainer/Menu/PlayButton
 @onready var quit_button: Button = $CenterContainer/Menu/QuitButton
