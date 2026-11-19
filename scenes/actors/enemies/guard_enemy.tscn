@@ -51,7 +51,7 @@ emission_enabled = true
 emission = Color(0.2, 1, 0.5, 1)
 emission_energy_multiplier = 1.6
 
-[node name="GuardEnemy" type="CharacterBody3D" groups=["enemies"]]
+[node name="GuardEnemy" type="CharacterBody3D" groups=["enemies", "guard_enemies"]]
 script = ExtResource("1_guard")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
