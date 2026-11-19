@@ -3,6 +3,7 @@ extends Node3D
 const DAMAGE_NUMBER_SCENE: PackedScene = preload("res://scenes/effects/damage_number.tscn")
 const ZONE_SCENES = [
 	preload("res://scenes/levels/zone_01.tscn"),
+	preload("res://scenes/levels/zone_02.tscn"),
 ]
 
 @export var zone_banner_hold: float = 1.2
