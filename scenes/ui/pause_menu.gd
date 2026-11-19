@@ -53,3 +53,10 @@ func _on_main_menu_pressed() -> void:
 	get_tree().paused = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+
+
+func set_enabled(enabled: bool) -> void:
+	# Al terminar la run la pausa se desactiva para no competir con fin de run.
+	process_mode = Node.PROCESS_MODE_ALWAYS if enabled else Node.PROCESS_MODE_DISABLED
+	if not enabled:
+		hide()

@@ -22,6 +22,9 @@ var money: int = 0:
 		money = clamped_value
 		money_changed.emit(money)
 
+# True mientras la run está en curso. Evita emitir run_ended más de una vez.
+var is_run_active: bool = false
+
 # Tiempo restante de la run actual.
 var run_timer: float = 0.0
 
@@ -43,23 +46,30 @@ func spend_money(amount: int) -> bool:
 
 
 func start_run() -> void:
+	is_run_active = true
 	run_timer = base_run_time
 	timer_changed.emit(run_timer)
 	run_started.emit()
 
 
 func tick_run(delta: float) -> void:
-	# Avanza el temporizador y notifica. La run no tickea si ya llegó a 0.
-	if run_timer <= 0.0:
+	# Avanza el temporizador y notifica. No tickea si la run ya terminó.
+	if not is_run_active or run_timer <= 0.0:
 		return
 
 	run_timer = maxf(run_timer - delta, 0.0)
 	timer_changed.emit(run_timer)
 
-	# TODO: Fase 2 — al llegar a 0 llamar a end_run("timer").
+	if run_timer <= 0.0:
+		end_run("timer")
 
 
 func end_run(reason: String) -> void:
+	# Ignora llamadas repetidas (ej. muerte y timer en el mismo frame).
+	if not is_run_active:
+		return
+	is_run_active = false
+
 	# TODO: Fase 2.4 — aplicar consecuencias por motivo (ej. penalización por muerte).
 	if not VALID_END_REASONS.has(reason):
 		push_warning("GameState.end_run: motivo desconocido '%s'" % reason)
@@ -68,5 +78,6 @@ func end_run(reason: String) -> void:
 
 func reset_run() -> void:
 	# Solo reinicia el estado de la run. money y upgrades persisten.
+	is_run_active = false
 	run_timer = base_run_time
 	timer_changed.emit(run_timer)
