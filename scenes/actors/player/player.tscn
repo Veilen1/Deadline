@@ -55,4 +55,4 @@ mesh = SubResource("BoxMesh_weapon_grip")
 surface_material_override/0 = SubResource("StandardMaterial3D_weapon")
 
 [node name="ShootOrigin" type="Marker3D" parent="Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, -0.1, -0.69)
