@@ -9,14 +9,14 @@ extends CharacterBody3D
 @export var camera_height: float = 1.5
 @export var camera_pitch_limit_deg: float = 80.0
 
-@onready var spring_arm: SpringArm3D = $SpringArm3D
-@onready var camera: Camera3D = $SpringArm3D/Camera3D
-@onready var shoot_origin: Marker3D = $ShootOrigin
+@onready var camera: Camera3D = $Camera3D
+@onready var shoot_origin: Marker3D = $Camera3D/ShootOrigin
 
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	spring_arm.position.y = camera_height
+	camera.position.y = camera_height
+	# TODO: Fase 1.3 — viewmodel/brazos en primera persona (el mesh del cuerpo está oculto).
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -28,11 +28,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if event is InputEventMouseMotion:
-		# Yaw sobre el cuerpo; pitch sobre el brazo de cámara.
+		# Yaw sobre el cuerpo; pitch sobre la cámara (primera persona).
 		rotate_y(-event.relative.x * mouse_sensitivity)
 		var pitch_limit: float = deg_to_rad(camera_pitch_limit_deg)
-		spring_arm.rotation.x = clampf(
-			spring_arm.rotation.x - event.relative.y * mouse_sensitivity,
+		camera.rotation.x = clampf(
+			camera.rotation.x - event.relative.y * mouse_sensitivity,
 			-pitch_limit,
 			pitch_limit
 		)
@@ -45,8 +45,8 @@ func _physics_process(delta: float) -> void:
 		"move_left", "move_right", "move_forward", "move_back"
 	)
 
-	var camera_basis: Basis = camera.global_basis
-	var direction: Vector3 = camera_basis.x * input_vector.x + camera_basis.z * input_vector.y
+	var body_basis: Basis = global_basis
+	var direction: Vector3 = body_basis.x * input_vector.x + body_basis.z * input_vector.y
 	direction.y = 0.0
 	if direction.length_squared() > 0.0:
 		direction = direction.normalized()
