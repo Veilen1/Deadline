@@ -1,5 +1,8 @@
 extends CharacterBody3D
 
+@export_group("Health")
+@export var max_health: float = 100.0
+
 @export_group("Movement")
 @export var move_speed: float = 5.0
 @export var gravity: float = 20.0
@@ -17,8 +20,11 @@ extends CharacterBody3D
 @onready var camera: Camera3D = $Camera3D
 @onready var shoot_origin: Marker3D = $Camera3D/ShootOrigin
 
+var current_health: float
+
 
 func _ready() -> void:
+	current_health = max_health
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	camera.position.y = camera_height
 	# TODO: Fase 1.3 — viewmodel/brazos en primera persona (el mesh del cuerpo está oculto).
@@ -63,6 +69,18 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 
 	move_and_slide()
+
+
+func take_damage(amount: float) -> void:
+	# Ignora daño si ya está muerto.
+	if current_health <= 0.0:
+		return
+
+	current_health = maxf(current_health - amount, 0.0)
+	EventBus.player_damaged.emit(amount)
+
+	if current_health <= 0.0:
+		EventBus.player_died.emit()
 
 
 func shoot() -> void:
