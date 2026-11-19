@@ -3,6 +3,8 @@ extends Node
 ## Configuración persistente del jugador. Se aplica al arrancar y desde
 ## la pantalla de configuración.
 
+signal settings_changed
+
 const DEFAULT_SAVE_PATH: String = "user://deadline_settings.cfg"
 const SAVE_VERSION: int = 1
 
@@ -114,24 +116,28 @@ func reset_defaults() -> void:
 
 
 func save_settings() -> void:
-	if not persistence_enabled or _is_loading:
+	if _is_loading:
 		return
 
-	var config := ConfigFile.new()
-	config.set_value("settings", "version", SAVE_VERSION)
-	config.set_value("settings", "fov", fov)
-	config.set_value("settings", "ui_scale", ui_scale)
-	config.set_value("settings", "fullscreen", fullscreen)
-	config.set_value("settings", "vsync", vsync)
-	config.set_value("settings", "mouse_sensitivity", mouse_sensitivity)
-	config.set_value("settings", "invert_y", invert_y)
-	config.set_value("settings", "master_volume", master_volume)
-	config.set_value("settings", "show_minimap", show_minimap)
-	config.set_value("settings", "difficulty", difficulty)
+	if persistence_enabled:
+		var config := ConfigFile.new()
+		config.set_value("settings", "version", SAVE_VERSION)
+		config.set_value("settings", "fov", fov)
+		config.set_value("settings", "ui_scale", ui_scale)
+		config.set_value("settings", "fullscreen", fullscreen)
+		config.set_value("settings", "vsync", vsync)
+		config.set_value("settings", "mouse_sensitivity", mouse_sensitivity)
+		config.set_value("settings", "invert_y", invert_y)
+		config.set_value("settings", "master_volume", master_volume)
+		config.set_value("settings", "show_minimap", show_minimap)
+		config.set_value("settings", "difficulty", difficulty)
 
-	var error: int = config.save(save_path)
-	if error != OK:
-		push_warning("Settings: no se pudo guardar la configuración (%s)" % error)
+		var error: int = config.save(save_path)
+		if error != OK:
+			push_warning("Settings: no se pudo guardar la configuración (%s)" % error)
+
+	# Permite que la partida en curso aplique FOV, sensibilidad y minimapa al instante.
+	settings_changed.emit()
 
 
 func load_settings() -> void:

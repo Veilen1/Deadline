@@ -42,6 +42,7 @@ func _ready() -> void:
 	EventBus.boss_spawned.connect(_on_boss_spawned)
 	EventBus.boss_health_changed.connect(_on_boss_health_changed)
 	EventBus.boss_defeated.connect(_on_boss_defeated)
+	Settings.settings_changed.connect(_on_settings_changed)
 	player.call("apply_meta_upgrades", GameState.upgrades)
 	minimap.visible = Settings.show_minimap
 	_update_money_label(GameState.money)
@@ -86,7 +87,7 @@ func _advance_zone() -> void:
 	# Congela el timer mientras se muestra la transición.
 	_transitioning = true
 	_show_zone_banner("ZONA %d COMPLETADA" % (_zone_index + 1))
-	await get_tree().create_timer(zone_banner_hold).timeout
+	await get_tree().create_timer(zone_banner_hold, false).timeout
 
 	if not GameState.is_run_active:
 		_transitioning = false
@@ -95,7 +96,7 @@ func _advance_zone() -> void:
 	_zone_index += 1
 	_load_zone(_zone_index)
 	_show_zone_banner("ZONA %d" % (_zone_index + 1))
-	await get_tree().create_timer(zone_banner_hold).timeout
+	await get_tree().create_timer(zone_banner_hold, false).timeout
 	_transitioning = false
 
 
@@ -140,6 +141,10 @@ func _on_damage_number_requested(world_position: Vector3, amount: float) -> void
 	var number: Node3D = DAMAGE_NUMBER_SCENE.instantiate() as Node3D
 	add_child(number)
 	number.call("show_damage", world_position, amount)
+
+
+func _on_settings_changed() -> void:
+	minimap.visible = Settings.show_minimap
 
 
 func _on_boss_spawned(_boss: Node, max_health: float) -> void:
