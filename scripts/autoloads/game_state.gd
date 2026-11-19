@@ -32,6 +32,12 @@ var run_timer: float = 0.0
 var upgrades: Dictionary = {}
 
 
+func add_run_time(seconds: float) -> void:
+	# Registra la mejora (para persistirla/serializarla) y amplía el timer base.
+	base_run_time += seconds
+	upgrades["run_time_bonus"] = float(upgrades.get("run_time_bonus", 0.0)) + seconds
+
+
 func add_money(amount: int) -> void:
 	if amount <= 0:
 		return
