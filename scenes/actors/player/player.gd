@@ -113,6 +113,13 @@ func take_damage(amount: float) -> void:
 		EventBus.player_died.emit()
 
 
+func apply_meta_upgrades(upgrades: Dictionary) -> void:
+	# Aplica los bonus comprados en el hub. Se llama una vez al empezar la run.
+	weapon_damage += float(upgrades.get("damage_bonus", 0.0))
+	max_health += float(upgrades.get("health_bonus", 0.0))
+	current_health = max_health
+
+
 func shoot() -> void:
 	# Raycast desde el centro de la cámara hacia donde se mira.
 	var screen_center: Vector2 = get_viewport().get_visible_rect().size * 0.5
