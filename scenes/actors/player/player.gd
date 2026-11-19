@@ -8,6 +8,7 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 @export_group("Movement")
 @export var move_speed: float = 5.0
 @export var gravity: float = 20.0
+@export var jump_height: float = 0.9
 
 @export_group("Camera")
 @export var mouse_sensitivity: float = 0.003
@@ -69,6 +70,9 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= gravity * delta
 	else:
 		velocity.y = 0.0
+		if Input.is_action_just_pressed("jump"):
+			# Salto de medio cuerpo: v = sqrt(2 * g * h).
+			velocity.y = sqrt(2.0 * gravity * jump_height)
 
 	move_and_slide()
 
