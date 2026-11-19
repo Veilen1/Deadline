@@ -34,6 +34,7 @@ var _aura: OmniLight3D
 
 func _ready() -> void:
 	super._ready()
+	jump_damage *= Settings.enemy_damage_multiplier()
 	_aura = get_node_or_null("Aura") as OmniLight3D
 	EventBus.boss_spawned.emit(self, max_health)
 

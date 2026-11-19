@@ -26,6 +26,8 @@ var _attack_timer: float = 0.0
 
 
 func _ready() -> void:
+	max_health *= Settings.enemy_health_multiplier()
+	attack_damage *= Settings.enemy_damage_multiplier()
 	current_health = max_health
 
 

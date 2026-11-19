@@ -10,6 +10,7 @@ const ZONE_SCENES = [
 
 @onready var player: Node = $Player
 @onready var zones_root: Node3D = $Zones
+@onready var minimap: Control = $CanvasLayer/Minimap
 @onready var money_label: Label = $CanvasLayer/MoneyLabel
 @onready var zone_label: Label = $CanvasLayer/ZoneLabel
 @onready var timer_label: Label = $CanvasLayer/TimerLabel
@@ -42,6 +43,7 @@ func _ready() -> void:
 	EventBus.boss_health_changed.connect(_on_boss_health_changed)
 	EventBus.boss_defeated.connect(_on_boss_defeated)
 	player.call("apply_meta_upgrades", GameState.upgrades)
+	minimap.visible = Settings.show_minimap
 	_update_money_label(GameState.money)
 	_update_health_label()
 	_load_zone(_zone_index)
