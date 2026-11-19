@@ -18,4 +18,5 @@ func _on_play_pressed() -> void:
 
 
 func _on_quit_pressed() -> void:
+	GameState.save_game()
 	get_tree().quit()

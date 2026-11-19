@@ -48,17 +48,20 @@ func _on_resume_pressed() -> void:
 
 
 func _on_restart_pressed() -> void:
+	GameState.save_game()
 	get_tree().paused = false
 	get_tree().reload_current_scene()
 
 
 func _on_hub_pressed() -> void:
+	GameState.save_game()
 	get_tree().paused = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().change_scene_to_file(HUB_SCENE)
 
 
 func _on_main_menu_pressed() -> void:
+	GameState.save_game()
 	get_tree().paused = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
