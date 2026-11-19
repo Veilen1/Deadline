@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scenes/actors/enemies/enemy_base.gd" id="1_enemy"]
 
@@ -6,45 +6,76 @@
 radius = 0.4
 height = 1.8
 
-[sub_resource type="BoxMesh" id="BoxMesh_body"]
-size = Vector3(0.8, 1.8, 0.8)
+[sub_resource type="BoxMesh" id="BoxMesh_head"]
+size = Vector3(0.42, 0.42, 0.42)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_red"]
+[sub_resource type="BoxMesh" id="BoxMesh_torso"]
+size = Vector3(0.8, 0.9, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_leg"]
+size = Vector3(0.25, 0.7, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_head"]
+albedo_color = Color(1, 0.35, 0.3, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_torso"]
 albedo_color = Color(0.85, 0.12, 0.12, 1)
 roughness = 1.0
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_head"]
-radius = 0.28
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_legs"]
+albedo_color = Color(0.55, 0.08, 0.08, 1)
+roughness = 1.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_head"]
+size = Vector3(0.46, 0.46, 0.46)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_torso"]
-size = Vector3(0.85, 0.7, 0.85)
+size = Vector3(0.85, 0.9, 0.55)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_legs"]
-size = Vector3(0.85, 0.6, 0.85)
+size = Vector3(0.85, 0.75, 0.4)
 
-[node name="EnemyBase" type="CharacterBody3D"]
+[node name="EnemyBase" type="CharacterBody3D" groups=["enemies"]]
 script = ExtResource("1_enemy")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_body")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_body")
-surface_material_override/0 = SubResource("StandardMaterial3D_red")
+[node name="Torso" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+mesh = SubResource("BoxMesh_torso")
+surface_material_override/0 = SubResource("StandardMaterial3D_torso")
+
+[node name="Head" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.68, 0)
+mesh = SubResource("BoxMesh_head")
+surface_material_override/0 = SubResource("StandardMaterial3D_head")
+
+[node name="LegLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, -0.55, 0)
+mesh = SubResource("BoxMesh_leg")
+surface_material_override/0 = SubResource("StandardMaterial3D_legs")
+
+[node name="LegRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.55, 0)
+mesh = SubResource("BoxMesh_leg")
+surface_material_override/0 = SubResource("StandardMaterial3D_legs")
 
 [node name="HeadHitbox" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.68, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="HeadHitbox"]
-shape = SubResource("SphereShape3D_head")
+shape = SubResource("BoxShape3D_head")
 
 [node name="TorsoHitbox" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TorsoHitbox"]
 shape = SubResource("BoxShape3D_torso")
 
 [node name="LegsHitbox" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.62, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.55, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="LegsHitbox"]
 shape = SubResource("BoxShape3D_legs")
