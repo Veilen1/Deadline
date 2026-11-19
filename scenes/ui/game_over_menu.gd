@@ -30,7 +30,7 @@ func _reason_text(reason: String) -> String:
 		"death":
 			return "Moriste"
 		"completed":
-			return "Zona completada"
+			return "Run completada"
 		_:
 			return "Fin de la run"
 
