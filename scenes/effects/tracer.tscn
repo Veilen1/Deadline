@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/effects/tracer.gd" id="1_tracer"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_tracer"]
+
+[node name="Tracer" type="MeshInstance3D" groups=["tracers"]]
+cast_shadow = 0
+mesh = SubResource("BoxMesh_tracer")
+script = ExtResource("1_tracer")
