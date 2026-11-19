@@ -1,5 +1,9 @@
 # Godot 4+ specific ignores
 .godot/
+.import/
+.mono/
 /android/
 *.exe
+*.tmp
 export/
+.DS_Store
