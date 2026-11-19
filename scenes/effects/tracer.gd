@@ -2,9 +2,9 @@ extends MeshInstance3D
 
 ## Trazo visual del disparo. Se autodestruye al terminar su vida útil.
 
-@export var width: float = 0.025
+@export var width: float = 0.04
 @export var color: Color = Color(1.0, 0.82, 0.25, 1.0)
-@export var lifetime: float = 0.07
+@export var lifetime: float = 0.1
 @export var emission_energy: float = 3.0
 
 
