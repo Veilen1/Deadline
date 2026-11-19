@@ -8,16 +8,6 @@ extends CharacterBody3D
 @export_group("Health")
 @export var max_health: float = 100.0
 
-@export_group("Money")
-@export var money_head: int = 30
-@export var money_torso: int = 10
-@export var money_legs: int = 5
-
-@export_group("Damage")
-@export var damage_head: float = 50.0
-@export var damage_torso: float = 20.0
-@export var damage_legs: float = 10.0
-
 @export_group("Zone Multipliers")
 @export var damage_mult_head: float = 2.5
 @export var damage_mult_torso: float = 1.0
@@ -61,6 +51,7 @@ func _physics_process(delta: float) -> void:
 
 
 func take_hit(hit_zone: String, base_damage: float, base_money: int) -> void:
+	# base_damage y base_money los define el arma; acá solo se aplica el multiplicador de zona.
 	var damage_mult: float = 1.0
 	var money_mult: float = 1.0
 	match hit_zone:
