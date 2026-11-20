@@ -2,7 +2,7 @@
 
 Todas las versiones relevantes del prototipo.
 
-## No publicado
+## v0.4.0 — 2026-11-20
 
 ### Agregado
 - Símbolos por nodo del árbol y tooltip lateral con descripción, nivel y pips.

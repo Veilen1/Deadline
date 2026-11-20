@@ -2,8 +2,8 @@
 
 > **Estado del documento:** vivo y en construcción. Todo lo que está acá está sujeto a cambios durante el prototipado y el testeo. Las decisiones cerradas se marcan con ✅ y las que están abiertas o en revisión se marcan con 🟡.
 >
-> **Última actualización:** 19/11/2026
-> **Versión:** 0.1 — Pre-prototipo
+> **Última actualización:** 20/11/2026
+> **Versión:** 0.4.0 — Prototipo jugable
 
 ---
 
@@ -351,12 +351,12 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - `main`: releases estables.
 - `dev`: integración de features.
 - Una rama por feature: `feature/<nombre>` desde `dev`, commits atómicos, merge `--no-ff` a `dev`.
-- Tags: `v0.1.0` (core loop, zonas, hub, guardado) y `v0.2.0` (minimapa, configuración, penalización y límites).
+- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol) y `v0.4.0` (armas con skins, audio, HUD y pulido).
 
 ### Limitaciones conocidas
 
 - Solo hay dos zonas.
-- No hay variedad de armas, munición ni recarga.
+- Hay tres armas con munición independiente y regeneración, pero no recarga manual.
 - El volumen es general; no hay sliders separados de música/efectos.
 - La dificultad se aplica a los enemigos que aparecen después del cambio; los ya vivos no se recalculan.
 - Los élites comparten el patrón de salto; los enemigos verdes son los únicos con escudo.
@@ -365,9 +365,9 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Próximos pasos
 
-1. Zona 3 y nuevas variantes de enemigo.
-2. Armas, munición y recarga.
-3. Música y sliders separados de audio.
+1. Zona 3 y nuevas variantes de enemigo (tirador a distancia).
+2. Sliders separados de música y efectos, y mezcla por zona.
+3. Movimiento avanzado: dash aéreo y combos de slide/salto.
 4. Balance fino con la dificultad y los costos del hub.
 5. Localización y soporte de controller.
 
@@ -432,7 +432,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ---
 
-## 16. Post v0.3.0 — iconografía, tema global, transiciones y sonidos
+## 16. v0.4.0 — armas, audio y pulido
 
 ### Árbol con símbolos y tooltip
 
