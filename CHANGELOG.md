@@ -13,6 +13,8 @@ Todas las versiones relevantes del prototipo.
 - Tienda de armas con compra, equipamiento y persistencia.
 - Armas nuevas: Avispa (SMG) y Trueno (escopeta slug).
 - Pantalla de perfil con nombre editable y estadísticas persistentes.
+- Medidor de estilo/combo con rangos D–ULTRAKILL, FOV/shake por rango y chispas en críticos.
+- Documento de referencia de estilo Ultrakill.
 
 ## v0.2.0 — 2026-11-19
 

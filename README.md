@@ -420,6 +420,15 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - Estadísticas persistentes: plata actual, plata total recaudada, runs iniciadas/completadas, muertes/abandonos, veces sin tiempo, enemigos eliminados, nodos desbloqueados, armas compradas y arma equipada.
 - El perfil se guarda automáticamente.
 
+### Estilo Ultrakill
+
+- Medidor de estilo/combo con rangos `D → ULTRAKILL`.
+- Sube al impactar y matar; decae al dejar de atacar.
+- HUD abajo a la derecha con rango, combo y barra.
+- FOV y shake de cámara aumentan con el rango.
+- Headshots críticos: chispas, estilo extra y feedback visual.
+- Ver `docs/STYLE_REFERENCE.md`.
+
 ---
 
 *Documento vivo. Cualquier cambio de dirección debe reflejarse acá.*
