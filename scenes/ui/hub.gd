@@ -64,5 +64,5 @@ func _update_ui() -> void:
 	bonus_label.text = "Bonos: +%d daño, +%d vida · %d nodos" % [
 		int(round(damage_bonus)),
 		int(round(health_bonus)),
-		maxi(GameState.unlocked_skills.size() - 1, 0),
+		GameState.get_unlocked_skill_count(),
 	]
