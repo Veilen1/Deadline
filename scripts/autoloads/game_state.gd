@@ -313,6 +313,7 @@ func end_run(reason: String) -> void:
 	if not VALID_END_REASONS.has(reason):
 		push_warning("GameState.end_run: motivo desconocido '%s'" % reason)
 	run_ended.emit(reason)
+	Diagnostics.mark("end_run", {"reason": reason, "money": money})
 	# Guarda fuera del frame crítico para no demorar el menú de fin de run.
 	save_game.call_deferred()
 
@@ -394,6 +395,7 @@ func save_game() -> void:
 	if not persistence_enabled:
 		return
 
+	var started_ms: int = Time.get_ticks_msec()
 	var config := ConfigFile.new()
 	config.set_value("progress", "version", SAVE_VERSION)
 	config.set_value("progress", "money", money)
@@ -414,6 +416,9 @@ func save_game() -> void:
 	var error: int = config.save(save_path)
 	if error != OK:
 		push_warning("GameState: no se pudo guardar el progreso (%s)" % error)
+	var elapsed: int = Time.get_ticks_msec() - started_ms
+	if elapsed >= 30:
+		Diagnostics.mark("save_slow", {"ms": elapsed, "path": save_path})
 
 
 func load_game() -> void:

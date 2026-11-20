@@ -75,6 +75,7 @@ func reload_current_scene() -> void:
 
 
 func _begin(path: String, reload: bool) -> void:
+	Diagnostics.mark("transition_begin", {"path": path, "reload": reload})
 	_busy = true
 	_active_path = path
 	_active_reload = reload
@@ -86,6 +87,7 @@ func _begin(path: String, reload: bool) -> void:
 
 
 func _end() -> void:
+	Diagnostics.mark("transition_end", {"path": _active_path, "reload": _active_reload})
 	_watchdog.stop()
 	_overlay.hide()
 	_busy = false
@@ -95,6 +97,7 @@ func _end() -> void:
 
 func _on_watchdog_timeout() -> void:
 	# Red de seguridad: una transición no debería tardar más que esto.
+	Diagnostics.mark("transition_watchdog", {"path": _active_path, "reload": _active_reload})
 	push_warning("Transitions: transición atascada; se libera el overlay.")
 	_busy = false
 	_active_path = ""

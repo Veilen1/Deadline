@@ -5,6 +5,7 @@ Todas las versiones relevantes del prototipo.
 ## No publicado
 
 ### Agregado
+- Log de diagnóstico `user://deadline_diag.log` con hitches de frame e hitos de fin de run, pausa y transiciones.
 - Zona 3 violeta con oleadas `5 / 6 / 4` y seis puntos de aparición.
 - Enemigo tirador: mantiene distancia, strafea y dispara proyectiles telegrafiados con un ojo brillante.
 - Élite tirador con más vida, cadencia y barra de élite.

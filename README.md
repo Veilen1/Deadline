@@ -346,6 +346,11 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - No se guarda una run en curso; al reabrir se empieza desde el hub.
 - `Borrar progreso` está en Configuración y pide confirmación. En pausa se deshabilita para no romper la run.
 
+### Diagnóstico
+
+- `user://deadline_diag.log` se reescribe en cada arranque y registra hitches de frame mayores a `350 ms` y los hitos de fin de run, pausa y transiciones.
+- Si el juego se traba, ese archivo permite ver en qué etapa ocurrió y cuánto duró el frame bloqueado.
+
 ### Flujo de ramas y versiones
 
 - `main`: releases estables.
