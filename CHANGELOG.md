@@ -12,6 +12,9 @@ Todas las versiones relevantes del prototipo.
 - La tienda muestra las armas bloqueadas y su requisito.
 - Conversión de `$250` a `1` núcleo desde el árbol.
 - Estadísticas de headshots, élites, sabuesos y zonas en el perfil.
+- Bendiciones por zona: al completar una zona se elige 1 de 3 mejoras que duran toda la run.
+- Bendiciones de daño, cadencia, regeneración, vida, crítico y velocidad, acumulables.
+- Indicador de bendiciones activas en el HUD.
 - Zona 3 violeta con oleadas `5 / 6 / 4` y seis puntos de aparición.
 - Enemigo tirador: mantiene distancia, strafea y dispara proyectiles telegrafiados con un ojo brillante.
 - Élite tirador con más vida, cadencia y barra de élite.
