@@ -128,6 +128,7 @@ func _on_node_pressed(skill_id: String) -> void:
 	elif GameState.money < cost:
 		status_label.text = "Te faltan $%d para %s." % [cost - GameState.money, title]
 	elif GameState.upgrade_skill(skill_id):
+		AudioDirector.play_upgrade()
 		_refresh()
 		status_label.text = (
 			"Desbloqueado: %s" % title

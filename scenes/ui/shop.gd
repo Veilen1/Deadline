@@ -134,6 +134,7 @@ func _on_buy_pressed(weapon_id: String) -> void:
 	var data: WeaponData = WeaponRegistry.get_data(weapon_id)
 	var title: String = data.weapon_name if data != null else weapon_id
 	if GameState.buy_weapon(weapon_id):
+		AudioDirector.play_upgrade()
 		status_label.text = "Compraste %s. Ya podés equiparla." % title
 	else:
 		status_label.text = "No alcanza la plata para %s." % title

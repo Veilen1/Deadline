@@ -24,6 +24,7 @@ StyleSystem="*res://scripts/autoloads/style_system.gd"
 ThemeManager="*res://scripts/autoloads/theme_manager.gd"
 Transitions="*res://scripts/autoloads/transitions.gd"
 UISound="*res://scripts/autoloads/ui_sound.gd"
+AudioDirector="*res://scripts/autoloads/audio_director.gd"
 
 [input]
 
