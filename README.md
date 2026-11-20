@@ -3,7 +3,7 @@
 > **Estado del documento:** vivo y en construcción. Todo lo que está acá está sujeto a cambios durante el prototipado y el testeo. Las decisiones cerradas se marcan con ✅ y las que están abiertas o en revisión se marcan con 🟡.
 >
 > **Última actualización:** 20/11/2026
-> **Versión:** 0.5.0 — Prototipo jugable
+> **Versión:** 0.5.1 — Prototipo jugable
 
 ---
 
@@ -356,7 +356,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - `main`: releases estables.
 - `dev`: integración de features.
 - Una rama por feature: `feature/<nombre>` desde `dev`, commits atómicos, merge `--no-ff` a `dev`.
-- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido) y `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos).
+- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos) y `v0.5.1` (perfil desplazable, monedas en el árbol y toasts).
 
 ### Limitaciones conocidas
 
@@ -583,7 +583,8 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - **Trueno:** se desbloquea al completar una run.
 - Desafíos de núcleos por élites, sabuesos, zonas, headshots y runs completadas.
 - La tienda muestra las armas bloqueadas, su requisito y el progreso actual.
-- Las estadísticas quedan en el perfil.
+- Al completar un desafío aparece un **toast arriba a la derecha** con el desbloqueo y la condición cumplida. Los desafíos de núcleos avisan que la recompensa se reclama desde la pantalla.
+- Las estadísticas quedan en el perfil, que ahora es desplazable con el botón **Volver** fijo.
 
 ### Contratos
 
@@ -608,6 +609,15 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 - `user://deadline_diag.log` registra frames de más de `350 ms` y los hitos de fin de run, pausa y transiciones.
 - Sirve para revisar un freeze con el estado exacto del juego.
+
+---
+
+## 20. v0.5.1 — perfil, monedas y toasts
+
+- El perfil ahora tiene scroll y la barra superior fija con **Volver** siempre visible.
+- El árbol muestra `$` (plata) y `◈` (núcleos) juntos para evaluar la conversión.
+- Los desafíos completados disparan un **toast arriba a la derecha** con el desbloqueo y la condición cumplida.
+- Los toasts no se repiten y no avisan armas que ya estaban compradas antes.
 
 ---
 
