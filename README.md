@@ -502,9 +502,12 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 ### Ritmo de oleadas
 
 - El tiempo entre oleadas bajó de `2.5 s` a `1.2 s` para que la run sea más frenética.
-- **Completar una zona otorga +10 s** de timer para la siguiente. El bonus se aplica antes de la transición y se puede ajustar con `zone_time_bonus` en `main.gd`.
 
-### Zona 3 y tirador
+---
+
+## 17. Post v0.4.0 — Zona 3 y tirador
+
+### Zona 3
 
 - Tercera zona con estética violeta oscura, piso lavanda y seis puntos de aparición.
 - Oleadas `5 / 6 / 4` con `1.1 s` entre rondas y bonus de completación de `$80`.
@@ -512,6 +515,11 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - Antes de disparar se detiene y enciende un **ojo naranja** que crece durante `0.55 s`: esa es la ventana para atacarlo o esquivar.
 - Los proyectiles son esferas naranjas que viajan a `19 m/s`, dañan al impactar y se destruyen contra paredes o enemigos.
 - **Élite tirador:** escala `1.5`, `700` de vida, dispara más seguido y alimenta la barra de élite del HUD.
+
+### Bonus de tiempo
+
+- **Completar una zona otorga +10 s** de timer para la siguiente. El bonus se aplica antes de la transición y se puede ajustar con `zone_time_bonus` en `main.gd`.
+- El bonus hace sostenible una run de tres zonas con el timer base de la run.
 
 ---
 
