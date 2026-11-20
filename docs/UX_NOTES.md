@@ -44,13 +44,21 @@
 - Paleta principal: azul noche (`#0b1320`), dorado (`#f2c14e`), turquesa (`#4fd1c5`) y gris azulado para lo bloqueado.
 - Superficies en capas: fondo, panel, tarjeta, acento. Evitar blanco y negro planos.
 - Animaciones cortas: fade/scale de 150–250 ms; pulso suave en nodos y botones.
-- El árbol ya usa esta dirección; el siguiente paso es extenderla a menú, hub, pausa y configuración.
+- El árbol usa esta dirección y el tema ya se extendió a menú, hub, pausa, configuración, tienda y perfil.
+
+## Lectura del HUD y del viewmodel
+
+- El HUD usa paneles oscuros translúcidos sobre la arena blanca para sostener contraste sin tapar la acción.
+- La información de armas vive arriba a la derecha; abajo al centro quedan los slots y el medidor de dash, y abajo a la derecha el estilo.
+- El minimapa ocupa la esquina inferior izquierda para no competir con los indicadores de combate.
+- Cada arma tiene una silueta y una paleta propia; el cambio se anima para que el jugador registre qué equipó.
+- El dash se comunica con líneas de velocidad, kick de FOV y un medidor que se recarga.
 
 ## Próximas tareas de UX/UI
 
-1. **HUD**: tematizado con paneles oscuros; falta pulir densidad y tamaños en resoluciones chicas.
+1. **HUD**: tematizado, con slots y cooldown de dash; falta probar en resoluciones chicas y con UI scale alto.
 2. **Tema global:** aplicado a menús, hub, configuración, pausa, tienda, árbol y perfil.
 3. **Transiciones:** fades y sonidos de UI implementados; falta música/ambiente.
-4. **Feedback:** disparo/pasos suavizados, dash/rango/cambio de arma con sonido.
+4. **Feedback:** disparo/pasos suavizados, dash/rango/cambio de arma con sonido, muzzle flash y speed lines.
 5. **Accesibilidad:** tamaño de texto, contraste, navegación con teclado/controller.
 6. **Contenido:** más armas/consumibles, Zona 3 y modo dash/slide combinado.
