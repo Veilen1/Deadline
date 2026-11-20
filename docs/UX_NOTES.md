@@ -56,10 +56,9 @@
 
 ## Próximas tareas de UX/UI
 
-1. **HUD**: tematizado, con slots y cooldown de dash; falta probar en resoluciones chicas y con UI scale alto.
-2. **Tema global:** aplicado a menús, hub, configuración, pausa, tienda, árbol y perfil.
-3. **Transiciones:** fades y sonidos de UI implementados; falta feedback de sonido en transiciones y más animaciones de botones/nodos.
-4. **Feedback:** disparo/pasos suavizados, dash/rango/cambio de arma con sonido, muzzle flash y speed lines; impacto, crítico, muerte y daño tienen audio posicional.
-5. **Accesibilidad:** tamaño de texto, contraste, navegación con teclado/controller.
-6. **Contenido:** Zona 3 con tiradores implementada; falta más variedad (corredor explosivo, torreta) y dash aéreo.
-7. **Audio:** música ambiente en loop continuo; falta mezcla por categorías (música/SFX) y variación por zona.
+1. **Mapas y zonas:** rediseñar las arenas con plataformas, verticalidad y un puzzle/evento por zona.
+2. **HUD:** probar los nuevos indicadores (bendiciones, grado) en resoluciones chicas y UI scale alto.
+3. **Audio:** sliders separados de música/efectos y mezcla por zona.
+4. **Feedback:** dash aéreo y combos de movimiento.
+5. **Accesibilidad:** navegación con teclado/controller y contraste.
+6. **Contenido:** torreta fija y nuevas variantes de enemigo.

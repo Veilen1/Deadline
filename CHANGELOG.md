@@ -2,7 +2,7 @@
 
 Todas las versiones relevantes del prototipo.
 
-## No publicado
+## v0.5.0 — 2026-11-20
 
 ### Agregado
 - Log de diagnóstico `user://deadline_diag.log` con hitches de frame e hitos de fin de run, pausa y transiciones.

@@ -3,7 +3,7 @@
 > **Estado del documento:** vivo y en construcción. Todo lo que está acá está sujeto a cambios durante el prototipado y el testeo. Las decisiones cerradas se marcan con ✅ y las que están abiertas o en revisión se marcan con 🟡.
 >
 > **Última actualización:** 20/11/2026
-> **Versión:** 0.4.0 — Prototipo jugable
+> **Versión:** 0.5.0 — Prototipo jugable
 
 ---
 
@@ -356,24 +356,25 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - `main`: releases estables.
 - `dev`: integración de features.
 - Una rama por feature: `feature/<nombre>` desde `dev`, commits atómicos, merge `--no-ff` a `dev`.
-- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol) y `v0.4.0` (armas con skins, audio, HUD y pulido).
+- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido) y `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos).
 
 ### Limitaciones conocidas
 
-- Hay tres zonas: blanca, celeste y violeta.
+- Hay tres zonas: blanca, celeste y violeta. Todas son arenas planas; todavía no hay plataformas ni puzzles.
 - Hay tres armas con munición independiente y regeneración, pero no recarga manual.
 - El volumen es general; no hay sliders separados de música/efectos.
 - La dificultad se aplica a los enemigos que aparecen después del cambio; los ya vivos no se recalculan.
 - Los élites comparten mecánicas base; la Zona 3 suma un élite tirador.
 - No hay guardado de run en curso, multijugador, controller ni localización.
+- No hay leaderboard ni semilla diaria; el ciclo se sube manualmente hasta 10.
 - Los menús y modelos son provisorios.
 
 ### Próximos pasos
 
-1. Sliders separados de música y efectos, y mezcla por zona.
-2. Movimiento avanzado: dash aéreo y combos de slide/salto.
-3. Más variantes de enemigo (torreta fija, corredor con escudo).
-4. Validar el balance v0.5 con testeo real y ajustar números.
+1. Rediseñar físicamente las zonas: plataformas, verticalidad y un puzzle o evento por arena.
+2. Sliders separados de música y efectos, y mezcla por zona.
+3. Movimiento avanzado: dash aéreo y combos de slide/salto.
+4. Nuevas variantes de enemigo (torreta fija, corredor con escudo).
 5. Localización y soporte de controller.
 
 ---
@@ -515,15 +516,15 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 ### Zona 3
 
 - Tercera zona con estética violeta oscura, piso lavanda y seis puntos de aparición.
-- Oleadas `5 / 6 / 4` con `1.1 s` entre rondas y bonus de completación de `$80`.
+- Oleadas `5 / 6 / 4` con `0.7 s` entre rondas y bonus de completación de `$50`.
 - **Tirador:** enemigo violeta con cabeza naranja que mantiene distancia (`6–11 m`), strafea y dispara proyectiles.
-- Antes de disparar se detiene y enciende un **ojo naranja** que crece durante `0.55 s`: esa es la ventana para atacarlo o esquivar.
-- Los proyectiles son esferas naranjas que viajan a `19 m/s`, dañan al impactar y se destruyen contra paredes o enemigos.
+- Antes de disparar se detiene y enciende un **ojo naranja** que crece durante `0.5 s`: esa es la ventana para atacarlo o esquivar.
+- Los proyectiles son esferas naranjas que viajan a `22 m/s`, dañan al impactar y se destruyen contra paredes o enemigos.
 - **Élite tirador:** escala `1.5`, `700` de vida, dispara más seguido y alimenta la barra de élite del HUD.
 
 ### Bonus de tiempo
 
-- **Completar una zona otorga +10 s** de timer para la siguiente. El bonus se aplica antes de la transición y se puede ajustar con `zone_time_bonus` en `main.gd`.
+- **Completar una zona otorga +5 s** de timer para la siguiente. El bonus se aplica antes de la transición y se puede ajustar con `zone_time_bonus` en `main.gd`.
 - El bonus hace sostenible una run de tres zonas con el timer base de la run.
 
 ---
@@ -562,6 +563,51 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - Dash: cooldown `0.7 → 0.9`, duración `0.14 → 0.13`.
 - Slide: cooldown `0.8 → 1.0`, duración `0.45 → 0.42`.
 - La intención es que esquivar sea una decisión y no un estado permanente.
+
+---
+
+## 19. v0.5.0 — Progresión y rejugabilidad
+
+### Núcleos
+
+- `◈ Núcleos` es la moneda exclusiva del árbol de habilidades. La plata queda para armas y la conversión.
+- Se ganan `+1` por élite, `+1` por zona completada y `+3` por run completada, más contrato y grado.
+- Los costos del árbol son exponenciales (`×1.35` por nivel).
+- Conversión manual de `$250 → ◈1` desde el árbol para darle uso a la plata sobrante.
+- Los saves viejos conservan sus niveles; la economía nueva empieza desde cero.
+
+### Desafíos
+
+- Pantalla propia desde el hub con progreso, recompensa y botón de reclamo.
+- **Avispa:** se desbloquea con `40 headshots`.
+- **Trueno:** se desbloquea al completar una run.
+- Desafíos de núcleos por élites, sabuesos, zonas, headshots y runs completadas.
+- La tienda muestra las armas bloqueadas, su requisito y el progreso actual.
+- Las estadísticas quedan en el perfil.
+
+### Contratos
+
+- Antes de jugar se eligen 3 contratos aleatorios o una run estándar.
+- Modificadores disponibles: velocidad enemiga, daño recibido, regeneración de munición, timer inicial, vida máxima, vida enemiga y daño enemigo.
+- Pagan `+2` o `+3` núcleos **solo si se completa la run**.
+
+### Bendiciones
+
+- Al completar una zona (excepto la última) se elige **1 de 3** mejoras que duran el resto de la run.
+- Daño `+15%`, cadencia `+12%`, regeneración `+1.5/s`, vida `+20`, crítico `+15%` y velocidad `+10%`.
+- Se acumulan si se repite la misma y se muestran en el HUD.
+
+### Ciclos y grado
+
+- El ciclo se sube manualmente desde el hub, hasta 10.
+- Cada ciclo suma `+12%` vida enemiga, `+8%` daño enemigo, `+4%` velocidad y `+25%` núcleos al completar.
+- El **grado de run** (`S/A/B/C`) sale de la precisión, las kills y si se completó.
+- `S/A/B` pagan `3/2/1` núcleos extra; el mejor grado queda guardado.
+
+### Diagnóstico
+
+- `user://deadline_diag.log` registra frames de más de `350 ms` y los hitos de fin de run, pausa y transiciones.
+- Sirve para revisar un freeze con el estado exacto del juego.
 
 ---
 
