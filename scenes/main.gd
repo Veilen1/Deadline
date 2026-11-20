@@ -20,6 +20,8 @@ const ZONE_SCENES = [
 @onready var ammo_label: Label = $CanvasLayer/AmmoLabel
 @onready var ammo_bar: ProgressBar = $CanvasLayer/AmmoBar
 @onready var weapon_label: Label = $CanvasLayer/WeaponLabel
+@onready var dash_bar: ProgressBar = $CanvasLayer/DashBar
+@onready var weapon_slots: RichTextLabel = $CanvasLayer/WeaponSlots
 @onready var style_label: Label = $CanvasLayer/StyleLabel
 @onready var style_bar: ProgressBar = $CanvasLayer/StyleBar
 @onready var boss_label: Label = $CanvasLayer/BossLabel
@@ -61,6 +63,7 @@ func _ready() -> void:
 	var player_weapon: WeaponData = player.get("weapon_data") as WeaponData
 	if player_weapon != null:
 		weapon_label.text = player_weapon.weapon_name
+	_update_weapon_slots()
 	_on_ammo_changed(int(player.get("current_ammo")), int(player.get("max_ammo")))
 	minimap.visible = Settings.show_minimap
 	_update_money_label(GameState.money)
@@ -72,6 +75,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if not _transitioning:
 		GameState.tick_run(delta)
+	if player != null and is_instance_valid(player):
+		var ratio: float = float(player.call("get_dash_cooldown_ratio"))
+		dash_bar.value = ratio
+		dash_bar.modulate = Color(1, 1, 1, 1) if ratio >= 1.0 else Color(0.75, 0.82, 0.9, 0.85)
 
 
 func _on_money_changed(new_amount: int) -> void:
@@ -197,6 +204,25 @@ func _on_ammo_changed(current: int, maximum: int) -> void:
 
 func _on_weapon_changed(weapon_name: String) -> void:
 	weapon_label.text = weapon_name
+	_update_weapon_slots()
+
+
+func _update_weapon_slots() -> void:
+	var current_weapon: WeaponData = player.get("weapon_data") as WeaponData
+	var current_name: String = current_weapon.weapon_name if current_weapon != null else ""
+	var parts: Array[String] = []
+	var ids: Array = GameState.owned_weapons
+	for index in mini(ids.size(), 3):
+		var data: WeaponData = WeaponRegistry.get_data(str(ids[index]))
+		if data == null:
+			continue
+		if data.weapon_name == current_name:
+			parts.append(
+				"[color=#f2c040][b]%d %s[/b][/color]" % [index + 1, data.weapon_name]
+			)
+		else:
+			parts.append("%d %s" % [index + 1, data.weapon_name])
+	weapon_slots.text = "  ·  ".join(PackedStringArray(parts))
 
 
 func _on_style_changed(rank: String, rank_index: int, progress: float, combo: int) -> void:

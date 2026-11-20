@@ -7,7 +7,7 @@ extends Node3D
 @export var elite_scene: PackedScene
 @export var spawn_points: Array[Marker3D] = []
 @export var enemies_per_wave: Array[int] = [4, 5, 3]
-@export var wave_delay: float = 2.5
+@export var wave_delay: float = 1.2
 @export var completion_bonus: int = 50
 @export var zone_id: String = "zona_1"
 
