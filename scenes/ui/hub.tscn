@@ -65,6 +65,11 @@ custom_minimum_size = Vector2(340, 40)
 layout_mode = 2
 text = "Árbol de habilidades"
 
+[node name="ShopButton" type="Button" parent="CenterContainer/Menu"]
+custom_minimum_size = Vector2(340, 40)
+layout_mode = 2
+text = "Tienda"
+
 [node name="HintLabel" type="Label" parent="CenterContainer/Menu"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)

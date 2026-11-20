@@ -5,6 +5,8 @@ extends Resource
 ## agregar bonus encima.
 
 @export var weapon_name: String = "Rifle básico"
+@export var description: String = "Arma equilibrada de fábrica."
+@export var price: int = 0
 @export var damage: float = 20.0
 @export var money_per_hit: int = 10
 @export var range: float = 100.0

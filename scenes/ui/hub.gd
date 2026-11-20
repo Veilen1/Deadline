@@ -3,11 +3,13 @@ extends Control
 const MAIN_MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
 const GAME_SCENE: String = "res://scenes/main.tscn"
 const SKILL_TREE_SCENE: String = "res://scenes/ui/skill_tree.tscn"
+const SHOP_SCENE: String = "res://scenes/ui/shop.tscn"
 
 @onready var money_label: Label = $CenterContainer/Menu/MoneyLabel
 @onready var timer_label: Label = $CenterContainer/Menu/TimerLabel
 @onready var bonus_label: Label = $CenterContainer/Menu/BonusLabel
 @onready var skill_tree_button: Button = $CenterContainer/Menu/SkillTreeButton
+@onready var shop_button: Button = $CenterContainer/Menu/ShopButton
 @onready var play_button: Button = $CenterContainer/Menu/PlayButton
 @onready var main_menu_button: Button = $CenterContainer/Menu/MainMenuButton
 
@@ -16,6 +18,7 @@ func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	GameState.money_changed.connect(_on_money_changed)
 	skill_tree_button.pressed.connect(_on_skill_tree_pressed)
+	shop_button.pressed.connect(_on_shop_pressed)
 	play_button.pressed.connect(_on_play_pressed)
 	main_menu_button.pressed.connect(_on_main_menu_pressed)
 	_update_ui()
@@ -29,6 +32,11 @@ func _on_money_changed(_new_amount: int) -> void:
 func _on_skill_tree_pressed() -> void:
 	GameState.save_game()
 	get_tree().change_scene_to_file(SKILL_TREE_SCENE)
+
+
+func _on_shop_pressed() -> void:
+	GameState.save_game()
+	get_tree().change_scene_to_file(SHOP_SCENE)
 
 
 func _on_play_pressed() -> void:

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/weapons/weapon_data.gd" id="1_weapon"]
+
+[resource]
+script = ExtResource("1_weapon")
+weapon_name = "Avispa"
+description = "Subfusil hiperactivo: mucha cadencia y cargador grande, poco daño por bala."
+price = 260
+damage = 12.0
+money_per_hit = 6
+range = 80.0
+shots_per_second = 8.0
+magazine_size = 24
+ammo_regen_per_second = 5.0
+regen_delay = 0.15

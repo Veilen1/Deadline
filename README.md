@@ -402,6 +402,17 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - Ver `docs/UX_NOTES.md` para principios, referencias y próximos pasos.
 - Pendiente: tienda, perfiles (definir slots vs perfil de jugador), tema global, transiciones y feedback de UI.
 
+### Tienda de armas
+
+- Accesible desde el hub.
+- Armas actuales:
+  - **Rifle básico**: 20 daño, 4/s, 12 balas, regen 3/s. Gratis e inicial.
+  - **Avispa** (SMG): 12 daño, 8/s, 24 balas, regen 5/s. $260.
+  - **Trueno** (escopeta slug): 55 daño, 1.1/s, 6 balas, regen 1.2/s. $420.
+- Se compran con plata, se equipan y la próxima run usa el arma equipada.
+- Persistencia de armas compradas y equipada.
+- La UI muestra daño, cadencia, cargador y regeneración por arma.
+
 ---
 
 *Documento vivo. Cualquier cambio de dirección debe reflejarse acá.*

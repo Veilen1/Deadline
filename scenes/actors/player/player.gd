@@ -42,6 +42,9 @@ var _ammo_regen_accumulator: float = 0.0
 
 func _ready() -> void:
 	current_health = max_health
+	var equipped_weapon: WeaponData = WeaponRegistry.get_data(GameState.equipped_weapon)
+	if equipped_weapon != null:
+		weapon_data = equipped_weapon
 	if weapon_data != null:
 		max_ammo = weapon_data.magazine_size
 		current_ammo = max_ammo
