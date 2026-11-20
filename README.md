@@ -600,10 +600,12 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Ciclos y grado
 
-- El ciclo se sube manualmente desde el hub, hasta 10.
-- Cada ciclo suma `+12%` vida enemiga, `+8%` daño enemigo, `+4%` velocidad y `+25%` núcleos al completar.
+- La **dificultad** se ajusta con `−` y `+` desde el hub, entre 1 y 10, y **no es permanente**: podés bajarla cuando quieras.
+- Cada nivel suma `+12%` vida enemiga, `+8%` daño enemigo, `+4%` velocidad y `+25%` núcleos al completar.
+- Al cambiarla aparece un toast con los porcentajes y el multiplicador de núcleos.
 - El **grado de run** (`S/A/B/C`) sale de la precisión, las kills y si se completó.
 - `S/A/B` pagan `3/2/1` núcleos extra; el mejor grado queda guardado.
+- La dificultad se ajusta con botones `−` y `+` (1–10) y no es definitiva; cada cambio muestra un toast con vida/daño/velocidad enemiga y el multiplicador de núcleos.
 
 ### Diagnóstico
 
