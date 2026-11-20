@@ -48,8 +48,8 @@
 
 ## Próximas tareas de UX/UI
 
-1. **Tienda:** armas/consumibles, comparación de stats, confirmación de compra.
-2. **Perfiles:** definir si son slots de guardado o una pantalla de perfil de jugador.
-3. **Tema global:** tipografía, botones, paneles, foco y transiciones en todas las pantallas.
-4. **Feedback:** sonidos de UI, aparición de textos, popups con tiempo mínimo de lectura.
+1. **Tema global:** extender azul noche/dorado/turquesa a menú, pausa, configuración y hub.
+2. **Transiciones:** fades/scale de 150–250 ms entre pantallas y popups, con tiempo de lectura.
+3. **Tienda de consumibles** y comparación de armas; perfiles ya implementados.
+4. **Feedback:** sonidos de UI, hover/press y aparición de textos.
 5. **Accesibilidad:** tamaño de texto, contraste, navegación con teclado/controller.

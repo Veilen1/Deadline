@@ -373,7 +373,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ---
 
-## 15. En desarrollo (post v0.2.0)
+## 15. v0.3.0 — Tienda, perfil, estilo y árbol
 
 ### Armas y munición
 
@@ -386,21 +386,22 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Árbol de habilidades
 
-- Pantalla propia desde el hub: nodos, líneas de conexión y panel de detalle.
-- Estados: bloqueado, disponible y desbloqueado.
-- Solo se habilitan nodos adyacentes a uno desbloqueado.
-- Nodos actuales:
-  - `Calibre` (+5 daño) → `Munición pesada` (+5 daño) y `Gatillo rápido` (+15% cadencia).
-  - `Resistencia` (+20 vida) → `Segundo aire` (+20 vida).
-  - `Reloj de arena` (+10 s) → `Cargador extendido` (+4 balas) → `Recarga viva` (+1.5 balas/s).
-- Los nodos y bonus se guardan en el progreso.
-- Las mejoras lineales anteriores siguen aplicándose como bonus heredados para no perder progreso.
+- Pantalla propia desde el hub con nodo central y cuatro ramas cardinales.
+- **Núcleo de daño** central (nivel máximo 5) y, alrededor:
+  - Norte: `Precisión` (3) → `Ejecutor` (1).
+  - Este: `Cadencia` (5) → `Cargador` (3).
+  - Sur: `Vitalidad` (5) → `Armadura` (1).
+  - Oeste: `Reloj de arena` (3) → `Recarga viva` (5).
+- Los nodos son cuadrados con el nivel actual; al pasar el mouse o seleccionarlos se muestra título, descripción, efecto por nivel, costo y una barra de pips 5/3/1.
+- Solo se habilitan nodos adyacentes a uno ya desbloqueado.
+- Los niveles y bonus se guardan; el árbol anterior se migra automáticamente.
+- Los efectos se aplican al empezar la run: daño, crítico, devolución de bala, cadencia, cargador, vida, reducción de daño, tiempo y regeneración.
 
 ### UX/UI
 
-- El árbol usa una primera dirección visual oscura con dorado/turquesa y conexiones por estado.
+- El árbol, la tienda y el perfil usan la dirección visual azul noche + dorado/turquesa.
 - Ver `docs/UX_NOTES.md` para principios, referencias y próximos pasos.
-- Pendiente: tienda, perfiles (definir slots vs perfil de jugador), tema global, transiciones y feedback de UI.
+- Pendiente: tema global en menú/pausa/configuración, transiciones y feedback de UI.
 
 ### Tienda de armas
 
