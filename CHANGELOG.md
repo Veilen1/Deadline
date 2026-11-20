@@ -2,6 +2,16 @@
 
 Todas las versiones relevantes del prototipo.
 
+## No publicado
+
+### Agregado
+- Símbolos por nodo del árbol y tooltip lateral con descripción, nivel y pips.
+- Subida de nivel haciendo click directo en el nodo.
+- Tema global azul noche, dorado y turquesa para todas las pantallas.
+- Transiciones con fade entre escenas, pausa, fin de run, configuración y tooltip.
+- Sonidos de UI (hover/click) auto-conectados a todos los botones.
+- Disparo y pasos regenerados con un timbre más suave y menos agresivo.
+
 ## v0.3.0 — 2026-11-19
 
 ### Agregado

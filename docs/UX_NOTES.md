@@ -48,8 +48,8 @@
 
 ## Próximas tareas de UX/UI
 
-1. **Tema global:** extender azul noche/dorado/turquesa a menú, pausa, configuración y hub.
-2. **Transiciones:** fades/scale de 150–250 ms entre pantallas y popups, con tiempo de lectura.
-3. **Tienda de consumibles** y comparación de armas; perfiles ya implementados.
-4. **Feedback:** sonidos de UI, hover/press y aparición de textos.
+1. **HUD**: unificar el HUD de partida con el tema sin perder legibilidad sobre la arena blanca.
+2. **Tema global:** menú, hub, pausa, configuración, tienda, árbol y perfil ya usan el tema; falta pulir el HUD.
+3. **Transiciones:** fades implementados; falta feedback de sonido en transiciones y más animaciones de botones/nodos.
+4. **Feedback:** sonidos de UI y de disparo/pasos suavizados; falta música/ambiente y sonidos de rango.
 5. **Accesibilidad:** tamaño de texto, contraste, navegación con teclado/controller.
