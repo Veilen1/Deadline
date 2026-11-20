@@ -37,6 +37,7 @@ cast_shadow = 0
 stream = ExtResource("2_audio")
 volume_db = -13.0
 unit_size = 6.0
+bus = "SFX"
 
 [node name="Light" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)

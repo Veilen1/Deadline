@@ -14,6 +14,10 @@ const MAIN_MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
 @onready var ui_scale_value: Label = $CenterContainer/Menu/OptionsScroll/Options/UIScaleRow/UIScaleValue
 @onready var volume_slider: HSlider = $CenterContainer/Menu/OptionsScroll/Options/VolumeRow/VolumeSlider
 @onready var volume_value: Label = $CenterContainer/Menu/OptionsScroll/Options/VolumeRow/VolumeValue
+@onready var music_slider: HSlider = $CenterContainer/Menu/OptionsScroll/Options/MusicRow/MusicSlider
+@onready var music_value: Label = $CenterContainer/Menu/OptionsScroll/Options/MusicRow/MusicValue
+@onready var sfx_slider: HSlider = $CenterContainer/Menu/OptionsScroll/Options/SfxRow/SfxSlider
+@onready var sfx_value: Label = $CenterContainer/Menu/OptionsScroll/Options/SfxRow/SfxValue
 @onready var invert_check: CheckButton = $CenterContainer/Menu/OptionsScroll/Options/InvertRow/InvertCheck
 @onready var fullscreen_check: CheckButton = $CenterContainer/Menu/OptionsScroll/Options/FullscreenRow/FullscreenCheck
 @onready var vsync_check: CheckButton = $CenterContainer/Menu/OptionsScroll/Options/VsyncRow/VsyncCheck
@@ -38,6 +42,8 @@ func _ready() -> void:
 	sensitivity_slider.value_changed.connect(_on_sensitivity_changed)
 	ui_scale_slider.value_changed.connect(_on_ui_scale_changed)
 	volume_slider.value_changed.connect(_on_volume_changed)
+	music_slider.value_changed.connect(_on_music_changed)
+	sfx_slider.value_changed.connect(_on_sfx_changed)
 	invert_check.toggled.connect(_on_invert_toggled)
 	fullscreen_check.toggled.connect(_on_fullscreen_toggled)
 	vsync_check.toggled.connect(_on_vsync_toggled)
@@ -72,6 +78,8 @@ func _load_controls() -> void:
 	sensitivity_slider.value = Settings.mouse_sensitivity
 	ui_scale_slider.value = Settings.ui_scale
 	volume_slider.value = Settings.master_volume
+	music_slider.value = Settings.music_volume
+	sfx_slider.value = Settings.sfx_volume
 	invert_check.button_pressed = Settings.invert_y
 	fullscreen_check.button_pressed = Settings.fullscreen
 	vsync_check.button_pressed = Settings.vsync
@@ -86,6 +94,8 @@ func _update_value_labels() -> void:
 	sensitivity_value.text = "%.4f" % sensitivity_slider.value
 	ui_scale_value.text = "%d%%" % int(round(ui_scale_slider.value * 100.0))
 	volume_value.text = "%d%%" % int(round(volume_slider.value * 100.0))
+	music_value.text = "%d%%" % int(round(music_slider.value * 100.0))
+	sfx_value.text = "%d%%" % int(round(sfx_slider.value * 100.0))
 
 
 func _on_fov_changed(value: float) -> void:
@@ -117,6 +127,24 @@ func _on_volume_changed(value: float) -> void:
 	if _updating:
 		return
 	Settings.master_volume = value
+	_update_value_labels()
+	Settings.apply_audio()
+	Settings.save_settings()
+
+
+func _on_music_changed(value: float) -> void:
+	if _updating:
+		return
+	Settings.music_volume = value
+	_update_value_labels()
+	Settings.apply_audio()
+	Settings.save_settings()
+
+
+func _on_sfx_changed(value: float) -> void:
+	if _updating:
+		return
+	Settings.sfx_volume = value
 	_update_value_labels()
 	Settings.apply_audio()
 	Settings.save_settings()

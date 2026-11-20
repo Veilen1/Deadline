@@ -12,11 +12,13 @@ func _ready() -> void:
 	_hover_player = AudioStreamPlayer.new()
 	_hover_player.stream = preload("res://assets/audio/ui_hover.wav")
 	_hover_player.volume_db = -20.0
+	_hover_player.bus = "SFX"
 	add_child(_hover_player)
 
 	_click_player = AudioStreamPlayer.new()
 	_click_player.stream = preload("res://assets/audio/ui_click.wav")
 	_click_player.volume_db = -12.0
+	_click_player.bus = "SFX"
 	add_child(_click_player)
 
 	get_tree().node_added.connect(_on_node_added)

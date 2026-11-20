@@ -57,22 +57,27 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, -0.1, -0.69)
 [node name="ShootPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_shoot")
 volume_db = -10.0
+bus = "SFX"
 
 [node name="FootstepPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_footstep")
 volume_db = -17.0
+bus = "SFX"
 
 [node name="DashPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("5_dash")
 volume_db = -14.0
+bus = "SFX"
 
 [node name="RankUpPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_rank_up")
 volume_db = -10.0
+bus = "SFX"
 
 [node name="WeaponSwitchPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_switch")
 volume_db = -14.0
+bus = "SFX"
 
 [node name="DashTrail" type="CPUParticles3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, -1.6)

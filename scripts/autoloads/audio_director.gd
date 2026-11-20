@@ -18,6 +18,9 @@ var _hit_stream: AudioStream
 var _crit_stream: AudioStream
 var _kill_stream: AudioStream
 var _hurt_stream: AudioStream
+var _enemy_shot_stream: AudioStream
+var _event_spawn_stream: AudioStream
+var _event_destroy_stream: AudioStream
 
 var _fx_players: Array[AudioStreamPlayer3D] = []
 var _last_hit_ms: int = 0
@@ -30,6 +33,7 @@ func _ready() -> void:
 	_ambient = AudioStreamPlayer.new()
 	_ambient.stream = preload("res://assets/audio/ambient_loop.wav")
 	_ambient.volume_db = ambient_volume_db
+	_ambient.bus = "Music"
 	add_child(_ambient)
 	_ambient.play()
 
@@ -37,15 +41,20 @@ func _ready() -> void:
 	_crit_stream = preload("res://assets/audio/crit.wav")
 	_kill_stream = preload("res://assets/audio/kill.wav")
 	_hurt_stream = preload("res://assets/audio/hurt.wav")
+	_enemy_shot_stream = preload("res://assets/audio/enemy_shot.wav")
+	_event_spawn_stream = preload("res://assets/audio/event_spawn.wav")
+	_event_destroy_stream = preload("res://assets/audio/event_destroy.wav")
 
 	_hurt_player = AudioStreamPlayer.new()
 	_hurt_player.stream = _hurt_stream
 	_hurt_player.volume_db = hurt_volume_db
+	_hurt_player.bus = "SFX"
 	add_child(_hurt_player)
 
 	_upgrade_player = AudioStreamPlayer.new()
 	_upgrade_player.stream = preload("res://assets/audio/level_up.wav")
 	_upgrade_player.volume_db = -10.0
+	_upgrade_player.bus = "SFX"
 	add_child(_upgrade_player)
 
 	EventBus.damage_number_requested.connect(_on_hit)
@@ -87,6 +96,37 @@ func play_upgrade() -> void:
 	_upgrade_player.play()
 
 
+func play_enemy_shot(world_position: Vector3) -> void:
+	_play_at(
+		_enemy_shot_stream, world_position, -13.0, randf_range(0.92, 1.06)
+	)
+
+
+func play_event_spawn(world_position: Vector3) -> void:
+	_play_at(_event_spawn_stream, world_position, -9.0, 1.0)
+
+
+func play_event_destroy(world_position: Vector3) -> void:
+	_play_at(_event_destroy_stream, world_position, -6.0, 1.0)
+
+
+func set_zone_mood(zone_index: int) -> void:
+	if _ambient == null:
+		return
+	var index: int = clampi(zone_index, 0, 2)
+	var pitches: Array[float] = [0.96, 1.0, 1.05]
+	var boosts: Array[float] = [0.0, 0.5, 1.0]
+	_ambient.pitch_scale = pitches[index]
+	_ambient.volume_db = ambient_volume_db + boosts[index]
+
+
+func reset_mood() -> void:
+	if _ambient == null:
+		return
+	_ambient.pitch_scale = 1.0
+	_ambient.volume_db = ambient_volume_db
+
+
 func _exit_tree() -> void:
 	# Evita que el stream quede en uso al cerrar el juego.
 	if _ambient != null:
@@ -112,6 +152,7 @@ func _play_at(stream: AudioStream, world_position: Vector3, volume_db: float, pi
 	player.pitch_scale = pitch
 	player.unit_size = 14.0
 	player.max_distance = 70.0
+	player.bus = "SFX"
 	scene.add_child(player)
 	player.global_position = world_position
 	player.play()
