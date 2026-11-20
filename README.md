@@ -355,20 +355,20 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Limitaciones conocidas
 
-- Solo hay dos zonas.
+- Hay tres zonas: blanca, celeste y violeta.
 - Hay tres armas con munición independiente y regeneración, pero no recarga manual.
 - El volumen es general; no hay sliders separados de música/efectos.
 - La dificultad se aplica a los enemigos que aparecen después del cambio; los ya vivos no se recalculan.
-- Los élites comparten el patrón de salto; los enemigos verdes son los únicos con escudo.
+- Los élites comparten mecánicas base; la Zona 3 suma un élite tirador.
 - No hay guardado de run en curso, multijugador, controller ni localización.
 - Los menús y modelos son provisorios.
 
 ### Próximos pasos
 
-1. Zona 3 y nuevas variantes de enemigo (tirador a distancia).
-2. Sliders separados de música y efectos, y mezcla por zona.
-3. Movimiento avanzado: dash aéreo y combos de slide/salto.
-4. Balance fino con la dificultad y los costos del hub.
+1. Sliders separados de música y efectos, y mezcla por zona.
+2. Movimiento avanzado: dash aéreo y combos de slide/salto.
+3. Más variantes de enemigo (corredor explosivo, torreta fija).
+4. Balance fino con la dificultad, el timer y los costos del hub.
 5. Localización y soporte de controller.
 
 ---
@@ -502,6 +502,16 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 ### Ritmo de oleadas
 
 - El tiempo entre oleadas bajó de `2.5 s` a `1.2 s` para que la run sea más frenética.
+- **Completar una zona otorga +10 s** de timer para la siguiente. El bonus se aplica antes de la transición y se puede ajustar con `zone_time_bonus` en `main.gd`.
+
+### Zona 3 y tirador
+
+- Tercera zona con estética violeta oscura, piso lavanda y seis puntos de aparición.
+- Oleadas `5 / 6 / 4` con `1.1 s` entre rondas y bonus de completación de `$80`.
+- **Tirador:** enemigo violeta con cabeza naranja que mantiene distancia (`6–11 m`), strafea y dispara proyectiles.
+- Antes de disparar se detiene y enciende un **ojo naranja** que crece durante `0.55 s`: esa es la ventana para atacarlo o esquivar.
+- Los proyectiles son esferas naranjas que viajan a `19 m/s`, dañan al impactar y se destruyen contra paredes o enemigos.
+- **Élite tirador:** escala `1.5`, `700` de vida, dispara más seguido y alimenta la barra de élite del HUD.
 
 ---
 
