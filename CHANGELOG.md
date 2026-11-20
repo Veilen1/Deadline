@@ -10,6 +10,11 @@ Todas las versiones relevantes del prototipo.
 - Núcleos de arena recogibles sobre las plataformas, con toast y +1 núcleo.
 - Salto corto de enemigos contra coberturas para que no queden trabados.
 
+### Cambiado
+- La dificultad dejó de ser un ciclo fijo: ahora se ajusta con botones `−` y `+` entre 1 y 10, y se puede bajar.
+- El botón **Subir ciclo** pasó a **Subir dificultad**, con su par **Bajar dificultad**.
+- Al cambiarla aparece un toast con vida/daño/velocidad enemiga y el multiplicador de núcleos.
+
 ## v0.5.1 — 2026-11-20
 
 ### Agregado

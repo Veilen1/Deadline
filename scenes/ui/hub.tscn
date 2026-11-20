@@ -78,13 +78,24 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
 theme_override_font_sizes/font_size = 14
-text = "Ciclo 1 · grado máximo C"
+text = "Dificultad 1 · grado máximo C"
 horizontal_alignment = 1
 
-[node name="CycleButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 32)
+[node name="CycleRow" type="HBoxContainer" parent="CenterContainer/Menu"]
 layout_mode = 2
-text = "Subir ciclo"
+theme_override_constants/separation = 8
+
+[node name="CycleDownButton" type="Button" parent="CenterContainer/Menu/CycleRow"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Bajar dificultad"
+
+[node name="CycleUpButton" type="Button" parent="CenterContainer/Menu/CycleRow"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Subir dificultad"
 
 [node name="SkillTreeButton" type="Button" parent="CenterContainer/Menu"]
 custom_minimum_size = Vector2(340, 36)

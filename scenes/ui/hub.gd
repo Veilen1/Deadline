@@ -12,7 +12,8 @@ const CHALLENGES_SCENE: String = "res://scenes/ui/challenges.tscn"
 @onready var bonus_label: Label = $CenterContainer/Menu/BonusLabel
 @onready var contract_label: Label = $CenterContainer/Menu/ContractLabel
 @onready var cycle_label: Label = $CenterContainer/Menu/CycleLabel
-@onready var cycle_button: Button = $CenterContainer/Menu/CycleButton
+@onready var cycle_down_button: Button = $CenterContainer/Menu/CycleRow/CycleDownButton
+@onready var cycle_up_button: Button = $CenterContainer/Menu/CycleRow/CycleUpButton
 @onready var skill_tree_button: Button = $CenterContainer/Menu/SkillTreeButton
 @onready var shop_button: Button = $CenterContainer/Menu/ShopButton
 @onready var challenges_button: Button = $CenterContainer/Menu/ChallengesButton
@@ -28,7 +29,8 @@ func _ready() -> void:
 	skill_tree_button.pressed.connect(_on_skill_tree_pressed)
 	shop_button.pressed.connect(_on_shop_pressed)
 	challenges_button.pressed.connect(_on_challenges_pressed)
-	cycle_button.pressed.connect(_on_cycle_pressed)
+	cycle_down_button.pressed.connect(_on_cycle_down_pressed)
+	cycle_up_button.pressed.connect(_on_cycle_up_pressed)
 	play_button.pressed.connect(_on_play_pressed)
 	main_menu_button.pressed.connect(_on_main_menu_pressed)
 	_update_ui()
@@ -63,10 +65,64 @@ func _on_play_pressed() -> void:
 	Transitions.change_scene_to_file(CONTRACTS_SCENE)
 
 
-func _on_cycle_pressed() -> void:
-	if GameState.advance_cycle():
+func _on_cycle_down_pressed() -> void:
+	if GameState.cycle <= 1:
+		Toast.show_toast(
+			"DIFICULTAD",
+			"Dificultad mínima",
+			"Ya estás en el nivel base, sin modificadores enemigos.",
+			"",
+			Color(0.3, 0.85, 0.8, 1)
+		)
+		return
+	if GameState.decrease_cycle():
 		AudioDirector.play_upgrade()
 		_update_ui()
+		_show_cycle_toast()
+
+
+func _on_cycle_up_pressed() -> void:
+	if GameState.runs_completed < 1:
+		Toast.show_toast(
+			"DIFICULTAD BLOQUEADA",
+			"Completá una run",
+			"Terminá una run para desbloquear el ajuste de dificultad.",
+			"Después podés subir o bajar el nivel cuando quieras.",
+			Color(0.95, 0.75, 0.25, 1)
+		)
+		return
+	if GameState.cycle >= 10:
+		Toast.show_toast(
+			"DIFICULTAD",
+			"Dificultad máxima",
+			"Ya estás en el nivel 10.",
+			"",
+			Color(0.95, 0.75, 0.25, 1)
+		)
+		return
+	if GameState.increase_cycle():
+		AudioDirector.play_upgrade()
+		_update_ui()
+		_show_cycle_toast()
+
+
+func _show_cycle_toast() -> void:
+	Toast.show_toast(
+		"DIFICULTAD AJUSTADA",
+		"Dificultad %d" % GameState.cycle,
+		_cycle_summary(),
+		"Núcleos al completar la run: ×%.2f · se aplica a la próxima run." % GameState.cycle_core_mult(),
+		Color(0.95, 0.75, 0.25, 1)
+	)
+
+
+func _cycle_summary() -> String:
+	if GameState.cycle <= 1:
+		return "Sin modificadores enemigos."
+	var health: int = int(round((GameState.cycle_enemy_health_mult() - 1.0) * 100.0))
+	var damage: int = int(round((GameState.cycle_enemy_damage_mult() - 1.0) * 100.0))
+	var speed: int = int(round((GameState.cycle_enemy_speed_mult() - 1.0) * 100.0))
+	return "Enemigos +%d%% vida, +%d%% daño, +%d%% velocidad." % [health, damage, speed]
 
 
 func _on_main_menu_pressed() -> void:
@@ -102,6 +158,7 @@ func _update_ui() -> void:
 			int(contract.get("core_bonus", 0)),
 		]
 
-	cycle_label.text = "Ciclo %d · grado máximo %s" % [GameState.cycle, GameState.best_grade]
-	cycle_button.disabled = GameState.runs_completed < 1 or GameState.cycle >= 10
-	cycle_button.text = "Ciclo máximo" if GameState.cycle >= 10 else "Subir ciclo"
+	cycle_label.text = "Dificultad %d · grado máximo %s" % [GameState.cycle, GameState.best_grade]
+	cycle_label.tooltip_text = _cycle_summary() + "\nNúcleos al completar: ×%.2f" % GameState.cycle_core_mult()
+	cycle_down_button.disabled = GameState.cycle <= 1
+	cycle_up_button.disabled = GameState.cycle >= 10
