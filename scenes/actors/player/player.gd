@@ -10,11 +10,11 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 @export var gravity: float = 20.0
 @export var jump_height: float = 0.9
 @export var dash_speed: float = 16.0
-@export var dash_duration: float = 0.14
-@export var dash_cooldown: float = 0.7
+@export var dash_duration: float = 0.13
+@export var dash_cooldown: float = 0.9
 @export var slide_speed_multiplier: float = 1.7
-@export var slide_duration: float = 0.45
-@export var slide_cooldown: float = 0.8
+@export var slide_duration: float = 0.42
+@export var slide_cooldown: float = 1.0
 @export var slide_camera_height: float = 0.9
 
 @export_group("Camera")
@@ -74,10 +74,20 @@ var _dash_fov_kick: float = 0.0
 var _slide_timer: float = 0.0
 var _slide_cooldown_timer: float = 0.0
 var _slide_direction: Vector3 = Vector3.ZERO
+var _contract_damage_taken: float = 1.0
+var _contract_ammo_regen: float = 1.0
+var _blessing_damage_mult: float = 1.0
+var _blessing_fire_rate_mult: float = 1.0
+var _blessing_regen_bonus: float = 0.0
+var _blessing_crit_bonus: float = 0.0
+var _blessing_move_mult: float = 1.0
+var _blessing_health_applied: int = 0
 
 
 func _ready() -> void:
 	current_health = max_health
+	_contract_damage_taken = GameState.contract_modifier("player_damage_taken", 1.0)
+	_contract_ammo_regen = GameState.contract_modifier("ammo_regen", 1.0)
 	var equipped_weapon: WeaponData = WeaponRegistry.get_data(GameState.equipped_weapon)
 	if equipped_weapon != null:
 		weapon_data = equipped_weapon
@@ -315,12 +325,12 @@ func _physics_process(delta: float) -> void:
 		velocity.z = _dash_direction.z * dash_speed
 		_dash_timer = maxf(_dash_timer - delta, 0.0)
 	elif _slide_timer > 0.0:
-		velocity.x = _slide_direction.x * move_speed * slide_speed_multiplier
-		velocity.z = _slide_direction.z * move_speed * slide_speed_multiplier
+		velocity.x = _slide_direction.x * move_speed * slide_speed_multiplier * _blessing_move_mult
+		velocity.z = _slide_direction.z * move_speed * slide_speed_multiplier * _blessing_move_mult
 		_slide_timer = maxf(_slide_timer - delta, 0.0)
 	else:
-		velocity.x = direction.x * move_speed
-		velocity.z = direction.z * move_speed
+		velocity.x = direction.x * move_speed * _blessing_move_mult
+		velocity.z = direction.z * move_speed * _blessing_move_mult
 
 	if not is_on_floor():
 		velocity.y -= gravity * delta
@@ -359,6 +369,7 @@ func take_damage(amount: float) -> void:
 		return
 
 	var final_damage: float = amount * (1.0 - clampf(damage_reduction, 0.0, 0.8))
+	final_damage *= _contract_damage_taken
 	current_health = maxf(current_health - final_damage, 0.0)
 	EventBus.player_damaged.emit(final_damage)
 
@@ -373,6 +384,7 @@ func apply_meta_upgrades(upgrades: Dictionary) -> void:
 	crit_refund += float(upgrades.get("crit_refund", 0.0))
 	damage_reduction += float(upgrades.get("damage_reduction", 0.0))
 	max_health += float(upgrades.get("health_bonus", 0.0))
+	max_health *= GameState.contract_modifier("player_health", 1.0)
 	ammo_capacity_bonus += int(upgrades.get("ammo_capacity_bonus", 0))
 	if weapon_data != null:
 		max_ammo = weapon_data.magazine_size + ammo_capacity_bonus
@@ -381,6 +393,23 @@ func apply_meta_upgrades(upgrades: Dictionary) -> void:
 	current_health = max_health
 	_init_ammo()
 	_set_current_ammo(max_ammo)
+	apply_blessings()
+
+
+func apply_blessings() -> void:
+	# Recalcula las bendiciones de la run desde cero.
+	_blessing_damage_mult = 1.0 + 0.15 * float(GameState.blessing_count("damage"))
+	_blessing_fire_rate_mult = 1.0 + 0.12 * float(GameState.blessing_count("cadence"))
+	_blessing_regen_bonus = 1.5 * float(GameState.blessing_count("regen"))
+	_blessing_crit_bonus = 0.15 * float(GameState.blessing_count("crit"))
+	_blessing_move_mult = 1.0 + 0.10 * float(GameState.blessing_count("mobility"))
+
+	var health_stacks: int = GameState.blessing_count("health")
+	if health_stacks > _blessing_health_applied:
+		var gained: float = float(health_stacks - _blessing_health_applied) * 20.0
+		max_health += gained
+		current_health = minf(current_health + gained, max_health)
+		_blessing_health_applied = health_stacks
 
 
 func _update_ammo_regen(delta: float) -> void:
@@ -392,7 +421,11 @@ func _update_ammo_regen(delta: float) -> void:
 		_regen_delay_timer -= delta
 		return
 
-	var rate: float = maxf(weapon_data.ammo_regen_per_second + ammo_regen_bonus, 0.0)
+	var rate: float = maxf(
+		(weapon_data.ammo_regen_per_second + ammo_regen_bonus + _blessing_regen_bonus)
+		* _contract_ammo_regen,
+		0.0
+	)
 	if rate <= 0.0:
 		return
 
@@ -410,7 +443,10 @@ func shoot() -> void:
 		return
 
 	current_ammo -= 1
-	_fire_timer = 1.0 / maxf(weapon_data.shots_per_second * (1.0 + fire_rate_bonus), 0.01)
+	GameState.run_shots += 1
+	_fire_timer = 1.0 / maxf(
+		weapon_data.shots_per_second * (1.0 + fire_rate_bonus) * _blessing_fire_rate_mult, 0.01
+	)
 	_regen_delay_timer = weapon_data.regen_delay
 	_ammo_regen_accumulator = 0.0
 	_set_current_ammo(current_ammo)
@@ -442,11 +478,13 @@ func shoot() -> void:
 				var enemy: Node = collider.get_parent()
 				if enemy != null and enemy.has_method("take_hit"):
 					var hit_position: Vector3 = result.get("position", Vector3.INF)
-					var damage: float = weapon_data.damage + damage_bonus
+					var damage: float = (weapon_data.damage + damage_bonus) * _blessing_damage_mult
 					if hit_zone == "head":
-						damage *= 1.0 + crit_bonus
+						damage *= 1.0 + crit_bonus + _blessing_crit_bonus
+						# Ejecutor: probabilidad de recuperar la bala del headshot.
 						if crit_refund > 0.0 and current_ammo < max_ammo:
-							_set_current_ammo(current_ammo + int(round(crit_refund)))
+							if randf() < clampf(crit_refund, 0.0, 1.0):
+								_set_current_ammo(current_ammo + 1)
 					enemy.call("take_hit", hit_zone, damage, weapon_data.money_per_hit, hit_position)
 
 	_spawn_tracer(end_point)

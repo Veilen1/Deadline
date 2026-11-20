@@ -5,9 +5,11 @@ const SPARK_BURST_SCENE: PackedScene = preload("res://scenes/effects/spark_burst
 const ZONE_SCENES = [
 	preload("res://scenes/levels/zone_01.tscn"),
 	preload("res://scenes/levels/zone_02.tscn"),
+	preload("res://scenes/levels/zone_03.tscn"),
 ]
 
 @export var zone_banner_hold: float = 1.2
+@export var zone_time_bonus: float = 5.0
 
 @onready var player: Node = $Player
 @onready var zones_root: Node3D = $Zones
@@ -31,6 +33,8 @@ const ZONE_SCENES = [
 @onready var zone_banner: Label = $CanvasLayer/ZoneBanner
 @onready var pause_menu: Control = $CanvasLayer/PauseMenu
 @onready var game_over_menu: Control = $CanvasLayer/GameOverMenu
+@onready var blessing_panel: Control = $CanvasLayer/BlessingPanel
+@onready var blessing_label: Label = $CanvasLayer/BlessingLabel
 
 var _zone_index: int = 0
 var _current_zone: Node3D
@@ -70,6 +74,8 @@ func _ready() -> void:
 	_update_health_label()
 	_load_zone(_zone_index)
 	GameState.start_run()
+	GameState.apply_contract_start()
+	_update_blessing_label()
 
 
 func _process(delta: float) -> void:
@@ -100,12 +106,51 @@ func _on_wave_started(wave_number: int) -> void:
 func _on_zone_completed(_zone_id: String) -> void:
 	if not GameState.is_run_active or _transitioning:
 		return
+	_transitioning = true
+	Diagnostics.mark("zone_completed", {"zone": _zone_id, "index": _zone_index})
 
 	if _zone_index + 1 >= ZONE_SCENES.size():
 		GameState.end_run("completed")
+		_transitioning = false
 		return
 
+	# Completar una zona premia con tiempo extra para la siguiente.
+	GameState.grant_run_time(zone_time_bonus)
+	await _choose_blessing()
 	_advance_zone()
+
+
+func _choose_blessing() -> void:
+	# La elección se hace con el árbol pausado para que el timer no corra.
+	get_tree().paused = true
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	var blessing_id: String = await blessing_panel.call("choose")
+	GameState.add_blessing(blessing_id)
+	player.call("apply_blessings")
+	_update_blessing_label()
+	get_tree().paused = false
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+
+func _update_blessing_label() -> void:
+	var parts: Array[String] = []
+	for id in GameState.run_blessings:
+		var count: int = int(GameState.run_blessings[id])
+		if count <= 0:
+			continue
+		var data: Dictionary = BlessingRegistry.get_data(str(id))
+		var label_text: String = "%s %s" % [
+			str(data.get("symbol", "?")),
+			str(data.get("title", id)),
+		]
+		if count > 1:
+			label_text += " x%d" % count
+		parts.append(label_text)
+
+	if parts.is_empty():
+		blessing_label.text = "Bendiciones: ninguna"
+	else:
+		blessing_label.text = "Bendiciones: " + " · ".join(PackedStringArray(parts))
 
 
 func _advance_zone() -> void:
@@ -258,12 +303,14 @@ func _style_color(rank_index: int) -> Color:
 
 
 func _on_player_died() -> void:
+	Diagnostics.mark("player_died", {"health": float(player.get("current_health"))})
 	GameState.end_run("death")
 
 
 func _on_run_ended(reason: String) -> void:
 	# Congela la run y muestra el resumen. La pausa deja de responder.
 	# El cursor se libera antes de pausar para que el menú sea clickeable ya.
+	Diagnostics.mark("run_ended_ui", {"reason": reason, "paused": get_tree().paused})
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().paused = true
 	pause_menu.call("set_enabled", false)

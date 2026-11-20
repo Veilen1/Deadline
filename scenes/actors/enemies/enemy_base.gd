@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 @export_group("Movement")
-@export var move_speed: float = 3.0
+@export var move_speed: float = 3.5
 @export var gravity: float = 20.0
 @export var stop_distance: float = 1.5
 
@@ -9,9 +9,9 @@ extends CharacterBody3D
 @export var max_health: float = 100.0
 
 @export_group("Attack")
-@export var attack_range: float = 2.0
-@export var attack_damage: float = 15.0
-@export var attack_cooldown: float = 0.7
+@export var attack_range: float = 2.2
+@export var attack_damage: float = 18.0
+@export var attack_cooldown: float = 0.6
 
 @export_group("Zone Multipliers")
 @export var damage_mult_head: float = 2.5
@@ -26,8 +26,19 @@ var _attack_timer: float = 0.0
 
 
 func _ready() -> void:
-	max_health *= Settings.enemy_health_multiplier()
-	attack_damage *= Settings.enemy_damage_multiplier()
+	max_health *= (
+		Settings.enemy_health_multiplier()
+		* GameState.contract_modifier("enemy_health", 1.0)
+		* GameState.cycle_enemy_health_mult()
+	)
+	attack_damage *= (
+		Settings.enemy_damage_multiplier()
+		* GameState.contract_modifier("enemy_damage", 1.0)
+		* GameState.cycle_enemy_damage_mult()
+	)
+	move_speed *= (
+		GameState.contract_modifier("enemy_speed", 1.0) * GameState.cycle_enemy_speed_mult()
+	)
 	current_health = max_health
 
 

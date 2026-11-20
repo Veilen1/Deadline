@@ -2,6 +2,44 @@
 
 Todas las versiones relevantes del prototipo.
 
+## v0.5.0 — 2026-11-20
+
+### Agregado
+- Log de diagnóstico `user://deadline_diag.log` con hitches de frame e hitos de fin de run, pausa y transiciones.
+- Núcleos (`◈`) como moneda exclusiva del árbol de habilidades, con costos exponenciales por nivel.
+- Pantalla de Desafíos con progreso, recompensas y reclamo de núcleos.
+- Desafíos que desbloquean la Avispa (40 headshots) y el Trueno (completar una run).
+- La tienda muestra las armas bloqueadas y su requisito.
+- Conversión de `$250` a `1` núcleo desde el árbol.
+- Estadísticas de headshots, élites, sabuesos y zonas en el perfil.
+- Bendiciones por zona: al completar una zona se elige 1 de 3 mejoras que duran toda la run.
+- Bendiciones de daño, cadencia, regeneración, vida, crítico y velocidad, acumulables.
+- Indicador de bendiciones activas en el HUD.
+- Ciclos de dificultad opcionales (hasta 10) con más vida, daño y velocidad enemiga.
+- Grado de run `S/A/B/C` según precisión, kills y completación, con núcleos extra.
+- Ciclo y mejor grado visibles en el hub, el perfil y el fin de run.
+- Zona 3 violeta con oleadas `5 / 6 / 4` y seis puntos de aparición.
+- Enemigo tirador: mantiene distancia, strafea y dispara proyectiles telegrafiados con un ojo brillante.
+- Élite tirador con más vida, cadencia y barra de élite.
+- Proyectiles enemigos visibles que se destruyen contra paredes y enemigos.
+- Bonus de **+10 s** al completar cada zona.
+- Sabueso explosivo con mecha telegrafiada y explosión en área.
+- Mezcla de enemigos por zona: sabuesos en Zona 2 y alternados con tiradores en Zona 3.
+
+### Cambiado
+- Timer base de `60 s` a `50 s` y bonus por zona de `+10 s` a `+5 s`.
+- Migración de saves: los viejos pierden 10 s de base y conservan el tiempo comprado.
+- Plata por impacto: rifle `10 → 5`, Avispa `6 → 2`, Trueno `25 → 12`.
+- Bonus de completación: `50 → 35` (Zonas 1/2) y `80 → 50` (Zona 3).
+- Enemigos base: velocidad `3.0 → 3.5`, daño `15 → 18`, rango `2.0 → 2.2`, cadencia `0.7 → 0.6`.
+- Oleadas más seguidas: `1.2 → 0.8 s` y `1.1 → 0.7 s` en Zona 3.
+- Tirador: intervalo `2.2 → 1.9`, carga `0.55 → 0.5`, proyectil `19 → 22 m/s`, daño `12 → 14`.
+- Élite tirador: intervalo `1.5 → 1.3`, daño `18 → 22`.
+- Élite de salto: intervalo `3.5 → 3.0`, daño `30 → 36`.
+- Ejecutor: de devolver 1 bala por headshot a **25% de probabilidad de no gastar munición**.
+- Dash: cooldown `0.7 → 0.9`, duración `0.14 → 0.13`.
+- Slide: cooldown `0.8 → 1.0`, duración `0.45 → 0.42`.
+
 ## v0.4.0 — 2026-11-20
 
 ### Agregado

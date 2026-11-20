@@ -36,6 +36,7 @@ func _build_card(weapon_id: String) -> void:
 
 	var owned: bool = GameState.is_weapon_owned(weapon_id)
 	var equipped: bool = GameState.equipped_weapon == weapon_id
+	var unlocked: bool = GameState.is_weapon_unlocked(weapon_id)
 
 	var card := PanelContainer.new()
 	var card_style := StyleBoxFlat.new()
@@ -91,13 +92,34 @@ func _build_card(weapon_id: String) -> void:
 	stats.add_theme_font_size_override("font_size", 14)
 	info.add_child(stats)
 
+	if not unlocked:
+		var unlock_id: String = ChallengeRegistry.weapon_unlock_for(weapon_id)
+		var unlock_data: Dictionary = ChallengeRegistry.get_data(unlock_id)
+		var requirement := Label.new()
+		requirement.text = "Bloqueada · %s (%d/%d)" % [
+			str(unlock_data.get("description", "Completá el desafío")),
+			GameState.get_challenge_progress(unlock_id),
+			int(unlock_data.get("target", 1)),
+		]
+		requirement.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		requirement.add_theme_color_override("font_color", Color(1.0, 0.55, 0.35, 1))
+		requirement.add_theme_font_size_override("font_size", 13)
+		info.add_child(requirement)
+
 	var actions := VBoxContainer.new()
 	actions.custom_minimum_size = Vector2(160, 0)
 	actions.add_theme_constant_override("separation", 8)
 	row.add_child(actions)
 
 	var price_label := Label.new()
-	price_label.text = "EQUIPADA" if equipped else ("COMPRADA" if owned else "$%d" % data.price)
+	if equipped:
+		price_label.text = "EQUIPADA"
+	elif owned:
+		price_label.text = "COMPRADA"
+	elif not unlocked:
+		price_label.text = "BLOQUEADA"
+	else:
+		price_label.text = "$%d" % data.price
 	price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	price_label.add_theme_font_size_override("font_size", 18)
 	price_label.add_theme_color_override(
@@ -106,7 +128,15 @@ func _build_card(weapon_id: String) -> void:
 	)
 	actions.add_child(price_label)
 
-	if not owned:
+	if not unlocked:
+		var locked_label := Label.new()
+		locked_label.text = "Completá el desafío"
+		locked_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		locked_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		locked_label.add_theme_color_override("font_color", Color(0.85, 0.5, 0.35, 1))
+		locked_label.add_theme_font_size_override("font_size", 13)
+		actions.add_child(locked_label)
+	elif not owned:
 		var buy_button := Button.new()
 		buy_button.text = "Comprar"
 		buy_button.custom_minimum_size = Vector2(150, 38)

@@ -30,12 +30,12 @@ grow_vertical = 2
 
 [node name="Menu" type="VBoxContainer" parent="CenterContainer"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 8
 
 [node name="TitleLabel" type="Label" parent="CenterContainer/Menu"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 34
 text = "HUB"
 horizontal_alignment = 1
 
@@ -44,6 +44,13 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.85, 0.8, 1)
 theme_override_font_sizes/font_size = 24
 text = "$0"
+horizontal_alignment = 1
+
+[node name="CoresLabel" type="Label" parent="CenterContainer/Menu"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 20
+text = "◈ 0 núcleos"
 horizontal_alignment = 1
 
 [node name="TimerLabel" type="Label" parent="CenterContainer/Menu"]
@@ -60,15 +67,39 @@ theme_override_font_sizes/font_size = 16
 text = "Bonos: +0 daño, +0 vida"
 horizontal_alignment = 1
 
+[node name="ContractLabel" type="Label" parent="CenterContainer/Menu"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "Contrato: sin contrato"
+horizontal_alignment = 1
+
+[node name="CycleLabel" type="Label" parent="CenterContainer/Menu"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 14
+text = "Ciclo 1 · grado máximo C"
+horizontal_alignment = 1
+
+[node name="CycleButton" type="Button" parent="CenterContainer/Menu"]
+custom_minimum_size = Vector2(340, 32)
+layout_mode = 2
+text = "Subir ciclo"
+
 [node name="SkillTreeButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 40)
+custom_minimum_size = Vector2(340, 36)
 layout_mode = 2
 text = "Árbol de habilidades"
 
 [node name="ShopButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 40)
+custom_minimum_size = Vector2(340, 36)
 layout_mode = 2
 text = "Tienda"
+
+[node name="ChallengesButton" type="Button" parent="CenterContainer/Menu"]
+custom_minimum_size = Vector2(340, 36)
+layout_mode = 2
+text = "Desafíos"
 
 [node name="HintLabel" type="Label" parent="CenterContainer/Menu"]
 layout_mode = 2
@@ -78,11 +109,11 @@ text = "Desbloqueá nodos adyacentes en el árbol."
 horizontal_alignment = 1
 
 [node name="PlayButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 40)
+custom_minimum_size = Vector2(340, 36)
 layout_mode = 2
 text = "Jugar"
 
 [node name="MainMenuButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 40)
+custom_minimum_size = Vector2(340, 36)
 layout_mode = 2
 text = "Menú principal"

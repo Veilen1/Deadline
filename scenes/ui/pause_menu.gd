@@ -45,6 +45,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _pause_game() -> void:
+	Diagnostics.mark("pause_open")
 	get_tree().paused = true
 	show()
 	modulate.a = 0.0
@@ -59,6 +60,7 @@ func _pause_game() -> void:
 
 
 func _resume_game() -> void:
+	Diagnostics.mark("pause_close")
 	get_tree().paused = false
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	var tween: Tween = create_tween()

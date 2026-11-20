@@ -9,10 +9,10 @@ const SLAM_WAVE_SCENE: PackedScene = preload("res://scenes/effects/slam_wave.tsc
 enum State { CHASE, TELEGRAPH, JUMP, RECOVER }
 
 @export_group("Elite Jump")
-@export var jump_interval: float = 3.5
+@export var jump_interval: float = 3.0
 @export var jump_trigger_range: float = 12.0
 @export var jump_radius: float = 3.5
-@export var jump_damage: float = 30.0
+@export var jump_damage: float = 36.0
 @export var jump_height: float = 3.0
 @export var air_time: float = 0.55
 @export var recover_time: float = 0.5
@@ -34,7 +34,12 @@ var _aura: OmniLight3D
 
 func _ready() -> void:
 	super._ready()
-	jump_damage *= Settings.enemy_damage_multiplier()
+	add_to_group("elites")
+	jump_damage *= (
+		Settings.enemy_damage_multiplier()
+		* GameState.contract_modifier("enemy_damage", 1.0)
+		* GameState.cycle_enemy_damage_mult()
+	)
 	_aura = get_node_or_null("Aura") as OmniLight3D
 	EventBus.boss_spawned.emit(self, max_health)
 

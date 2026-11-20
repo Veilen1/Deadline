@@ -1,15 +1,21 @@
 extends Control
 
 const MAIN_MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
-const GAME_SCENE: String = "res://scenes/main.tscn"
+const CONTRACTS_SCENE: String = "res://scenes/ui/contracts.tscn"
 const SKILL_TREE_SCENE: String = "res://scenes/ui/skill_tree.tscn"
 const SHOP_SCENE: String = "res://scenes/ui/shop.tscn"
+const CHALLENGES_SCENE: String = "res://scenes/ui/challenges.tscn"
 
 @onready var money_label: Label = $CenterContainer/Menu/MoneyLabel
+@onready var cores_label: Label = $CenterContainer/Menu/CoresLabel
 @onready var timer_label: Label = $CenterContainer/Menu/TimerLabel
 @onready var bonus_label: Label = $CenterContainer/Menu/BonusLabel
+@onready var contract_label: Label = $CenterContainer/Menu/ContractLabel
+@onready var cycle_label: Label = $CenterContainer/Menu/CycleLabel
+@onready var cycle_button: Button = $CenterContainer/Menu/CycleButton
 @onready var skill_tree_button: Button = $CenterContainer/Menu/SkillTreeButton
 @onready var shop_button: Button = $CenterContainer/Menu/ShopButton
+@onready var challenges_button: Button = $CenterContainer/Menu/ChallengesButton
 @onready var play_button: Button = $CenterContainer/Menu/PlayButton
 @onready var main_menu_button: Button = $CenterContainer/Menu/MainMenuButton
 
@@ -17,8 +23,12 @@ const SHOP_SCENE: String = "res://scenes/ui/shop.tscn"
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	GameState.money_changed.connect(_on_money_changed)
+	GameState.cores_changed.connect(_on_cores_changed)
+	GameState.challenges_changed.connect(_update_ui)
 	skill_tree_button.pressed.connect(_on_skill_tree_pressed)
 	shop_button.pressed.connect(_on_shop_pressed)
+	challenges_button.pressed.connect(_on_challenges_pressed)
+	cycle_button.pressed.connect(_on_cycle_pressed)
 	play_button.pressed.connect(_on_play_pressed)
 	main_menu_button.pressed.connect(_on_main_menu_pressed)
 	_update_ui()
@@ -26,6 +36,10 @@ func _ready() -> void:
 
 
 func _on_money_changed(_new_amount: int) -> void:
+	_update_ui()
+
+
+func _on_cores_changed(_new_amount: int) -> void:
 	_update_ui()
 
 
@@ -39,9 +53,20 @@ func _on_shop_pressed() -> void:
 	Transitions.change_scene_to_file(SHOP_SCENE)
 
 
+func _on_challenges_pressed() -> void:
+	GameState.save_game()
+	Transitions.change_scene_to_file(CHALLENGES_SCENE)
+
+
 func _on_play_pressed() -> void:
 	GameState.save_game()
-	Transitions.change_scene_to_file(GAME_SCENE)
+	Transitions.change_scene_to_file(CONTRACTS_SCENE)
+
+
+func _on_cycle_pressed() -> void:
+	if GameState.advance_cycle():
+		AudioDirector.play_upgrade()
+		_update_ui()
 
 
 func _on_main_menu_pressed() -> void:
@@ -51,6 +76,7 @@ func _on_main_menu_pressed() -> void:
 
 func _update_ui() -> void:
 	money_label.text = "$%d" % GameState.money
+	cores_label.text = "◈ %d núcleos" % GameState.cores
 	timer_label.text = "Timer inicial: %.0f s" % GameState.base_run_time
 
 	var damage_bonus: float = (
@@ -66,3 +92,16 @@ func _update_ui() -> void:
 		int(round(health_bonus)),
 		GameState.get_unlocked_skill_count(),
 	]
+
+	var contract: Dictionary = GameState.contract_data()
+	if contract.is_empty():
+		contract_label.text = "Contrato: sin contrato"
+	else:
+		contract_label.text = "Contrato: %s (+%d núcleos)" % [
+			str(contract.get("title", "")),
+			int(contract.get("core_bonus", 0)),
+		]
+
+	cycle_label.text = "Ciclo %d · grado máximo %s" % [GameState.cycle, GameState.best_grade]
+	cycle_button.disabled = GameState.runs_completed < 1 or GameState.cycle >= 10
+	cycle_button.text = "Ciclo máximo" if GameState.cycle >= 10 else "Subir ciclo"
