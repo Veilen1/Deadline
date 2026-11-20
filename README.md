@@ -3,7 +3,7 @@
 > **Estado del documento:** vivo y en construcción. Todo lo que está acá está sujeto a cambios durante el prototipado y el testeo. Las decisiones cerradas se marcan con ✅ y las que están abiertas o en revisión se marcan con 🟡.
 >
 > **Última actualización:** 20/11/2026
-> **Versión:** 0.6.1 — Prototipo jugable
+> **Versión:** 0.7.0 — Prototipo jugable
 
 ---
 
@@ -356,7 +356,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - `main`: releases estables.
 - `dev`: integración de features.
 - Una rama por feature: `feature/<nombre>` desde `dev`, commits atómicos, merge `--no-ff` a `dev`.
-- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos), `v0.5.1` (perfil desplazable, monedas en el árbol y toasts), `v0.6.0` (arenas verticales, telegrafía y eventos) y `v0.6.1` (hitmarker y calaveras por tipo).
+- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos), `v0.5.1` (perfil desplazable, monedas en el árbol y toasts), `v0.6.0` (arenas verticales, telegrafía y eventos), `v0.6.1` (hitmarker y calaveras por tipo) y `v0.7.0` (mezcla de audio, dash aéreo y combos).
 
 ### Limitaciones conocidas
 
@@ -719,7 +719,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ---
 
-## 24. Audio y mezcla (v0.7.0 en progreso)
+## 24. Audio y mezcla
 
 ### Buses y sliders
 
@@ -737,6 +737,19 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - **Aparición de evento**: alarma grave al aparecer un reactor, campo o torreta.
 - **Destrucción de evento**: boom grave al romperlo.
 - **Ambiente por zona**: el loop cambia de tono y sube un poco de volumen en Zona 2 y 3; el hub/menú vuelven al tono neutral.
+
+---
+
+## 25. Dash aéreo y combos
+
+- El dash ahora distingue suelo y aire:
+  - **Suelo:** velocidad `16`, duración `0.13` y cooldown `0.9`.
+  - **Aire:** velocidad `18`, duración `0.16`, una carga por salto y cooldown corto de `0.35`.
+- La carga aérea se recupera al tocar el piso.
+- El HUD muestra **AIRE ●/○** junto al medidor de dash; se apaga cuando no queda carga.
+- La estela y el FOV cambian a turquesa/cian y a un kick más fuerte en el aire.
+- **Salto desde slide:** +25% de altura, corta el slide y deja un pequeño kick de FOV.
+- El sonido del dash aéreo sube de tono para diferenciarlo.
 
 ---
 
