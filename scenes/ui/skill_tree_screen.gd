@@ -202,7 +202,10 @@ func _effects_text(effects: Dictionary) -> String:
 	if effects.has("crit_bonus"):
 		parts.append("+%d%% daño crítico" % int(round(float(effects["crit_bonus"]) * 100.0)))
 	if effects.has("crit_refund"):
-		parts.append("+1 bala por crítico")
+		parts.append(
+			"+%d%% de no gastar bala en headshot"
+			% int(round(float(effects["crit_refund"]) * 100.0))
+		)
 	if effects.has("damage_reduction"):
 		parts.append("-%d%% daño recibido" % int(round(float(effects["damage_reduction"]) * 100.0)))
 

@@ -32,13 +32,13 @@ const NODES: Dictionary = {
 	"executioner": {
 		"title": "Ejecutor",
 		"symbol": "★",
-		"description": "Cada headshot devuelve una bala al cargador.",
+		"description": "Cada headshot tiene 25% de probabilidad de no gastar munición.",
 		"max_level": 1,
 		"base_cost": 200,
 		"cost_step": 0,
 		"requires": ["precision"],
 		"position": Vector2(0.5, 0.14),
-		"effects": {"crit_refund": 1.0},
+		"effects": {"crit_refund": 0.25},
 	},
 	"cadence": {
 		"title": "Cadencia",

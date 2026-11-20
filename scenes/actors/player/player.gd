@@ -10,11 +10,11 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 @export var gravity: float = 20.0
 @export var jump_height: float = 0.9
 @export var dash_speed: float = 16.0
-@export var dash_duration: float = 0.14
-@export var dash_cooldown: float = 0.7
+@export var dash_duration: float = 0.13
+@export var dash_cooldown: float = 0.9
 @export var slide_speed_multiplier: float = 1.7
-@export var slide_duration: float = 0.45
-@export var slide_cooldown: float = 0.8
+@export var slide_duration: float = 0.42
+@export var slide_cooldown: float = 1.0
 @export var slide_camera_height: float = 0.9
 
 @export_group("Camera")
@@ -445,8 +445,10 @@ func shoot() -> void:
 					var damage: float = weapon_data.damage + damage_bonus
 					if hit_zone == "head":
 						damage *= 1.0 + crit_bonus
+						# Ejecutor: probabilidad de recuperar la bala del headshot.
 						if crit_refund > 0.0 and current_ammo < max_ammo:
-							_set_current_ammo(current_ammo + int(round(crit_refund)))
+							if randf() < clampf(crit_refund, 0.0, 1.0):
+								_set_current_ammo(current_ammo + 1)
 					enemy.call("take_hit", hit_zone, damage, weapon_data.money_per_hit, hit_position)
 
 	_spawn_tracer(end_point)
