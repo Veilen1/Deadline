@@ -1,0 +1,55 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_ns"]
+size = Vector3(40, 4, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_ew"]
+size = Vector3(1, 4, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_curb_ns"]
+size = Vector3(40, 0.3, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_curb_ew"]
+size = Vector3(0.2, 0.3, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_curb"]
+albedo_color = Color(0.68, 0.68, 0.7, 1)
+roughness = 1.0
+
+[node name="ArenaBounds" type="StaticBody3D"]
+
+[node name="CollisionNorth" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -20.5)
+shape = SubResource("BoxShape3D_wall_ns")
+
+[node name="CollisionSouth" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 20.5)
+shape = SubResource("BoxShape3D_wall_ns")
+
+[node name="CollisionEast" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, 2, 0)
+shape = SubResource("BoxShape3D_wall_ew")
+
+[node name="CollisionWest" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.5, 2, 0)
+shape = SubResource("BoxShape3D_wall_ew")
+
+[node name="CurbNorth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, -19.9)
+mesh = SubResource("BoxMesh_curb_ns")
+surface_material_override/0 = SubResource("StandardMaterial3D_curb")
+
+[node name="CurbSouth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 19.9)
+mesh = SubResource("BoxMesh_curb_ns")
+surface_material_override/0 = SubResource("StandardMaterial3D_curb")
+
+[node name="CurbEast" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.9, 0.15, 0)
+mesh = SubResource("BoxMesh_curb_ew")
+surface_material_override/0 = SubResource("StandardMaterial3D_curb")
+
+[node name="CurbWest" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.9, 0.15, 0)
+mesh = SubResource("BoxMesh_curb_ew")
+surface_material_override/0 = SubResource("StandardMaterial3D_curb")

@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scenes/levels/zone.gd" id="1_zone"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/enemy_base.tscn" id="2_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/elite_enemy.tscn" id="3_elite"]
+[ext_resource type="PackedScene" path="res://scenes/levels/arena_bounds.tscn" id="4_bounds"]
 
 [sub_resource type="Environment" id="Environment_white"]
 background_mode = 1
@@ -56,3 +57,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 6)
 
 [node name="SpawnPoint4" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 6)
+
+[node name="ArenaBounds" parent="." instance=ExtResource("4_bounds")]
