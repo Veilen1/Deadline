@@ -23,6 +23,8 @@ var invert_y: bool = false
 
 # Audio
 var master_volume: float = 1.0
+var music_volume: float = 0.8
+var sfx_volume: float = 1.0
 
 # HUD
 var show_minimap: bool = true
@@ -34,6 +36,7 @@ var _is_loading: bool = false
 
 
 func _ready() -> void:
+	_ensure_audio_buses()
 	load_settings()
 	apply_display()
 	apply_audio()
@@ -57,13 +60,37 @@ func apply_display() -> void:
 
 
 func apply_audio() -> void:
-	var bus: int = AudioServer.get_bus_index("Master")
-	if bus < 0:
-		return
+	_ensure_audio_buses()
+	_set_bus_volume("Master", master_volume)
+	_set_bus_volume("Music", music_volume)
+	_set_bus_volume("SFX", sfx_volume)
 
-	var volume: float = clampf(master_volume, 0.0, 1.0)
-	AudioServer.set_bus_mute(bus, volume <= 0.001)
-	AudioServer.set_bus_volume_db(bus, linear_to_db(maxf(volume, 0.001)))
+
+func _ensure_audio_buses() -> void:
+	_ensure_bus("Music")
+	_ensure_bus("SFX")
+
+
+func _ensure_bus(bus_name: String) -> int:
+	if bus_name == "Master":
+		return AudioServer.get_bus_index("Master")
+	var index: int = AudioServer.get_bus_index(bus_name)
+	if index >= 0:
+		if AudioServer.get_bus_send(index) != "Master":
+			AudioServer.set_bus_send(index, "Master")
+		return index
+	AudioServer.add_bus()
+	index = AudioServer.bus_count - 1
+	AudioServer.set_bus_name(index, bus_name)
+	AudioServer.set_bus_send(index, "Master")
+	return index
+
+
+func _set_bus_volume(bus_name: String, volume: float) -> void:
+	var index: int = _ensure_bus(bus_name)
+	var clamped: float = clampf(volume, 0.0, 1.0)
+	AudioServer.set_bus_mute(index, clamped <= 0.001)
+	AudioServer.set_bus_volume_db(index, linear_to_db(maxf(clamped, 0.001)))
 
 
 func enemy_health_multiplier() -> float:
@@ -103,6 +130,8 @@ func reset_defaults() -> void:
 	mouse_sensitivity = 0.003
 	ui_scale = 1.0
 	master_volume = 1.0
+	music_volume = 0.8
+	sfx_volume = 1.0
 	invert_y = false
 	fullscreen = false
 	vsync = true
@@ -129,6 +158,8 @@ func save_settings() -> void:
 		config.set_value("settings", "mouse_sensitivity", mouse_sensitivity)
 		config.set_value("settings", "invert_y", invert_y)
 		config.set_value("settings", "master_volume", master_volume)
+		config.set_value("settings", "music_volume", music_volume)
+		config.set_value("settings", "sfx_volume", sfx_volume)
 		config.set_value("settings", "show_minimap", show_minimap)
 		config.set_value("settings", "difficulty", difficulty)
 
@@ -156,6 +187,8 @@ func load_settings() -> void:
 	mouse_sensitivity = clampf(float(config.get_value("settings", "mouse_sensitivity", 0.003)), 0.0005, 0.01)
 	invert_y = bool(config.get_value("settings", "invert_y", false))
 	master_volume = clampf(float(config.get_value("settings", "master_volume", 1.0)), 0.0, 1.0)
+	music_volume = clampf(float(config.get_value("settings", "music_volume", 0.8)), 0.0, 1.0)
+	sfx_volume = clampf(float(config.get_value("settings", "sfx_volume", 1.0)), 0.0, 1.0)
 	show_minimap = bool(config.get_value("settings", "show_minimap", true))
 	difficulty = clampi(int(config.get_value("settings", "difficulty", 1)), 0, 2)
 	_is_loading = false

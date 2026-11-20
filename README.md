@@ -362,7 +362,8 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 - Hay tres zonas: blanca, celeste y violeta. Tienen coberturas, plataformas, torres, telegrafía de spawn y un evento de arena fijo por zona.
 - Hay tres armas con munición independiente y regeneración, pero no recarga manual.
-- El volumen es general; no hay sliders separados de música/efectos.
+- El volumen general ya no es la única perilla: hay sliders separados de música y efectos.
+- El ambiente sigue siendo un loop único con variación de tono por zona; falta música dedicada por zona.
 - La dificultad se aplica a los enemigos que aparecen después del cambio; los ya vivos no se recalculan.
 - Los élites comparten mecánicas base; la Zona 3 suma un élite tirador.
 - No hay guardado de run en curso, multijugador, controller ni localización.
@@ -372,9 +373,9 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Próximos pasos
 
-1. Más variantes de eventos de arena y combinaciones por run.
-2. Sliders separados de música y efectos, y mezcla por zona.
-3. Movimiento avanzado: dash aéreo y combos de slide/salto.
+1. Dash aéreo y combos de movimiento.
+2. Más capas de ambiente y música dedicada por zona.
+3. Más variantes de eventos de arena y combinaciones por run.
 4. Nuevas variantes de enemigo (torreta móvil, corredor con escudo).
 5. Localización y soporte de controller.
 
@@ -715,6 +716,27 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
   - **ÉLITE** dorado, más grande.
 - El anillo, el haz de luz y la luz del aviso usan el mismo color.
 - Sigue habiendo 2 segundos entre el aviso y la aparición.
+
+---
+
+## 24. Audio y mezcla (v0.7.0 en progreso)
+
+### Buses y sliders
+
+- Buses independientes **Music** y **SFX**, ambos enviados al Master.
+- Configuración ahora tiene tres controles:
+  - **Volumen general**.
+  - **Música** (default `80%`).
+  - **Efectos de sonido** (default `100%`).
+- El loop ambiente va a **Music**; disparos, pasos, dash, armas, UI, impactos y eventos van a **SFX**.
+- Los sliders aplican en el acto y se guardan en `deadline_settings.cfg`.
+
+### Sonidos nuevos
+
+- **Disparo enemigo**: los tiradores y la torreta de Zona 3 ahora tienen un zap posicional propio.
+- **Aparición de evento**: alarma grave al aparecer un reactor, campo o torreta.
+- **Destrucción de evento**: boom grave al romperlo.
+- **Ambiente por zona**: el loop cambia de tono y sube un poco de volumen en Zona 2 y 3; el hub/menú vuelven al tono neutral.
 
 ---
 

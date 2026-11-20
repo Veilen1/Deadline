@@ -10,6 +10,7 @@ const GAME_SCENE: String = "res://scenes/ui/hub.tscn"
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	AudioDirector.reset_mood()
 	play_button.pressed.connect(_on_play_pressed)
 	config_button.pressed.connect(_on_config_pressed)
 	profile_button.pressed.connect(_on_profile_pressed)

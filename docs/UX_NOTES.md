@@ -56,9 +56,9 @@
 
 ## Próximas tareas de UX/UI
 
-1. **Eventos de arena:** implementados Reactor, Campo de hielo y Torreta; faltan variantes y combinaciones.
-2. **Mapas:** seguir iterando layouts verticales, coberturas y legibilidad de la telegrafía.
-3. **Menús:** jerarquía primaria/secundaria aplicada; falta testear navegación con teclado/controller y resoluciones chicas.
-4. **Audio:** sliders separados de música/efectos y mezcla por zona.
-5. **Movimiento:** dash aéreo y combos de slide/salto.
-6. **Contenido:** torreta móvil y nuevas variantes de enemigo.
+1. **Movimiento:** dash aéreo y combos de slide/salto.
+2. **Audio:** sliders de música/efectos implementados; falta más variedad de ambiente por zona.
+3. **Eventos de arena:** implementados Reactor, Campo de hielo y Torreta; faltan variantes y combinaciones.
+4. **Mapas:** seguir iterando layouts verticales, coberturas y legibilidad de la telegrafía.
+5. **Contenido:** torreta móvil y nuevas variantes de enemigo.
+6. **Accesibilidad:** navegación con teclado/controller y resoluciones chicas.

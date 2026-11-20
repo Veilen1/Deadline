@@ -57,6 +57,7 @@ func _ready() -> void:
 		"Destruilo para +%d ◈" % core_reward,
 		_accent()
 	)
+	AudioDirector.play_event_spawn(global_position + Vector3.UP * 1.5)
 
 
 func _physics_process(delta: float) -> void:
@@ -108,6 +109,7 @@ func _fire_at(player: Node3D) -> void:
 		return
 	get_parent().add_child(projectile)
 	projectile.call("launch", origin, target, projectile_speed, projectile_damage, 3.5, self)
+	AudioDirector.play_enemy_shot(global_position + Vector3.UP * 1.9)
 
 
 func _spawn_wave() -> void:
@@ -146,6 +148,7 @@ func _destroy() -> void:
 		_accent()
 	)
 	AudioDirector.play_upgrade()
+	AudioDirector.play_event_destroy(global_position + Vector3.UP * 1.0)
 	queue_free()
 
 

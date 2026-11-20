@@ -23,6 +23,7 @@ const CHALLENGES_SCENE: String = "res://scenes/ui/challenges.tscn"
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	AudioDirector.reset_mood()
 	GameState.money_changed.connect(_on_money_changed)
 	GameState.cores_changed.connect(_on_cores_changed)
 	GameState.challenges_changed.connect(_update_ui)

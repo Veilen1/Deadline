@@ -183,6 +183,7 @@ func _load_zone(index: int) -> void:
 	_current_zone = new_zone
 
 	zone_label.text = "Zona %d" % (index + 1)
+	AudioDirector.set_zone_mood(index)
 
 
 func _show_zone_banner(text: String) -> void:
