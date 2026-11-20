@@ -51,6 +51,10 @@ func _pause_game() -> void:
 	var tween: Tween = create_tween()
 	tween.tween_property(self, "modulate:a", 1.0, 0.12)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	# Igual que en fin de run: fuerza el cursor visible y sobre el botón.
+	await get_tree().process_frame
+	if DisplayServer.get_name() != "headless":
+		Input.warp_mouse(resume_button.get_global_rect().get_center())
 	resume_button.grab_focus()
 
 

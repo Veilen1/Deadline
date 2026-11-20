@@ -313,7 +313,8 @@ func end_run(reason: String) -> void:
 	if not VALID_END_REASONS.has(reason):
 		push_warning("GameState.end_run: motivo desconocido '%s'" % reason)
 	run_ended.emit(reason)
-	save_game()
+	# Guarda fuera del frame crítico para no demorar el menú de fin de run.
+	save_game.call_deferred()
 
 
 func abandon_run() -> void:
@@ -324,7 +325,7 @@ func abandon_run() -> void:
 	_apply_death_penalty()
 	deaths += 1
 	is_run_active = false
-	save_game()
+	save_game.call_deferred()
 
 
 func _apply_death_penalty() -> void:

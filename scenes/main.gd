@@ -263,6 +263,8 @@ func _on_player_died() -> void:
 
 func _on_run_ended(reason: String) -> void:
 	# Congela la run y muestra el resumen. La pausa deja de responder.
+	# El cursor se libera antes de pausar para que el menú sea clickeable ya.
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().paused = true
 	pause_menu.call("set_enabled", false)
 	_hide_boss_ui()
