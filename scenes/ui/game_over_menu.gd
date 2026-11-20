@@ -17,6 +17,7 @@ func _ready() -> void:
 
 
 func show_result(reason: String, money: int) -> void:
+	Diagnostics.mark("game_over_show", {"reason": reason, "money": money})
 	reason_label.text = _reason_text(reason)
 	money_label.text = "Plata acumulada: $%d" % money
 
@@ -39,8 +40,13 @@ func show_result(reason: String, money: int) -> void:
 
 	# Espera un frame para que el layout calcule la posición del botón.
 	await get_tree().process_frame
+	Diagnostics.mark("game_over_layout", {
+		"rect": str(retry_button.get_global_rect()),
+		"focused": get_window().has_focus(),
+	})
 	_warp_cursor_to(retry_button)
 	retry_button.grab_focus()
+	Diagnostics.mark("game_over_ready", {"mouse": str(get_viewport().get_mouse_position())})
 
 
 func _warp_cursor_to(control: Control) -> void:
@@ -64,11 +70,13 @@ func _reason_text(reason: String) -> String:
 
 
 func _on_retry_pressed() -> void:
+	Diagnostics.mark("retry_pressed")
 	get_tree().paused = false
 	Transitions.reload_current_scene()
 
 
 func _on_hub_pressed() -> void:
+	Diagnostics.mark("hub_pressed")
 	get_tree().paused = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	Transitions.change_scene_to_file(HUB_SCENE)

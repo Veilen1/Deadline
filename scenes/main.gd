@@ -102,6 +102,7 @@ func _on_wave_started(wave_number: int) -> void:
 func _on_zone_completed(_zone_id: String) -> void:
 	if not GameState.is_run_active or _transitioning:
 		return
+	Diagnostics.mark("zone_completed", {"zone": _zone_id, "index": _zone_index})
 
 	if _zone_index + 1 >= ZONE_SCENES.size():
 		GameState.end_run("completed")
@@ -262,12 +263,14 @@ func _style_color(rank_index: int) -> Color:
 
 
 func _on_player_died() -> void:
+	Diagnostics.mark("player_died", {"health": float(player.get("current_health"))})
 	GameState.end_run("death")
 
 
 func _on_run_ended(reason: String) -> void:
 	# Congela la run y muestra el resumen. La pausa deja de responder.
 	# El cursor se libera antes de pausar para que el menú sea clickeable ya.
+	Diagnostics.mark("run_ended_ui", {"reason": reason, "paused": get_tree().paused})
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().paused = true
 	pause_menu.call("set_enabled", false)
