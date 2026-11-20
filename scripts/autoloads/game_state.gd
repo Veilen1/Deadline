@@ -49,6 +49,10 @@ var last_death_penalty: int = 0
 # Mejoras compradas. Persisten entre runs.
 var upgrades: Dictionary = {}
 
+# Árbol de habilidades.
+var unlocked_skills: Array[String] = ["root"]
+var skill_bonuses: Dictionary = {}
+
 var _save_timer: Timer
 var _is_loading: bool = false
 
@@ -82,6 +86,55 @@ func register_upgrade(upgrade_id: String, bonus: float) -> void:
 
 func get_upgrade_level(upgrade_id: String) -> int:
 	return int(upgrades.get(upgrade_id + "_level", 0))
+
+
+func is_skill_unlocked(skill_id: String) -> bool:
+	return unlocked_skills.has(skill_id)
+
+
+func is_skill_available(skill_id: String) -> bool:
+	if is_skill_unlocked(skill_id):
+		return false
+
+	var data: Dictionary = SkillTree.get_node_data(skill_id)
+	if data.is_empty():
+		return false
+
+	for required in data.get("requires", []):
+		if unlocked_skills.has(str(required)):
+			return true
+	return false
+
+
+func can_unlock_skill(skill_id: String) -> bool:
+	if not is_skill_available(skill_id):
+		return false
+
+	var data: Dictionary = SkillTree.get_node_data(skill_id)
+	return money >= int(data.get("cost", 0))
+
+
+func unlock_skill(skill_id: String) -> bool:
+	if not can_unlock_skill(skill_id):
+		return false
+
+	var data: Dictionary = SkillTree.get_node_data(skill_id)
+	var cost: int = int(data.get("cost", 0))
+	if not spend_money(cost):
+		return false
+
+	unlocked_skills.append(skill_id)
+
+	var effects: Dictionary = data.get("effects", {})
+	for key in effects:
+		var value: float = float(effects[key])
+		skill_bonuses[key] = float(skill_bonuses.get(key, 0.0)) + value
+
+	if effects.has("time_bonus"):
+		add_run_time(float(effects["time_bonus"]))
+
+	save_game()
+	return true
 
 
 func add_money(amount: int) -> void:
@@ -184,6 +237,9 @@ func reset_progress() -> void:
 	run_timer = base_run_time
 	run_start_money = 0
 	last_death_penalty = 0
+	unlocked_skills.clear()
+	unlocked_skills.append(SkillTree.ROOT_ID)
+	skill_bonuses.clear()
 	_is_loading = false
 	save_game()
 
@@ -197,6 +253,8 @@ func save_game() -> void:
 	config.set_value("progress", "money", money)
 	config.set_value("progress", "base_run_time", base_run_time)
 	config.set_value("progress", "upgrades", upgrades)
+	config.set_value("progress", "unlocked_skills", unlocked_skills)
+	config.set_value("progress", "skill_bonuses", skill_bonuses)
 
 	var error: int = config.save(save_path)
 	if error != OK:
@@ -220,6 +278,21 @@ func load_game() -> void:
 
 	var saved_upgrades = config.get_value("progress", "upgrades", {})
 	upgrades = saved_upgrades.duplicate() if saved_upgrades is Dictionary else {}
+
+	var saved_skills = config.get_value("progress", "unlocked_skills", ["root"])
+	unlocked_skills.clear()
+	if saved_skills is Array:
+		for skill_id in saved_skills:
+			unlocked_skills.append(str(skill_id))
+	elif saved_skills is PackedStringArray:
+		for skill_id in saved_skills:
+			unlocked_skills.append(str(skill_id))
+	if not unlocked_skills.has(SkillTree.ROOT_ID):
+		unlocked_skills.push_front(SkillTree.ROOT_ID)
+
+	var saved_bonuses = config.get_value("progress", "skill_bonuses", {})
+	skill_bonuses = saved_bonuses.duplicate() if saved_bonuses is Dictionary else {}
+
 	_is_loading = false
 
 
