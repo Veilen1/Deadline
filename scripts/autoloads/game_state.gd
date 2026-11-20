@@ -6,6 +6,7 @@ extends Node
 signal money_changed(new_amount: int)
 signal cores_changed(new_amount: int)
 signal challenges_changed
+signal challenge_unlocked(challenge_id: String)
 signal timer_changed(remaining: float)
 signal run_started
 signal run_ended(reason: String)
@@ -92,6 +93,7 @@ var elites_killed: int = 0
 var hounds_killed: int = 0
 var zones_cleared: int = 0
 var claimed_challenges: Array[String] = []
+var notified_challenges: Array[String] = []
 
 # Ciclos de dificultad y grado de la última run.
 var cycle: int = 1
@@ -133,6 +135,7 @@ func _on_enemy_killed(enemy: Node, _hit_zone: String) -> void:
 		if enemy.is_in_group("hound_enemies"):
 			hounds_killed += 1
 	challenges_changed.emit()
+	_check_challenge_unlocks()
 	_queue_save()
 
 
@@ -142,6 +145,7 @@ func _on_enemy_hit(_enemy: Node, hit_zone: String, _damage: float, _money: int) 
 		return
 	headshots += 1
 	challenges_changed.emit()
+	_check_challenge_unlocks()
 	_queue_save()
 
 
@@ -170,7 +174,33 @@ func register_zone_cleared() -> void:
 	zones_cleared += 1
 	add_cores(1)
 	challenges_changed.emit()
+	_check_challenge_unlocks()
 	_queue_save()
+
+
+func _check_challenge_unlocks() -> void:
+	for id in ChallengeRegistry.ids():
+		var challenge_id: String = str(id)
+		if notified_challenges.has(challenge_id) or not is_challenge_completed(challenge_id):
+			continue
+		var data: Dictionary = ChallengeRegistry.get_data(challenge_id)
+		var reward_type: String = str(data.get("reward_type", ""))
+		var reward_id: String = str(data.get("reward_id", ""))
+		# No avisar de un arma que el jugador ya tenía de antes.
+		if reward_type == "weapon" and is_weapon_owned(reward_id):
+			notified_challenges.append(challenge_id)
+			continue
+		notified_challenges.append(challenge_id)
+		challenge_unlocked.emit(challenge_id)
+		_queue_save()
+
+
+func _mark_completed_as_notified() -> void:
+	# Evita toasts retroactivos al cargar un save con desafíos ya completados.
+	for id in ChallengeRegistry.ids():
+		var challenge_id: String = str(id)
+		if is_challenge_completed(challenge_id) and not notified_challenges.has(challenge_id):
+			notified_challenges.append(challenge_id)
 
 
 func contract_data() -> Dictionary:
@@ -579,6 +609,7 @@ func end_run(reason: String) -> void:
 		last_death_penalty = 0
 	is_run_active = false
 	challenges_changed.emit()
+	_check_challenge_unlocks()
 
 	# TODO: Fase 2.4 — aplicar consecuencias específicas por motivo.
 	if not VALID_END_REASONS.has(reason):
@@ -648,6 +679,7 @@ func reset_progress() -> void:
 	money = 0
 	cores = 0
 	claimed_challenges.clear()
+	notified_challenges.clear()
 	cycle = 1
 	best_grade = "C"
 	last_grade = "C"
@@ -692,6 +724,7 @@ func save_game() -> void:
 	config.set_value("progress", "money", money)
 	config.set_value("progress", "cores", cores)
 	config.set_value("progress", "claimed_challenges", claimed_challenges)
+	config.set_value("progress", "notified_challenges", notified_challenges)
 	config.set_value("progress", "cycle", cycle)
 	config.set_value("progress", "best_grade", best_grade)
 	config.set_value("progress", "base_run_time", base_run_time)
@@ -738,6 +771,11 @@ func load_game() -> void:
 	if saved_claims is Array or saved_claims is PackedStringArray:
 		for claim in saved_claims:
 			claimed_challenges.append(str(claim))
+	notified_challenges.clear()
+	var saved_notified = config.get_value("progress", "notified_challenges", [])
+	if saved_notified is Array or saved_notified is PackedStringArray:
+		for notified in saved_notified:
+			notified_challenges.append(str(notified))
 	cycle = clampi(int(config.get_value("progress", "cycle", 1)), 1, 10)
 	best_grade = str(config.get_value("progress", "best_grade", "C"))
 
@@ -803,6 +841,7 @@ func load_game() -> void:
 	lifetime_earned = maxi(int(config.get_value("profile", "lifetime_earned", 0)), 0)
 
 	_is_loading = false
+	_mark_completed_as_notified()
 	challenges_changed.emit()
 
 

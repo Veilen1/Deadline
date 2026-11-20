@@ -2,6 +2,15 @@
 
 Todas las versiones relevantes del prototipo.
 
+## No publicado
+
+### Agregado
+- Toasts arriba a la derecha al completar un desafío, con el desbloqueo y la condición cumplida.
+- Monedas actuales (`$`) junto a los núcleos (`◈`) en el árbol, con el botón de conversión a la vista.
+
+### Corregido
+- El perfil ahora tiene el contenido desplazable y el botón **Volver** fijo arriba, siempre visible.
+
 ## v0.5.0 — 2026-11-20
 
 ### Agregado

@@ -583,7 +583,8 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - **Trueno:** se desbloquea al completar una run.
 - Desafíos de núcleos por élites, sabuesos, zonas, headshots y runs completadas.
 - La tienda muestra las armas bloqueadas, su requisito y el progreso actual.
-- Las estadísticas quedan en el perfil.
+- Al completar un desafío aparece un **toast arriba a la derecha** con el desbloqueo y la condición cumplida. Los desafíos de núcleos avisan que la recompensa se reclama desde la pantalla.
+- Las estadísticas quedan en el perfil, que ahora es desplazable con el botón **Volver** fijo.
 
 ### Contratos
 
