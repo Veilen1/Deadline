@@ -3,7 +3,7 @@
 > **Estado del documento:** vivo y en construcción. Todo lo que está acá está sujeto a cambios durante el prototipado y el testeo. Las decisiones cerradas se marcan con ✅ y las que están abiertas o en revisión se marcan con 🟡.
 >
 > **Última actualización:** 20/11/2026
-> **Versión:** 0.5.1 — Prototipo jugable
+> **Versión:** 0.6.0 — Prototipo jugable
 
 ---
 
@@ -356,25 +356,26 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - `main`: releases estables.
 - `dev`: integración de features.
 - Una rama por feature: `feature/<nombre>` desde `dev`, commits atómicos, merge `--no-ff` a `dev`.
-- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos) y `v0.5.1` (perfil desplazable, monedas en el árbol y toasts).
+- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos), `v0.5.1` (perfil desplazable, monedas en el árbol y toasts) y `v0.6.0` (arenas verticales, telegrafía y eventos).
 
 ### Limitaciones conocidas
 
-- Hay tres zonas: blanca, celeste y violeta. Ya tienen coberturas, plataformas y torres; faltan eventos de arena y más variaciones de layout.
+- Hay tres zonas: blanca, celeste y violeta. Tienen coberturas, plataformas, torres, telegrafía de spawn y un evento de arena fijo por zona.
 - Hay tres armas con munición independiente y regeneración, pero no recarga manual.
 - El volumen es general; no hay sliders separados de música/efectos.
 - La dificultad se aplica a los enemigos que aparecen después del cambio; los ya vivos no se recalculan.
 - Los élites comparten mecánicas base; la Zona 3 suma un élite tirador.
 - No hay guardado de run en curso, multijugador, controller ni localización.
-- No hay leaderboard ni semilla diaria; el ciclo se sube manualmente hasta 10.
+- No hay leaderboard ni semilla diaria; la dificultad se ajusta manualmente hasta 10.
+- Los eventos de arena son uno fijo por zona; faltan variantes y combinaciones.
 - Los menús y modelos son provisorios.
 
 ### Próximos pasos
 
-1. Eventos de arena por zona (terminales, compuertas o zonas a defender) sin frenar la acción.
+1. Más variantes de eventos de arena y combinaciones por run.
 2. Sliders separados de música y efectos, y mezcla por zona.
 3. Movimiento avanzado: dash aéreo y combos de slide/salto.
-4. Nuevas variantes de enemigo (torreta fija, corredor con escudo).
+4. Nuevas variantes de enemigo (torreta móvil, corredor con escudo).
 5. Localización y soporte de controller.
 
 ---
@@ -624,7 +625,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ---
 
-## 21. v0.6.0 (en progreso) — arenas verticales
+## 21. v0.6.0 — arenas verticales, telegrafía y eventos
 
 ### Jump pads
 
@@ -652,9 +653,24 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - Tiradores y sabuesos usan la misma lógica de escalada.
 - Las torres de Zona 3 siguen siendo riesgosas porque los tiradores disparan desde el piso.
 
+### Telegrafía de aparición
+
+- Antes de cada oleada se marcan los puntos de aparición con una **calavera roja**, un anillo y un haz de luz.
+- Los enemigos salen **2 segundos después**; el HUD muestra la oleada al empezar el aviso.
+- Aplica también a la primera oleada de cada zona y al élite.
+- Si la run termina durante el aviso, los enemigos no llegan a spawnear.
+
+### Eventos de arena
+
+- **Zona 1 — Reactor inestable:** `150` de vida; pulsa `8` de daño cada `3 s` en un radio de `6 m`. Recompensa `+2 ◈`.
+- **Zona 2 — Campo de hielo:** `200` de vida; ralentiza al jugador al `60%` dentro de `7 m`. El dash sigue permitiendo escapar. Recompensa `+2 ◈`.
+- **Zona 3 — Torreta de supresión:** `220` de vida; dispara proyectiles cada `1.4 s`. Recompensa `+3 ◈`.
+- Se pueden destruir disparándoles y muestran nombre y vida en una etiqueta 3D.
+- Al aparecer y al destruirse muestran un toast; su vida/daño escalan con dificultad, ciclo y contrato.
+
 ---
 
-## 22. Rediseño de menús (v0.6.0 en progreso)
+## 22. Rediseño de menús
 
 ### Jerarquía visual
 
