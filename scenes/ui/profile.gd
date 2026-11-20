@@ -2,10 +2,10 @@ extends Control
 
 const MAIN_MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
 
-@onready var name_edit: LineEdit = $Margin/VBox/ProfilePanel/Margin/VBox/NameRow/NameEdit
-@onready var stats_grid: GridContainer = $Margin/VBox/ProfilePanel/Margin/VBox/Stats
+@onready var name_edit: LineEdit = $Margin/VBox/Scroll/ProfilePanel/Margin/VBox/NameRow/NameEdit
+@onready var stats_grid: GridContainer = $Margin/VBox/Scroll/ProfilePanel/Margin/VBox/Stats
 @onready var back_button: Button = $Margin/VBox/TopBar/BackButton
-@onready var status_label: Label = $Margin/VBox/ProfilePanel/Margin/VBox/StatusLabel
+@onready var status_label: Label = $Margin/VBox/Scroll/ProfilePanel/Margin/VBox/StatusLabel
 
 
 func _ready() -> void:
