@@ -14,6 +14,7 @@ Todas las versiones relevantes del prototipo.
 - La dificultad dejó de ser un ciclo fijo: ahora se ajusta con botones `−` y `+` entre 1 y 10, y se puede bajar.
 - El botón **Subir ciclo** pasó a **Subir dificultad**, con su par **Bajar dificultad**.
 - Al cambiarla aparece un toast con vida/daño/velocidad enemiga y el multiplicador de núcleos.
+- **Reloj de arena** ahora da `+8 s` por nivel (antes `+5`). Los saves viejos reciben la diferencia automáticamente.
 
 ## v0.5.1 — 2026-11-20
 

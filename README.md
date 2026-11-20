@@ -573,6 +573,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - `◈ Núcleos` es la moneda exclusiva del árbol de habilidades. La plata queda para armas y la conversión.
 - Se ganan `+1` por élite, `+1` por zona completada y `+3` por run completada, más contrato y grado.
 - Los costos del árbol son exponenciales (`×1.35` por nivel).
+- **Reloj de arena** suma `+8 s` de timer base por nivel; los saves viejos reciben la diferencia automáticamente.
 - Conversión manual de `$250 → ◈1` desde el árbol para darle uso a la plata sobrante.
 - Los saves viejos conservan sus niveles; la economía nueva empieza desde cero.
 

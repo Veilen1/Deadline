@@ -80,12 +80,12 @@ const NODES: Dictionary = {
 	"time": {
 		"title": "Reloj de arena",
 		"symbol": "◷",
-		"description": "Más tiempo base para cada run.",
+		"description": "Más tiempo base para cada run (+8 s por nivel).",
 		"max_level": 3,
 		"base_cost": 2,
 		"requires": ["damage_core"],
 		"position": Vector2(0.32, 0.5),
-		"effects": {"time_bonus": 5.0},
+		"effects": {"time_bonus": 8.0},
 	},
 	"regen": {
 		"title": "Recarga viva",
