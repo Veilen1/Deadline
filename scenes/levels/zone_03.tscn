@@ -1,10 +1,13 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scenes/levels/zone.gd" id="1_zone"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/ranged_enemy.tscn" id="2_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/elite_shooter_enemy.tscn" id="3_elite"]
 [ext_resource type="PackedScene" path="res://scenes/levels/arena_bounds.tscn" id="4_bounds"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/hound_enemy.tscn" id="5_hound"]
+[ext_resource type="PackedScene" path="res://scenes/levels/arena_block.tscn" id="6_block"]
+[ext_resource type="PackedScene" path="res://scenes/levels/jump_pad.tscn" id="7_pad"]
+[ext_resource type="PackedScene" path="res://scenes/levels/core_pickup.tscn" id="8_core"]
 
 [sub_resource type="Environment" id="Environment_violet"]
 background_mode = 1
@@ -69,5 +72,39 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -12)
 
 [node name="SpawnPoint6" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 12)
+
+[node name="TowerLeft" parent="." instance=ExtResource("6_block")]
+position = Vector3(-10, 1.2, -1)
+scale = Vector3(2, 3, 2)
+
+[node name="TowerRight" parent="." instance=ExtResource("6_block")]
+position = Vector3(10, 1.2, -1)
+scale = Vector3(2, 3, 2)
+
+[node name="JumpPadLeft" parent="." instance=ExtResource("7_pad")]
+position = Vector3(-10, 0.02, 4)
+
+[node name="JumpPadRight" parent="." instance=ExtResource("7_pad")]
+position = Vector3(10, 0.02, 4)
+
+[node name="CoreLeft" parent="." instance=ExtResource("8_core")]
+position = Vector3(-10, 3, -1)
+
+[node name="CoreRight" parent="." instance=ExtResource("8_core")]
+position = Vector3(10, 3, -1)
+
+[node name="Cover1" parent="." instance=ExtResource("6_block")]
+position = Vector3(0, 0.4, 5)
+scale = Vector3(1.5, 1, 1)
+
+[node name="Cover2" parent="." instance=ExtResource("6_block")]
+position = Vector3(-5, 0.4, 7)
+
+[node name="Cover3" parent="." instance=ExtResource("6_block")]
+position = Vector3(5, 0.4, 7)
+
+[node name="Cover4" parent="." instance=ExtResource("6_block")]
+position = Vector3(0, 0.4, -8)
+scale = Vector3(1.5, 1, 1)
 
 [node name="ArenaBounds" parent="." instance=ExtResource("4_bounds")]
