@@ -82,6 +82,8 @@ func take_hit(hit_zone: String, base_damage: float, base_money: int, hit_positio
 		effect_position = _hitbox_position(hit_zone)
 	EventBus.enemy_hit.emit(self, hit_zone, final_damage, final_money)
 	EventBus.damage_number_requested.emit(effect_position, final_damage)
+	if hit_zone == "head":
+		EventBus.critical_hit.emit(effect_position, final_damage)
 
 	if current_health <= 0.0:
 		EventBus.enemy_killed.emit(self, hit_zone)

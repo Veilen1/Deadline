@@ -22,6 +22,11 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 @export var footstep_interval: float = 0.42
 @export var footstep_min_speed: float = 0.5
 
+@export_group("Style Camera")
+@export var style_fov_per_rank: float = 1.6
+@export var shake_duration: float = 0.18
+@export var shake_strength: float = 0.03
+
 @onready var camera: Camera3D = $Camera3D
 @onready var shoot_origin: Marker3D = $Camera3D/ShootOrigin
 @onready var shoot_player: AudioStreamPlayer = $ShootPlayer
@@ -38,6 +43,11 @@ var _footstep_timer: float = 0.0
 var _fire_timer: float = 0.0
 var _regen_delay_timer: float = 0.0
 var _ammo_regen_accumulator: float = 0.0
+var _base_fov: float = 75.0
+var _target_fov: float = 75.0
+var _style_rank: int = 0
+var _shake_time: float = 0.0
+var _shake_peak: float = 0.0
 
 
 func _ready() -> void:
@@ -52,15 +62,45 @@ func _ready() -> void:
 		push_warning("Player: falta weapon_data")
 
 	Settings.settings_changed.connect(_apply_live_settings)
+	StyleSystem.style_changed.connect(_on_style_changed)
+	StyleSystem.rank_up.connect(_on_rank_up)
 	_apply_live_settings()
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	camera.position.y = camera_height
 	# TODO: Fase 1.3 — viewmodel/brazos en primera persona (el mesh del cuerpo está oculto).
 
 
+func _process(delta: float) -> void:
+	if not is_instance_valid(camera):
+		return
+
+	camera.fov = lerpf(camera.fov, _target_fov, 1.0 - exp(-10.0 * delta))
+
+	if _shake_time > 0.0:
+		_shake_time = maxf(_shake_time - delta, 0.0)
+		var ratio: float = _shake_time / maxf(shake_duration, 0.01)
+		camera.h_offset = randf_range(-1.0, 1.0) * _shake_peak * ratio
+		camera.v_offset = randf_range(-1.0, 1.0) * _shake_peak * ratio
+	else:
+		camera.h_offset = 0.0
+		camera.v_offset = 0.0
+
+
+func _on_style_changed(_rank: String, rank_index: int, _progress: float, _combo: int) -> void:
+	_style_rank = rank_index
+	_target_fov = _base_fov + float(_style_rank) * style_fov_per_rank
+
+
+func _on_rank_up(_rank: String, rank_index: int) -> void:
+	_shake_time = shake_duration
+	_shake_peak = shake_strength * (1.0 + float(rank_index) * 0.25)
+
+
 func _apply_live_settings() -> void:
 	if is_instance_valid(camera):
-		camera.fov = Settings.fov
+		_base_fov = Settings.fov
+		_target_fov = _base_fov + float(_style_rank) * style_fov_per_rank
+		camera.fov = _target_fov
 	mouse_sensitivity = Settings.mouse_sensitivity
 
 
