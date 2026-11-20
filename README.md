@@ -467,18 +467,28 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - Paneles oscuros translúcidos detrás de plata/zona, timer/oleada, vida/arma/munición, barra del élite y estilo.
 - Texto claro sobre panel oscuro, manteniendo legibilidad sobre la arena blanca.
 - Etiqueta de arma equipada y color de munición dentro del HUD.
+- Indicador de **cooldown del dash** abajo al centro, que se llena al estar listo.
+- Fila de **slots de armas** (`1`, `2`, `3`) con el arma activa resaltada en dorado.
 
 ### Movimiento
 
-- **Dash:** `Shift`, burst rápido con cooldown y shake de cámara.
+- **Dash:** `Shift`, burst rápido con cooldown, shake de cámara y líneas de velocidad en primera persona.
 - **Slide:** `Ctrl`, acelera y baja la cámara durante un instante.
 - Ambos respetan la pausa y suenan con un whoosh suave.
+- El dash suma un pequeño kick de FOV para reforzar la sensación de velocidad.
 
 ### Cambio de armas
 
 - `1`, `2`, `3` cambian entre las armas compradas.
-- La HUD muestra el arma equipada y la munición correspondiente.
-- El cambio rellena el cargador del arma nueva (provisorio para el prototipo).
+- La HUD muestra el arma equipada, su munición y el slot activo.
+- Cada arma tiene **skin propia** (rifle, SMG y escopeta) con colores y acentos distintos.
+- Al cambiar se anima el viewmodel: baja, rota y vuelve con un pequeño rebote.
+- Cada disparo enciende un **muzzle flash** en la punta del arma.
+- La munición es **independiente por arma**: cada cargador conserva lo que le queda y no se rellena al cambiar. La regeneración de cada arma sigue funcionando con su propia cadencia y retardo.
+
+### Ritmo de oleadas
+
+- El tiempo entre oleadas bajó de `2.5 s` a `1.2 s` para que la run sea más frenética.
 
 ---
 

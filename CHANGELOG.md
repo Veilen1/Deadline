@@ -14,6 +14,12 @@ Todas las versiones relevantes del prototipo.
 - HUD tematizado con paneles oscuros y etiqueta de arma.
 - Dash (`Shift`), slide (`Ctrl`) y cambio de armas (`1/2/3`).
 - Sonidos de dash, subida de rango y cambio de arma.
+- Skins propias para rifle, SMG y escopeta con muzzle flash.
+- Animación de cambio de arma en el viewmodel.
+- Munición independiente por arma, sin relleno al cambiar.
+- Líneas de velocidad y kick de FOV durante el dash.
+- Indicador de cooldown de dash y slots de armas en el HUD.
+- Tiempo entre oleadas reducido de `2.5 s` a `1.2 s`.
 
 ## v0.3.0 — 2026-11-19
 

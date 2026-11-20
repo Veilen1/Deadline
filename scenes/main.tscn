@@ -308,6 +308,84 @@ show_percentage = false
 theme_override_styles/background = SubResource("StyleBoxFlat_style_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_style_fill")
 
+[node name="PanelSlots" type="Panel" parent="CanvasLayer"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -260.0
+offset_top = -110.0
+offset_right = 120.0
+offset_bottom = -78.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="WeaponSlots" type="RichTextLabel" parent="CanvasLayer"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = -107.0
+offset_right = 112.0
+offset_bottom = -81.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.62, 0.72, 0.82, 1)
+theme_override_font_sizes/normal_font_size = 13
+bbcode_enabled = true
+text = "[color=#f2c040]1 Rifle[/color]  ·  2 Avispa  ·  3 Trueno"
+scroll_active = false
+
+[node name="PanelDash" type="Panel" parent="CanvasLayer"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -260.0
+offset_top = -72.0
+offset_right = -104.0
+offset_bottom = -36.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="DashLabel" type="Label" parent="CanvasLayer"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -248.0
+offset_top = -68.0
+offset_right = -176.0
+offset_bottom = -48.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.3, 0.85, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "DASH ⇧"
+
+[node name="DashBar" type="ProgressBar" parent="CanvasLayer"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -172.0
+offset_top = -64.0
+offset_right = -116.0
+offset_bottom = -44.0
+grow_horizontal = 2
+grow_vertical = 0
+max_value = 1.0
+value = 1.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_style_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_ammo_fill")
+
 [node name="ZoneBanner" type="Label" parent="CanvasLayer"]
 visible = false
 anchor_left = 0.5
