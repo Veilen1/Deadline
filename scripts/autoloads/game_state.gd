@@ -356,6 +356,14 @@ func reset_run() -> void:
 	timer_changed.emit(run_timer)
 
 
+func grant_run_time(seconds: float) -> void:
+	# Bonus de tiempo al completar una zona. Se ignora fuera de una run.
+	if not is_run_active or seconds <= 0.0:
+		return
+	run_timer += seconds
+	timer_changed.emit(run_timer)
+
+
 func reset_progress() -> void:
 	# Borra plata, mejoras y tiempo comprado. Deja el guardado en cero.
 	_is_loading = true
