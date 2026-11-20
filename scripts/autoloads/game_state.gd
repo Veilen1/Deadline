@@ -16,6 +16,9 @@ const SAVE_DEBOUNCE: float = 0.5
 # Tiempo base por defecto, antes de mejoras.
 @export var default_run_time: float = 60.0
 
+# Fracción de la plata recaudada en la run que se pierde al morir o abandonar.
+@export var death_penalty: float = 0.30
+
 # Ruta y switch de persistencia. Los tests pueden usar una ruta temporal.
 var save_path: String = DEFAULT_SAVE_PATH
 var persistence_enabled: bool = true
@@ -38,6 +41,10 @@ var is_run_active: bool = false
 
 # Tiempo restante de la run actual.
 var run_timer: float = 0.0
+
+# Plata al empezar la run, para calcular lo recaudado y la penalización.
+var run_start_money: int = 0
+var last_death_penalty: int = 0
 
 # Mejoras compradas. Persisten entre runs.
 var upgrades: Dictionary = {}
@@ -92,6 +99,8 @@ func spend_money(amount: int) -> bool:
 
 func start_run() -> void:
 	is_run_active = true
+	run_start_money = money
+	last_death_penalty = 0
 	run_timer = base_run_time
 	timer_changed.emit(run_timer)
 	run_started.emit()
@@ -113,13 +122,40 @@ func end_run(reason: String) -> void:
 	# Ignora llamadas repetidas (ej. muerte y timer en el mismo frame).
 	if not is_run_active:
 		return
+
+	if reason == "death":
+		_apply_death_penalty()
+	else:
+		last_death_penalty = 0
 	is_run_active = false
 
-	# TODO: Fase 2.4 — aplicar consecuencias por motivo (ej. penalización por muerte).
+	# TODO: Fase 2.4 — aplicar consecuencias específicas por motivo.
 	if not VALID_END_REASONS.has(reason):
 		push_warning("GameState.end_run: motivo desconocido '%s'" % reason)
 	run_ended.emit(reason)
 	save_game()
+
+
+func abandon_run() -> void:
+	# Salir de la run desde la pausa cuenta como muerte.
+	if not is_run_active:
+		return
+
+	_apply_death_penalty()
+	is_run_active = false
+	save_game()
+
+
+func _apply_death_penalty() -> void:
+	last_death_penalty = 0
+	var earned: int = maxi(money - run_start_money, 0)
+	if earned <= 0:
+		return
+
+	var rate: float = clampf(death_penalty, 0.0, 1.0)
+	var penalty: int = mini(int(round(float(earned) * rate)), money)
+	last_death_penalty = penalty
+	money -= penalty
 
 
 func reset_run() -> void:
@@ -137,6 +173,8 @@ func reset_progress() -> void:
 	base_run_time = default_run_time
 	is_run_active = false
 	run_timer = base_run_time
+	run_start_money = 0
+	last_death_penalty = 0
 	_is_loading = false
 	save_game()
 
@@ -183,5 +221,10 @@ func _queue_save() -> void:
 
 
 func _exit_tree() -> void:
+	# Si se cierra el juego en plena run, también cuenta como abandono.
+	if is_run_active:
+		_apply_death_penalty()
+		is_run_active = false
+
 	# Último intento de guardado al cerrar el juego.
 	save_game()
