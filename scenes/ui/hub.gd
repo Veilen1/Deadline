@@ -6,19 +6,19 @@ const SKILL_TREE_SCENE: String = "res://scenes/ui/skill_tree.tscn"
 const SHOP_SCENE: String = "res://scenes/ui/shop.tscn"
 const CHALLENGES_SCENE: String = "res://scenes/ui/challenges.tscn"
 
-@onready var money_label: Label = $CenterContainer/Menu/MoneyLabel
-@onready var cores_label: Label = $CenterContainer/Menu/CoresLabel
-@onready var timer_label: Label = $CenterContainer/Menu/TimerLabel
-@onready var bonus_label: Label = $CenterContainer/Menu/BonusLabel
-@onready var contract_label: Label = $CenterContainer/Menu/ContractLabel
-@onready var cycle_label: Label = $CenterContainer/Menu/CycleLabel
-@onready var cycle_down_button: Button = $CenterContainer/Menu/CycleRow/CycleDownButton
-@onready var cycle_up_button: Button = $CenterContainer/Menu/CycleRow/CycleUpButton
-@onready var skill_tree_button: Button = $CenterContainer/Menu/SkillTreeButton
-@onready var shop_button: Button = $CenterContainer/Menu/ShopButton
-@onready var challenges_button: Button = $CenterContainer/Menu/ChallengesButton
-@onready var play_button: Button = $CenterContainer/Menu/PlayButton
-@onready var main_menu_button: Button = $CenterContainer/Menu/MainMenuButton
+@onready var money_label: Label = $Margin/VBox/TopBar/Resources/MoneyCard/VBox/MoneyLabel
+@onready var cores_label: Label = $Margin/VBox/TopBar/Resources/CoresCard/VBox/CoresLabel
+@onready var timer_label: Label = $Margin/VBox/Content/PlayCard/VBox/TimerLabel
+@onready var bonus_label: Label = $Margin/VBox/Content/PlayCard/VBox/BonusLabel
+@onready var contract_label: Label = $Margin/VBox/Content/PlayCard/VBox/ContractLabel
+@onready var cycle_label: Label = $Margin/VBox/Content/PlayCard/VBox/CycleLabel
+@onready var cycle_down_button: Button = $Margin/VBox/Content/PlayCard/VBox/CycleRow/CycleDownButton
+@onready var cycle_up_button: Button = $Margin/VBox/Content/PlayCard/VBox/CycleRow/CycleUpButton
+@onready var skill_tree_button: Button = $Margin/VBox/Content/Side/ProgressCard/VBox/SkillTreeButton
+@onready var shop_button: Button = $Margin/VBox/Content/Side/ArsenalCard/VBox/ShopButton
+@onready var challenges_button: Button = $Margin/VBox/Content/Side/ChallengesCard/VBox/ChallengesButton
+@onready var play_button: Button = $Margin/VBox/Content/PlayCard/VBox/PlayButton
+@onready var main_menu_button: Button = $Margin/VBox/BottomBar/MainMenuButton
 
 
 func _ready() -> void:
@@ -34,7 +34,7 @@ func _ready() -> void:
 	play_button.pressed.connect(_on_play_pressed)
 	main_menu_button.pressed.connect(_on_main_menu_pressed)
 	_update_ui()
-	skill_tree_button.grab_focus()
+	play_button.grab_focus()
 
 
 func _on_money_changed(_new_amount: int) -> void:
