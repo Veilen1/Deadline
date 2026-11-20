@@ -53,6 +53,10 @@ var upgrades: Dictionary = {}
 var unlocked_skills: Array[String] = ["root"]
 var skill_bonuses: Dictionary = {}
 
+# Armas desbloqueadas y equipada.
+var owned_weapons: Array[String] = ["basic_rifle"]
+var equipped_weapon: String = "basic_rifle"
+
 var _save_timer: Timer
 var _is_loading: bool = false
 
@@ -86,6 +90,33 @@ func register_upgrade(upgrade_id: String, bonus: float) -> void:
 
 func get_upgrade_level(upgrade_id: String) -> int:
 	return int(upgrades.get(upgrade_id + "_level", 0))
+
+
+func is_weapon_owned(weapon_id: String) -> bool:
+	return owned_weapons.has(weapon_id)
+
+
+func buy_weapon(weapon_id: String) -> bool:
+	if is_weapon_owned(weapon_id):
+		return false
+
+	var data: WeaponData = WeaponRegistry.get_data(weapon_id)
+	if data == null:
+		return false
+	if not spend_money(data.price):
+		return false
+
+	owned_weapons.append(weapon_id)
+	save_game()
+	return true
+
+
+func equip_weapon(weapon_id: String) -> bool:
+	if not is_weapon_owned(weapon_id):
+		return false
+	equipped_weapon = weapon_id
+	save_game()
+	return true
 
 
 func is_skill_unlocked(skill_id: String) -> bool:
@@ -240,6 +271,9 @@ func reset_progress() -> void:
 	unlocked_skills.clear()
 	unlocked_skills.append(SkillTree.ROOT_ID)
 	skill_bonuses.clear()
+	owned_weapons.clear()
+	owned_weapons.append("basic_rifle")
+	equipped_weapon = "basic_rifle"
 	_is_loading = false
 	save_game()
 
@@ -255,6 +289,8 @@ func save_game() -> void:
 	config.set_value("progress", "upgrades", upgrades)
 	config.set_value("progress", "unlocked_skills", unlocked_skills)
 	config.set_value("progress", "skill_bonuses", skill_bonuses)
+	config.set_value("progress", "owned_weapons", owned_weapons)
+	config.set_value("progress", "equipped_weapon", equipped_weapon)
 
 	var error: int = config.save(save_path)
 	if error != OK:
@@ -292,6 +328,21 @@ func load_game() -> void:
 
 	var saved_bonuses = config.get_value("progress", "skill_bonuses", {})
 	skill_bonuses = saved_bonuses.duplicate() if saved_bonuses is Dictionary else {}
+
+	var saved_weapons = config.get_value("progress", "owned_weapons", ["basic_rifle"])
+	owned_weapons.clear()
+	if saved_weapons is Array:
+		for weapon_id in saved_weapons:
+			owned_weapons.append(str(weapon_id))
+	elif saved_weapons is PackedStringArray:
+		for weapon_id in saved_weapons:
+			owned_weapons.append(str(weapon_id))
+	if not owned_weapons.has("basic_rifle"):
+		owned_weapons.push_front("basic_rifle")
+
+	equipped_weapon = str(config.get_value("progress", "equipped_weapon", "basic_rifle"))
+	if not owned_weapons.has(equipped_weapon):
+		equipped_weapon = "basic_rifle"
 
 	_is_loading = false
 

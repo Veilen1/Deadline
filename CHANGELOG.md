@@ -10,6 +10,8 @@ Todas las versiones relevantes del prototipo.
 - Árbol de habilidades con nodos, conexiones y desbloqueo por adyacencia.
 - Nodos de daño, vida, timer, cadencia, cargador y regeneración de munición.
 - Documento de notas de UX/UI y referencias.
+- Tienda de armas con compra, equipamiento y persistencia.
+- Armas nuevas: Avispa (SMG) y Trueno (escopeta slug).
 
 ## v0.2.0 — 2026-11-19
 
