@@ -11,6 +11,8 @@ const CHALLENGES_SCENE: String = "res://scenes/ui/challenges.tscn"
 @onready var timer_label: Label = $CenterContainer/Menu/TimerLabel
 @onready var bonus_label: Label = $CenterContainer/Menu/BonusLabel
 @onready var contract_label: Label = $CenterContainer/Menu/ContractLabel
+@onready var cycle_label: Label = $CenterContainer/Menu/CycleLabel
+@onready var cycle_button: Button = $CenterContainer/Menu/CycleButton
 @onready var skill_tree_button: Button = $CenterContainer/Menu/SkillTreeButton
 @onready var shop_button: Button = $CenterContainer/Menu/ShopButton
 @onready var challenges_button: Button = $CenterContainer/Menu/ChallengesButton
@@ -26,6 +28,7 @@ func _ready() -> void:
 	skill_tree_button.pressed.connect(_on_skill_tree_pressed)
 	shop_button.pressed.connect(_on_shop_pressed)
 	challenges_button.pressed.connect(_on_challenges_pressed)
+	cycle_button.pressed.connect(_on_cycle_pressed)
 	play_button.pressed.connect(_on_play_pressed)
 	main_menu_button.pressed.connect(_on_main_menu_pressed)
 	_update_ui()
@@ -60,6 +63,12 @@ func _on_play_pressed() -> void:
 	Transitions.change_scene_to_file(CONTRACTS_SCENE)
 
 
+func _on_cycle_pressed() -> void:
+	if GameState.advance_cycle():
+		AudioDirector.play_upgrade()
+		_update_ui()
+
+
 func _on_main_menu_pressed() -> void:
 	GameState.save_game()
 	Transitions.change_scene_to_file(MAIN_MENU_SCENE)
@@ -92,3 +101,7 @@ func _update_ui() -> void:
 			str(contract.get("title", "")),
 			int(contract.get("core_bonus", 0)),
 		]
+
+	cycle_label.text = "Ciclo %d · grado máximo %s" % [GameState.cycle, GameState.best_grade]
+	cycle_button.disabled = GameState.runs_completed < 1 or GameState.cycle >= 10
+	cycle_button.text = "Ciclo máximo" if GameState.cycle >= 10 else "Subir ciclo"

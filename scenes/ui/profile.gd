@@ -35,6 +35,8 @@ func _update_stats() -> void:
 
 	_add_stat("Plata actual", "$%d" % GameState.money)
 	_add_stat("Núcleos", "◈ %d" % GameState.cores)
+	_add_stat("Ciclo", str(GameState.cycle))
+	_add_stat("Mejor grado", GameState.best_grade)
 	_add_stat("Recaudado total", "$%d" % GameState.lifetime_earned)
 	_add_stat("Runs iniciadas", str(GameState.runs_started))
 	_add_stat("Runs completadas", str(GameState.runs_completed))

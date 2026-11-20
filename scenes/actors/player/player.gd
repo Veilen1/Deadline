@@ -443,6 +443,7 @@ func shoot() -> void:
 		return
 
 	current_ammo -= 1
+	GameState.run_shots += 1
 	_fire_timer = 1.0 / maxf(
 		weapon_data.shots_per_second * (1.0 + fire_rate_bonus) * _blessing_fire_rate_mult, 0.01
 	)

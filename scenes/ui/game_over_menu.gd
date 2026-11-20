@@ -5,6 +5,7 @@ const HUB_SCENE: String = "res://scenes/ui/hub.tscn"
 @onready var reason_label: Label = $CenterContainer/Menu/ReasonLabel
 @onready var penalty_label: Label = $CenterContainer/Menu/PenaltyLabel
 @onready var money_label: Label = $CenterContainer/Menu/MoneyLabel
+@onready var grade_label: Label = $CenterContainer/Menu/GradeLabel
 @onready var retry_button: Button = $CenterContainer/Menu/RetryButton
 @onready var hub_button: Button = $CenterContainer/Menu/HubButton
 
@@ -20,6 +21,11 @@ func show_result(reason: String, money: int) -> void:
 	Diagnostics.mark("game_over_show", {"reason": reason, "money": money})
 	reason_label.text = _reason_text(reason)
 	money_label.text = "Plata acumulada: $%d" % money
+	grade_label.text = "Grado %s · +%d núcleos" % [
+		GameState.last_grade,
+		GameState.last_grade_cores,
+	]
+	grade_label.add_theme_color_override("font_color", _grade_color(GameState.last_grade))
 
 	if reason == "death" and GameState.last_death_penalty > 0:
 		penalty_label.text = "Penalización (%d%%): -$%d" % [
@@ -67,6 +73,18 @@ func _reason_text(reason: String) -> String:
 			return "Run completada"
 		_:
 			return "Fin de la run"
+
+
+func _grade_color(grade: String) -> Color:
+	match grade:
+		"S":
+			return Color(1.0, 0.82, 0.3, 1)
+		"A":
+			return Color(0.3, 0.9, 0.85, 1)
+		"B":
+			return Color(0.85, 0.9, 1.0, 1)
+		_:
+			return Color(0.65, 0.72, 0.82, 1)
 
 
 func _on_retry_pressed() -> void:
