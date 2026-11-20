@@ -35,9 +35,17 @@ var _footstep_timer: float = 0.0
 
 func _ready() -> void:
 	current_health = max_health
+	Settings.settings_changed.connect(_apply_live_settings)
+	_apply_live_settings()
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	camera.position.y = camera_height
 	# TODO: Fase 1.3 — viewmodel/brazos en primera persona (el mesh del cuerpo está oculto).
+
+
+func _apply_live_settings() -> void:
+	if is_instance_valid(camera):
+		camera.fov = Settings.fov
+	mouse_sensitivity = Settings.mouse_sensitivity
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -52,8 +60,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		# Yaw sobre el cuerpo; pitch sobre la cámara (primera persona).
 		rotate_y(-event.relative.x * mouse_sensitivity)
 		var pitch_limit: float = deg_to_rad(camera_pitch_limit_deg)
+		var invert: float = -1.0 if Settings.invert_y else 1.0
 		camera.rotation.x = clampf(
-			camera.rotation.x - event.relative.y * mouse_sensitivity,
+			camera.rotation.x - event.relative.y * mouse_sensitivity * invert,
 			-pitch_limit,
 			pitch_limit
 		)

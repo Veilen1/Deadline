@@ -3,6 +3,7 @@ extends Control
 const HUB_SCENE: String = "res://scenes/ui/hub.tscn"
 
 @onready var reason_label: Label = $CenterContainer/Menu/ReasonLabel
+@onready var penalty_label: Label = $CenterContainer/Menu/PenaltyLabel
 @onready var money_label: Label = $CenterContainer/Menu/MoneyLabel
 @onready var retry_button: Button = $CenterContainer/Menu/RetryButton
 @onready var hub_button: Button = $CenterContainer/Menu/HubButton
@@ -18,6 +19,15 @@ func _ready() -> void:
 func show_result(reason: String, money: int) -> void:
 	reason_label.text = _reason_text(reason)
 	money_label.text = "Plata acumulada: $%d" % money
+
+	if reason == "death" and GameState.last_death_penalty > 0:
+		penalty_label.text = "Penalización (%d%%): -$%d" % [
+			int(round(GameState.death_penalty * 100.0)), GameState.last_death_penalty
+		]
+		penalty_label.show()
+	else:
+		penalty_label.hide()
+
 	show()
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	retry_button.grab_focus()
