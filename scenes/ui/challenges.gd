@@ -114,6 +114,7 @@ func _build_card(challenge_id: String) -> void:
 		var claim_button := Button.new()
 		claim_button.text = "Reclamar"
 		claim_button.custom_minimum_size = Vector2(170, 36)
+		claim_button.theme_type_variation = "SecondaryButton"
 		claim_button.pressed.connect(_on_claim_pressed.bind(challenge_id))
 		actions.add_child(claim_button)
 	else:

@@ -140,6 +140,7 @@ func _build_card(weapon_id: String) -> void:
 		var buy_button := Button.new()
 		buy_button.text = "Comprar"
 		buy_button.custom_minimum_size = Vector2(150, 38)
+		buy_button.theme_type_variation = "SecondaryButton"
 		buy_button.disabled = GameState.money < data.price
 		buy_button.pressed.connect(_on_buy_pressed.bind(weapon_id))
 		actions.add_child(buy_button)
@@ -147,6 +148,7 @@ func _build_card(weapon_id: String) -> void:
 		var equip_button := Button.new()
 		equip_button.text = "Equipar"
 		equip_button.custom_minimum_size = Vector2(150, 38)
+		equip_button.theme_type_variation = "SecondaryButton"
 		equip_button.pressed.connect(_on_equip_pressed.bind(weapon_id))
 		actions.add_child(equip_button)
 	else:
