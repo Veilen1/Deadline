@@ -40,7 +40,7 @@ func _update_stats() -> void:
 	_add_stat("Muertes / abandonos", str(GameState.deaths))
 	_add_stat("Veces sin tiempo", str(GameState.runs_timed_out))
 	_add_stat("Enemigos eliminados", str(GameState.kills))
-	_add_stat("Nodos desbloqueados", str(maxi(GameState.unlocked_skills.size() - 1, 0)))
+	_add_stat("Nodos desbloqueados", str(GameState.get_unlocked_skill_count()))
 	_add_stat("Armas compradas", "%d / %d" % [GameState.owned_weapons.size(), WeaponRegistry.ids().size()])
 	_add_stat("Arma equipada", equipped_name)
 	_add_stat("Timer base", "%.0f s" % GameState.base_run_time)

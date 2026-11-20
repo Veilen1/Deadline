@@ -34,6 +34,9 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 
 var current_health: float
 var damage_bonus: float = 0.0
+var crit_bonus: float = 0.0
+var crit_refund: float = 0.0
+var damage_reduction: float = 0.0
 var max_ammo: int = 0
 var current_ammo: int = 0
 var ammo_regen_bonus: float = 0.0
@@ -177,8 +180,9 @@ func take_damage(amount: float) -> void:
 	if current_health <= 0.0:
 		return
 
-	current_health = maxf(current_health - amount, 0.0)
-	EventBus.player_damaged.emit(amount)
+	var final_damage: float = amount * (1.0 - clampf(damage_reduction, 0.0, 0.8))
+	current_health = maxf(current_health - final_damage, 0.0)
+	EventBus.player_damaged.emit(final_damage)
 
 	if current_health <= 0.0:
 		EventBus.player_died.emit()
@@ -187,6 +191,9 @@ func take_damage(amount: float) -> void:
 func apply_meta_upgrades(upgrades: Dictionary) -> void:
 	# Aplica los bonus comprados en el hub. Se llama una vez al empezar la run.
 	damage_bonus += float(upgrades.get("damage_bonus", 0.0))
+	crit_bonus += float(upgrades.get("crit_bonus", 0.0))
+	crit_refund += float(upgrades.get("crit_refund", 0.0))
+	damage_reduction += float(upgrades.get("damage_reduction", 0.0))
 	max_health += float(upgrades.get("health_bonus", 0.0))
 	max_ammo += int(upgrades.get("ammo_capacity_bonus", 0))
 	ammo_regen_bonus += float(upgrades.get("ammo_regen_bonus", 0.0))
@@ -256,6 +263,11 @@ func shoot() -> void:
 				if enemy != null and enemy.has_method("take_hit"):
 					var hit_position: Vector3 = result.get("position", Vector3.INF)
 					var damage: float = weapon_data.damage + damage_bonus
+					if hit_zone == "head":
+						damage *= 1.0 + crit_bonus
+						if crit_refund > 0.0 and current_ammo < max_ammo:
+							current_ammo = mini(current_ammo + int(round(crit_refund)), max_ammo)
+							EventBus.ammo_changed.emit(current_ammo, max_ammo)
 					enemy.call("take_hit", hit_zone, damage, weapon_data.money_per_hit, hit_position)
 
 	_spawn_tracer(end_point)

@@ -50,7 +50,7 @@ var last_death_penalty: int = 0
 var upgrades: Dictionary = {}
 
 # Árbol de habilidades.
-var unlocked_skills: Array[String] = ["root"]
+var skill_levels: Dictionary = {}
 var skill_bonuses: Dictionary = {}
 
 # Armas desbloqueadas y equipada.
@@ -133,42 +133,57 @@ func equip_weapon(weapon_id: String) -> bool:
 	return true
 
 
+func get_skill_level(skill_id: String) -> int:
+	return int(skill_levels.get(skill_id, 0))
+
+
 func is_skill_unlocked(skill_id: String) -> bool:
-	return unlocked_skills.has(skill_id)
+	return get_skill_level(skill_id) > 0
 
 
 func is_skill_available(skill_id: String) -> bool:
-	if is_skill_unlocked(skill_id):
-		return false
-
 	var data: Dictionary = SkillTree.get_node_data(skill_id)
 	if data.is_empty():
 		return false
 
-	for required in data.get("requires", []):
-		if unlocked_skills.has(str(required)):
+	var max_level: int = int(data.get("max_level", 1))
+	if get_skill_level(skill_id) >= max_level:
+		return false
+
+	var requires: Array = data.get("requires", [])
+	if requires.is_empty():
+		return true
+
+	for required in requires:
+		if get_skill_level(str(required)) > 0:
 			return true
 	return false
 
 
-func can_unlock_skill(skill_id: String) -> bool:
+func skill_cost(skill_id: String) -> int:
+	var data: Dictionary = SkillTree.get_node_data(skill_id)
+	if data.is_empty():
+		return 0
+
+	return int(data.get("base_cost", 0)) + int(data.get("cost_step", 0)) * get_skill_level(skill_id)
+
+
+func can_upgrade_skill(skill_id: String) -> bool:
 	if not is_skill_available(skill_id):
 		return false
-
-	var data: Dictionary = SkillTree.get_node_data(skill_id)
-	return money >= int(data.get("cost", 0))
+	return money >= skill_cost(skill_id)
 
 
-func unlock_skill(skill_id: String) -> bool:
-	if not can_unlock_skill(skill_id):
+func upgrade_skill(skill_id: String) -> bool:
+	if not can_upgrade_skill(skill_id):
 		return false
 
 	var data: Dictionary = SkillTree.get_node_data(skill_id)
-	var cost: int = int(data.get("cost", 0))
+	var cost: int = skill_cost(skill_id)
 	if not spend_money(cost):
 		return false
 
-	unlocked_skills.append(skill_id)
+	skill_levels[skill_id] = get_skill_level(skill_id) + 1
 
 	var effects: Dictionary = data.get("effects", {})
 	for key in effects:
@@ -180,6 +195,66 @@ func unlock_skill(skill_id: String) -> bool:
 
 	save_game()
 	return true
+
+
+func get_unlocked_skill_count() -> int:
+	var count: int = 0
+	for level in skill_levels.values():
+		if int(level) > 0:
+			count += 1
+	return count
+
+
+func _apply_all_skill_effects() -> void:
+	skill_bonuses.clear()
+	for skill_id in skill_levels:
+		var level: int = get_skill_level(str(skill_id))
+		if level <= 0:
+			continue
+
+		var data: Dictionary = SkillTree.get_node_data(str(skill_id))
+		var effects: Dictionary = data.get("effects", {})
+		for key in effects:
+			var value: float = float(effects[key]) * float(level)
+			skill_bonuses[key] = float(skill_bonuses.get(key, 0.0)) + value
+			if key == "time_bonus":
+				add_run_time(float(effects[key]) * float(level))
+
+
+func _migrate_old_skills(old_skills) -> Dictionary:
+	var ids: Array = []
+	if old_skills is Array:
+		ids = old_skills
+	elif old_skills is PackedStringArray:
+		for raw_id in old_skills:
+			ids.append(str(raw_id))
+
+	var mapped: Dictionary = {}
+	for raw_id in ids:
+		match str(raw_id):
+			"dmg_1":
+				mapped["damage_core"] = maxi(int(mapped.get("damage_core", 0)), 1)
+			"dmg_2":
+				mapped["damage_core"] = maxi(int(mapped.get("damage_core", 0)), 2)
+			"fire_rate_1":
+				mapped["cadence"] = maxi(int(mapped.get("cadence", 0)), 1)
+			"hp_1":
+				mapped["vitality"] = maxi(int(mapped.get("vitality", 0)), 1)
+			"hp_2":
+				mapped["vitality"] = maxi(int(mapped.get("vitality", 0)), 2)
+			"time_1":
+				mapped["time"] = maxi(int(mapped.get("time", 0)), 1)
+			"ammo_cap_1":
+				mapped["extended_mag"] = maxi(int(mapped.get("extended_mag", 0)), 1)
+			"ammo_regen_1":
+				mapped["regen"] = maxi(int(mapped.get("regen", 0)), 1)
+			_:
+				pass
+
+	if not ids.is_empty() and not mapped.has("damage_core"):
+		mapped["damage_core"] = 1
+
+	return mapped
 
 
 func add_money(amount: int) -> void:
@@ -290,8 +365,7 @@ func reset_progress() -> void:
 	run_timer = base_run_time
 	run_start_money = 0
 	last_death_penalty = 0
-	unlocked_skills.clear()
-	unlocked_skills.append(SkillTree.ROOT_ID)
+	skill_levels.clear()
 	skill_bonuses.clear()
 	owned_weapons.clear()
 	owned_weapons.append("basic_rifle")
@@ -316,7 +390,7 @@ func save_game() -> void:
 	config.set_value("progress", "money", money)
 	config.set_value("progress", "base_run_time", base_run_time)
 	config.set_value("progress", "upgrades", upgrades)
-	config.set_value("progress", "unlocked_skills", unlocked_skills)
+	config.set_value("progress", "skill_levels", skill_levels)
 	config.set_value("progress", "skill_bonuses", skill_bonuses)
 	config.set_value("progress", "owned_weapons", owned_weapons)
 	config.set_value("progress", "equipped_weapon", equipped_weapon)
@@ -351,19 +425,24 @@ func load_game() -> void:
 	var saved_upgrades = config.get_value("progress", "upgrades", {})
 	upgrades = saved_upgrades.duplicate() if saved_upgrades is Dictionary else {}
 
-	var saved_skills = config.get_value("progress", "unlocked_skills", ["root"])
-	unlocked_skills.clear()
-	if saved_skills is Array:
-		for skill_id in saved_skills:
-			unlocked_skills.append(str(skill_id))
-	elif saved_skills is PackedStringArray:
-		for skill_id in saved_skills:
-			unlocked_skills.append(str(skill_id))
-	if not unlocked_skills.has(SkillTree.ROOT_ID):
-		unlocked_skills.push_front(SkillTree.ROOT_ID)
+	var saved_levels = null
+	if config.has_section_key("progress", "skill_levels"):
+		saved_levels = config.get_value("progress", "skill_levels")
 
-	var saved_bonuses = config.get_value("progress", "skill_bonuses", {})
-	skill_bonuses = saved_bonuses.duplicate() if saved_bonuses is Dictionary else {}
+	if saved_levels is Dictionary:
+		skill_levels = saved_levels.duplicate()
+		var saved_bonuses = config.get_value("progress", "skill_bonuses", {})
+		skill_bonuses = saved_bonuses.duplicate() if saved_bonuses is Dictionary else {}
+	else:
+		# Migración desde el árbol anterior de nodos únicos.
+		var old_skills = config.get_value("progress", "unlocked_skills", [])
+		var old_bonuses = config.get_value("progress", "skill_bonuses", {})
+		var old_time: float = 0.0
+		if old_bonuses is Dictionary:
+			old_time = float(old_bonuses.get("time_bonus", 0.0))
+		base_run_time = maxf(base_run_time - old_time, 1.0)
+		skill_levels = _migrate_old_skills(old_skills)
+		_apply_all_skill_effects()
 
 	var saved_weapons = config.get_value("progress", "owned_weapons", ["basic_rifle"])
 	owned_weapons.clear()
