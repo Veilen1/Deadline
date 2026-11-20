@@ -8,8 +8,8 @@ scale = Vector3(1.5, 1.5, 1.5)
 script = ExtResource("2_elite")
 max_health = 700.0
 move_speed = 2.0
-shot_interval = 1.5
-projectile_damage = 18.0
+shot_interval = 1.3
+projectile_damage = 22.0
 preferred_min_distance = 7.0
 preferred_max_distance = 13.0
 

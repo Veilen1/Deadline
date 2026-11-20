@@ -367,8 +367,8 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 1. Sliders separados de música y efectos, y mezcla por zona.
 2. Movimiento avanzado: dash aéreo y combos de slide/salto.
-3. Más variantes de enemigo (corredor explosivo, torreta fija).
-4. Balance fino con la dificultad, el timer y los costos del hub.
+3. Más variantes de enemigo (torreta fija, corredor con escudo).
+4. Validar el balance v0.5 con testeo real y ajustar números.
 5. Localización y soporte de controller.
 
 ---
@@ -520,6 +520,43 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 - **Completar una zona otorga +10 s** de timer para la siguiente. El bonus se aplica antes de la transición y se puede ajustar con `zone_time_bonus` en `main.gd`.
 - El bonus hace sostenible una run de tres zonas con el timer base de la run.
+
+---
+
+## 18. Balance v0.5 — más presión, menos margen
+
+### Timer y economía
+
+- Timer base `60 → 50 s`; bonus por zona `+10 → +5 s`. Una run completa pasa de `80` a `60 s` de timer efectivo.
+- Migración de saves: los guardados viejos restan `10 s` al timer base y conservan el tiempo comprado.
+- Plata por impacto: rifle `10 → 5`, Avispa `6 → 2`, Trueno `25 → 12` (los headshots siguen multiplicando ×3).
+- Bonus de completación: `50 → 35` en Zonas 1/2 y `80 → 50` en Zona 3.
+
+### Enemigos y oleadas
+
+- Enemigos base: velocidad `3.0 → 3.5`, daño melee `15 → 18`, rango `2.0 → 2.2` y cadencia `0.7 → 0.6`.
+- Oleadas más seguidas: `1.2 → 0.8 s` en Zonas 1/2 y `1.1 → 0.7 s` en Zona 3.
+- Tirador: intervalo `2.2 → 1.9`, carga `0.55 → 0.5`, proyectil `19 → 22 m/s` y daño `12 → 14`.
+- Élite tirador: intervalo `1.5 → 1.3` y daño `18 → 22`.
+- Élite de salto: intervalo `3.5 → 3.0` y daño `30 → 36`.
+
+### Sabueso explosivo
+
+- `45` de vida y velocidad `6.0`: más rápido que el jugador caminando.
+- Corre directo y al entrar en `2.6 m` enciende una **mecha de `0.45 s`** con luz roja.
+- Detona en un radio de `3.0 m` por `26` de daño. Si lo matás antes, no explota.
+- Se mezcla en Zona 2 (1 de cada 3 enemigos) y en Zona 3 (alternado con tiradores).
+
+### Ejecutor
+
+- Ya no devuelve una bala por headshot: ahora tiene **25% de probabilidad de no gastar munición**.
+- El tooltip muestra el porcentaje real.
+
+### Movimiento
+
+- Dash: cooldown `0.7 → 0.9`, duración `0.14 → 0.13`.
+- Slide: cooldown `0.8 → 1.0`, duración `0.45 → 0.42`.
+- La intención es que esquivar sea una decisión y no un estado permanente.
 
 ---
 

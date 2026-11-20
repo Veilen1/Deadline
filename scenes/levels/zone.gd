@@ -4,11 +4,12 @@ extends Node3D
 # al limpiar la última oleada se completa la zona.
 
 @export var enemy_scene: PackedScene
+@export var enemy_scenes: Array[PackedScene] = []
 @export var elite_scene: PackedScene
 @export var spawn_points: Array[Marker3D] = []
 @export var enemies_per_wave: Array[int] = [4, 5, 3]
-@export var wave_delay: float = 1.2
-@export var completion_bonus: int = 50
+@export var wave_delay: float = 0.8
+@export var completion_bonus: int = 35
 @export var zone_id: String = "zona_1"
 
 var current_wave: int = 0
@@ -28,7 +29,7 @@ func _ready() -> void:
 func _start_wave() -> void:
 	if _completed or not GameState.is_run_active or current_wave >= enemies_per_wave.size():
 		return
-	if enemy_scene == null or spawn_points.is_empty():
+	if (enemy_scene == null and enemy_scenes.is_empty()) or spawn_points.is_empty():
 		push_warning("Zone: falta enemy_scene o spawn_points")
 		return
 
@@ -49,7 +50,10 @@ func _start_wave() -> void:
 
 func _spawn_enemy(index: int) -> void:
 	var point: Marker3D = spawn_points[index % spawn_points.size()]
-	var enemy: Node3D = enemy_scene.instantiate()
+	var scene: PackedScene = _pick_enemy_scene(index)
+	if scene == null:
+		return
+	var enemy: Node3D = scene.instantiate()
 	add_child(enemy)
 
 	# Si hay más enemigos que puntos, se abren en anillos para no apilarse.
@@ -59,6 +63,13 @@ func _spawn_enemy(index: int) -> void:
 	# Compensa el origen de la cápsula cuando el enemigo tiene escala distinta de 1.
 	var height_offset: float = (enemy.scale.y - 1.0) * 0.9
 	enemy.global_position = point.global_position + offset + Vector3(0.0, height_offset, 0.0)
+
+
+func _pick_enemy_scene(index: int) -> PackedScene:
+	# Mezcla explícita por oleada cuando la zona define varias variantes.
+	if not enemy_scenes.is_empty():
+		return enemy_scenes[index % enemy_scenes.size()]
+	return enemy_scene
 
 
 func _spawn_elite() -> void:
