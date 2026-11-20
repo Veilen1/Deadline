@@ -235,11 +235,22 @@ func cycle_core_mult() -> float:
 	return 1.0 + 0.25 * float(cycle - 1)
 
 
-func advance_cycle() -> bool:
-	# Subir de ciclo es opcional; se habilita al completar la primera run.
-	if runs_completed < 1 or cycle >= 10:
+func increase_cycle() -> bool:
+	return set_cycle(cycle + 1)
+
+
+func decrease_cycle() -> bool:
+	return set_cycle(cycle - 1)
+
+
+func set_cycle(value: int) -> bool:
+	# La dificultad se puede subir o bajar; subir requiere haber completado una run.
+	var target: int = clampi(value, 1, 10)
+	if target == cycle:
 		return false
-	cycle += 1
+	if target > cycle and runs_completed < 1:
+		return false
+	cycle = target
 	save_game()
 	return true
 
