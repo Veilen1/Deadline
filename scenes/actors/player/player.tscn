@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scenes/actors/player/player.gd" id="1_player"]
 [ext_resource type="AudioStream" path="res://assets/audio/shoot.wav" id="2_shoot"]
@@ -7,6 +7,7 @@
 [ext_resource type="AudioStream" path="res://assets/audio/dash.wav" id="5_dash"]
 [ext_resource type="AudioStream" path="res://assets/audio/rank_up.wav" id="6_rank_up"]
 [ext_resource type="AudioStream" path="res://assets/audio/ui_click.wav" id="7_switch"]
+[ext_resource type="Script" path="res://scenes/actors/player/weapon_view.gd" id="8_view"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -19,16 +20,14 @@ size = Vector3(0.8, 1.8, 0.8)
 albedo_color = Color(0, 0, 0, 1)
 roughness = 1.0
 
-[sub_resource type="BoxMesh" id="BoxMesh_weapon_barrel"]
-size = Vector3(0.07, 0.07, 0.38)
+[sub_resource type="BoxMesh" id="BoxMesh_trail"]
+size = Vector3(0.009, 0.009, 0.42)
 
-[sub_resource type="BoxMesh" id="BoxMesh_weapon_grip"]
-size = Vector3(0.06, 0.16, 0.08)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_weapon"]
-albedo_color = Color(0, 0, 0, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_trail"]
+transparency = 1
 shading_mode = 0
-roughness = 1.0
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.25, 0.8, 0.8, 0.75)
 
 [node name="Player" type="CharacterBody3D" groups=["player"]]
 script = ExtResource("1_player")
@@ -48,18 +47,9 @@ surface_material_override/0 = SubResource("StandardMaterial3D_black")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 current = true
 
-[node name="Weapon" type="Node3D" parent="Camera3D"]
+[node name="WeaponView" type="Node3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, -0.1, -0.5)
-
-[node name="Barrel" type="MeshInstance3D" parent="Camera3D/Weapon"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.18)
-mesh = SubResource("BoxMesh_weapon_barrel")
-surface_material_override/0 = SubResource("StandardMaterial3D_weapon")
-
-[node name="Grip" type="MeshInstance3D" parent="Camera3D/Weapon"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0.03)
-mesh = SubResource("BoxMesh_weapon_grip")
-surface_material_override/0 = SubResource("StandardMaterial3D_weapon")
+script = ExtResource("8_view")
 
 [node name="ShootOrigin" type="Marker3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, -0.1, -0.69)
@@ -83,3 +73,22 @@ volume_db = -10.0
 [node name="WeaponSwitchPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_switch")
 volume_db = -14.0
+
+[node name="DashTrail" type="CPUParticles3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, -1.6)
+emitting = false
+amount = 48
+lifetime = 0.32
+local_coords = false
+mesh = SubResource("BoxMesh_trail")
+material_override = SubResource("StandardMaterial3D_trail")
+emission_shape = 1
+emission_sphere_radius = 1.0
+direction = Vector3(0, 0, 1)
+spread = 20.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 0.1
+initial_velocity_max = 0.6
+scale_amount_min = 0.6
+scale_amount_max = 1.3
+color = Color(0.3, 0.85, 0.82, 0.6)

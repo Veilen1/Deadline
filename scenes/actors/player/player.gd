@@ -36,6 +36,8 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 
 @onready var camera: Camera3D = $Camera3D
 @onready var shoot_origin: Marker3D = $Camera3D/ShootOrigin
+@onready var weapon_view: Node3D = $Camera3D/WeaponView
+@onready var dash_trail: CPUParticles3D = $Camera3D/DashTrail
 @onready var shoot_player: AudioStreamPlayer = $ShootPlayer
 @onready var footstep_player: AudioStreamPlayer = $FootstepPlayer
 @onready var dash_player: AudioStreamPlayer = $DashPlayer
@@ -55,6 +57,7 @@ var fire_rate_bonus: float = 0.0
 
 var _weapon_ids: Array[String] = []
 var _current_weapon_id: String = ""
+var _ammo_by_weapon: Dictionary = {}
 var _footstep_timer: float = 0.0
 var _fire_timer: float = 0.0
 var _regen_delay_timer: float = 0.0
@@ -67,6 +70,7 @@ var _shake_peak: float = 0.0
 var _dash_timer: float = 0.0
 var _dash_cooldown_timer: float = 0.0
 var _dash_direction: Vector3 = Vector3.ZERO
+var _dash_fov_kick: float = 0.0
 var _slide_timer: float = 0.0
 var _slide_cooldown_timer: float = 0.0
 var _slide_direction: Vector3 = Vector3.ZERO
@@ -77,16 +81,19 @@ func _ready() -> void:
 	var equipped_weapon: WeaponData = WeaponRegistry.get_data(GameState.equipped_weapon)
 	if equipped_weapon != null:
 		weapon_data = equipped_weapon
-	if weapon_data != null:
-		max_ammo = weapon_data.magazine_size
-		current_ammo = max_ammo
-	else:
+	if weapon_data == null:
 		push_warning("Player: falta weapon_data")
 
 	_weapon_ids = GameState.owned_weapons.duplicate()
 	_current_weapon_id = GameState.equipped_weapon
 	if not _weapon_ids.has(_current_weapon_id):
 		_weapon_ids.append(_current_weapon_id)
+
+	_init_ammo()
+	if weapon_view != null and weapon_view.has_method("setup"):
+		weapon_view.call("setup", _current_weapon_id)
+	if dash_trail != null:
+		dash_trail.emitting = false
 
 	Settings.settings_changed.connect(_apply_live_settings)
 	StyleSystem.style_changed.connect(_on_style_changed)
@@ -97,11 +104,41 @@ func _ready() -> void:
 	# TODO: Fase 1.3 — viewmodel/brazos en primera persona (el mesh del cuerpo está oculto).
 
 
+func _init_ammo() -> void:
+	# Munición independiente por arma: cada una conserva su cargador.
+	_ammo_by_weapon.clear()
+	for id: String in _weapon_ids:
+		var data: WeaponData = WeaponRegistry.get_data(id)
+		if data == null:
+			continue
+		_ammo_by_weapon[id] = data.magazine_size + ammo_capacity_bonus
+
+	if weapon_data != null:
+		max_ammo = weapon_data.magazine_size + ammo_capacity_bonus
+	else:
+		max_ammo = 0
+	current_ammo = clampi(int(_ammo_by_weapon.get(_current_weapon_id, max_ammo)), 0, max_ammo)
+
+
+func _set_current_ammo(value: int) -> void:
+	current_ammo = clampi(value, 0, max_ammo)
+	if not _current_weapon_id.is_empty():
+		_ammo_by_weapon[_current_weapon_id] = current_ammo
+	EventBus.ammo_changed.emit(current_ammo, max_ammo)
+
+
+func get_dash_cooldown_ratio() -> float:
+	if dash_cooldown <= 0.0:
+		return 1.0
+	return 1.0 - clampf(_dash_cooldown_timer / dash_cooldown, 0.0, 1.0)
+
+
 func _process(delta: float) -> void:
 	if not is_instance_valid(camera):
 		return
 
-	camera.fov = lerpf(camera.fov, _target_fov, 1.0 - exp(-10.0 * delta))
+	camera.fov = lerpf(camera.fov, _target_fov + _dash_fov_kick, 1.0 - exp(-10.0 * delta))
+	_dash_fov_kick = lerpf(_dash_fov_kick, 0.0, 1.0 - exp(-9.0 * delta))
 
 	var target_height: float = slide_camera_height if _slide_timer > 0.0 else camera_height
 	camera.position.y = lerpf(camera.position.y, target_height, 1.0 - exp(-12.0 * delta))
@@ -155,6 +192,10 @@ func _try_dash() -> void:
 	_slide_timer = 0.0
 	_shake_time = 0.12
 	_shake_peak = 0.02
+	_dash_fov_kick = 7.0
+	if dash_trail != null:
+		dash_trail.restart()
+		dash_trail.emitting = true
 	dash_player.pitch_scale = randf_range(0.95, 1.05)
 	dash_player.play()
 
@@ -193,15 +234,19 @@ func _switch_weapon(index: int) -> void:
 	if data == null:
 		return
 
+	# Guarda el cargador del arma que se deja y recupera el de la nueva.
+	_ammo_by_weapon[_current_weapon_id] = current_ammo
 	_current_weapon_id = weapon_id
 	weapon_data = data
 	max_ammo = data.magazine_size + ammo_capacity_bonus
-	current_ammo = max_ammo
+	current_ammo = clampi(int(_ammo_by_weapon.get(weapon_id, max_ammo)), 0, max_ammo)
 	_fire_timer = 0.0
 	_regen_delay_timer = 0.0
 	_ammo_regen_accumulator = 0.0
 	EventBus.ammo_changed.emit(current_ammo, max_ammo)
 	EventBus.weapon_changed.emit(data.weapon_name)
+	if weapon_view != null and weapon_view.has_method("switch_to"):
+		weapon_view.call("switch_to", weapon_id)
 	weapon_switch_player.play()
 
 
@@ -251,6 +296,8 @@ func _physics_process(delta: float) -> void:
 	_fire_timer = maxf(_fire_timer - delta, 0.0)
 	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
 	_slide_cooldown_timer = maxf(_slide_cooldown_timer - delta, 0.0)
+	if dash_trail != null:
+		dash_trail.emitting = _dash_timer > 0.0
 	_update_ammo_regen(delta)
 
 	var input_vector: Vector2 = Input.get_vector(
@@ -332,7 +379,8 @@ func apply_meta_upgrades(upgrades: Dictionary) -> void:
 	ammo_regen_bonus += float(upgrades.get("ammo_regen_bonus", 0.0))
 	fire_rate_bonus += float(upgrades.get("fire_rate_bonus", 0.0))
 	current_health = max_health
-	current_ammo = max_ammo
+	_init_ammo()
+	_set_current_ammo(max_ammo)
 
 
 func _update_ammo_regen(delta: float) -> void:
@@ -354,8 +402,7 @@ func _update_ammo_regen(delta: float) -> void:
 		return
 
 	_ammo_regen_accumulator -= float(rounds)
-	current_ammo = mini(current_ammo + rounds, max_ammo)
-	EventBus.ammo_changed.emit(current_ammo, max_ammo)
+	_set_current_ammo(current_ammo + rounds)
 
 
 func shoot() -> void:
@@ -366,7 +413,7 @@ func shoot() -> void:
 	_fire_timer = 1.0 / maxf(weapon_data.shots_per_second * (1.0 + fire_rate_bonus), 0.01)
 	_regen_delay_timer = weapon_data.regen_delay
 	_ammo_regen_accumulator = 0.0
-	EventBus.ammo_changed.emit(current_ammo, max_ammo)
+	_set_current_ammo(current_ammo)
 
 	# Raycast desde el centro de la cámara hacia donde se mira.
 	var screen_center: Vector2 = get_viewport().get_visible_rect().size * 0.5
@@ -399,11 +446,12 @@ func shoot() -> void:
 					if hit_zone == "head":
 						damage *= 1.0 + crit_bonus
 						if crit_refund > 0.0 and current_ammo < max_ammo:
-							current_ammo = mini(current_ammo + int(round(crit_refund)), max_ammo)
-							EventBus.ammo_changed.emit(current_ammo, max_ammo)
+							_set_current_ammo(current_ammo + int(round(crit_refund)))
 					enemy.call("take_hit", hit_zone, damage, weapon_data.money_per_hit, hit_position)
 
 	_spawn_tracer(end_point)
+	if weapon_view != null and weapon_view.has_method("flash"):
+		weapon_view.call("flash")
 	shoot_player.pitch_scale = randf_range(0.95, 1.05)
 	shoot_player.play()
 
