@@ -333,6 +333,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - El 30% se calcula sobre lo recaudado, no sobre el total acumulado. Se configura con `death_penalty` en `GameState`.
 - Terminar por timer o completar las dos zonas **no** aplica penalización.
 - El fin de run por muerte muestra la penalización aplicada.
+- Antes de volver al lobby o reiniciar desde la pausa, se muestra un aviso con el monto exacto: “Si vuelves al lobby ahora perderás $X (30% de $Y recaudados en esta run)”.
 
 ### Guardado
 
@@ -369,6 +370,65 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 3. Música y sliders separados de audio.
 4. Balance fino con la dificultad y los costos del hub.
 5. Localización y soporte de controller.
+
+---
+
+## 15. v0.3.0 — Tienda, perfil, estilo y árbol
+
+### Armas y munición
+
+- Recurso `WeaponData` con daño, plata por impacto, alcance, cadencia, cargador, regeneración y delay de regeneración.
+- Arma inicial: **Rifle básico** (20 daño, 4 disparos/s, 12 balas, 3 balas/s, delay 0.25 s).
+- Disparo automático manteniendo el click y respuesta inmediata al click.
+- HUD de munición: contador `actual / máximo` y barra.
+- Al quedarse sin balas se puede seguir apuntando; la regeneración repone munición tras el delay.
+- Los bonus de cargador/regeneración/cadencia se aplican al empezar la run.
+
+### Árbol de habilidades
+
+- Pantalla propia desde el hub con nodo central y cuatro ramas cardinales.
+- **Núcleo de daño** central (nivel máximo 5) y, alrededor:
+  - Norte: `Precisión` (3) → `Ejecutor` (1).
+  - Este: `Cadencia` (5) → `Cargador` (3).
+  - Sur: `Vitalidad` (5) → `Armadura` (1).
+  - Oeste: `Reloj de arena` (3) → `Recarga viva` (5).
+- Los nodos son cuadrados con el nivel actual; al pasar el mouse o seleccionarlos se muestra título, descripción, efecto por nivel, costo y una barra de pips 5/3/1.
+- Solo se habilitan nodos adyacentes a uno ya desbloqueado.
+- Los niveles y bonus se guardan; el árbol anterior se migra automáticamente.
+- Los efectos se aplican al empezar la run: daño, crítico, devolución de bala, cadencia, cargador, vida, reducción de daño, tiempo y regeneración.
+
+### UX/UI
+
+- El árbol, la tienda y el perfil usan la dirección visual azul noche + dorado/turquesa.
+- Ver `docs/UX_NOTES.md` para principios, referencias y próximos pasos.
+- Pendiente: tema global en menú/pausa/configuración, transiciones y feedback de UI.
+
+### Tienda de armas
+
+- Accesible desde el hub.
+- Armas actuales:
+  - **Rifle básico**: 20 daño, 4/s, 12 balas, regen 3/s. Gratis e inicial.
+  - **Avispa** (SMG): 12 daño, 8/s, 24 balas, regen 5/s. $260.
+  - **Trueno** (escopeta slug): 55 daño, 1.1/s, 6 balas, regen 1.2/s. $420.
+- Se compran con plata, se equipan y la próxima run usa el arma equipada.
+- Persistencia de armas compradas y equipada.
+- La UI muestra daño, cadencia, cargador y regeneración por arma.
+
+### Perfil del jugador
+
+- Accesible desde el menú principal.
+- Nombre editable (máx. 20 caracteres).
+- Estadísticas persistentes: plata actual, plata total recaudada, runs iniciadas/completadas, muertes/abandonos, veces sin tiempo, enemigos eliminados, nodos desbloqueados, armas compradas y arma equipada.
+- El perfil se guarda automáticamente.
+
+### Estilo Ultrakill
+
+- Medidor de estilo/combo con rangos `D → ULTRAKILL`.
+- Sube al impactar y matar; decae al dejar de atacar.
+- HUD abajo a la derecha con rango, combo y barra.
+- FOV y shake de cámara aumentan con el rango.
+- Headshots críticos: chispas, estilo extra y feedback visual.
+- Ver `docs/STYLE_REFERENCE.md`.
 
 ---
 

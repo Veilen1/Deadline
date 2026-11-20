@@ -1,6 +1,7 @@
 extends Node3D
 
 const DAMAGE_NUMBER_SCENE: PackedScene = preload("res://scenes/effects/damage_number.tscn")
+const SPARK_BURST_SCENE: PackedScene = preload("res://scenes/effects/spark_burst.tscn")
 const ZONE_SCENES = [
 	preload("res://scenes/levels/zone_01.tscn"),
 	preload("res://scenes/levels/zone_02.tscn"),
@@ -16,6 +17,10 @@ const ZONE_SCENES = [
 @onready var timer_label: Label = $CanvasLayer/TimerLabel
 @onready var wave_label: Label = $CanvasLayer/WaveLabel
 @onready var health_label: Label = $CanvasLayer/HealthLabel
+@onready var ammo_label: Label = $CanvasLayer/AmmoLabel
+@onready var ammo_bar: ProgressBar = $CanvasLayer/AmmoBar
+@onready var style_label: Label = $CanvasLayer/StyleLabel
+@onready var style_bar: ProgressBar = $CanvasLayer/StyleBar
 @onready var boss_label: Label = $CanvasLayer/BossLabel
 @onready var boss_bar: ProgressBar = $CanvasLayer/BossBar
 @onready var boss_hp_label: Label = $CanvasLayer/BossHpLabel
@@ -36,6 +41,9 @@ func _ready() -> void:
 	EventBus.enemy_hit.connect(_on_enemy_hit)
 	EventBus.player_damaged.connect(_on_player_damaged)
 	EventBus.player_died.connect(_on_player_died)
+	EventBus.ammo_changed.connect(_on_ammo_changed)
+	EventBus.critical_hit.connect(_on_critical_hit)
+	StyleSystem.style_changed.connect(_on_style_changed)
 	EventBus.wave_started.connect(_on_wave_started)
 	EventBus.zone_completed.connect(_on_zone_completed)
 	EventBus.damage_number_requested.connect(_on_damage_number_requested)
@@ -43,7 +51,11 @@ func _ready() -> void:
 	EventBus.boss_health_changed.connect(_on_boss_health_changed)
 	EventBus.boss_defeated.connect(_on_boss_defeated)
 	Settings.settings_changed.connect(_on_settings_changed)
-	player.call("apply_meta_upgrades", GameState.upgrades)
+	var run_upgrades: Dictionary = GameState.upgrades.duplicate()
+	for key in GameState.skill_bonuses:
+		run_upgrades[key] = float(run_upgrades.get(key, 0.0)) + float(GameState.skill_bonuses[key])
+	player.call("apply_meta_upgrades", run_upgrades)
+	_on_ammo_changed(int(player.get("current_ammo")), int(player.get("max_ammo")))
 	minimap.visible = Settings.show_minimap
 	_update_money_label(GameState.money)
 	_update_health_label()
@@ -168,6 +180,44 @@ func _on_boss_defeated() -> void:
 
 func _on_player_damaged(_amount: float) -> void:
 	_update_health_label()
+
+
+func _on_ammo_changed(current: int, maximum: int) -> void:
+	ammo_label.text = "%d / %d" % [current, maximum]
+	ammo_bar.max_value = maximum
+	ammo_bar.value = current
+
+
+func _on_style_changed(rank: String, rank_index: int, progress: float, combo: int) -> void:
+	style_label.text = "%s · x%d" % [rank, combo]
+	style_label.add_theme_color_override("font_color", _style_color(rank_index))
+	style_bar.value = progress
+
+
+func _on_critical_hit(world_position: Vector3, _damage: float) -> void:
+	var sparks: Node3D = SPARK_BURST_SCENE.instantiate() as Node3D
+	add_child(sparks)
+	sparks.call("start", world_position, true)
+
+
+func _style_color(rank_index: int) -> Color:
+	match rank_index:
+		0:
+			return Color(0.72, 0.78, 0.88, 1)
+		1:
+			return Color(0.4, 0.75, 1.0, 1)
+		2:
+			return Color(0.3, 0.9, 0.85, 1)
+		3:
+			return Color(0.4, 0.95, 0.55, 1)
+		4:
+			return Color(0.95, 0.8, 0.25, 1)
+		5:
+			return Color(1.0, 0.55, 0.2, 1)
+		6:
+			return Color(1.0, 0.3, 0.25, 1)
+		_:
+			return Color(1.0, 0.4, 0.9, 1)
 
 
 func _on_player_died() -> void:

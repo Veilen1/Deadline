@@ -49,6 +49,23 @@ var last_death_penalty: int = 0
 # Mejoras compradas. Persisten entre runs.
 var upgrades: Dictionary = {}
 
+# Árbol de habilidades.
+var skill_levels: Dictionary = {}
+var skill_bonuses: Dictionary = {}
+
+# Armas desbloqueadas y equipada.
+var owned_weapons: Array[String] = ["basic_rifle"]
+var equipped_weapon: String = "basic_rifle"
+
+# Perfil del jugador.
+var profile_name: String = "Jugador"
+var runs_started: int = 0
+var runs_completed: int = 0
+var runs_timed_out: int = 0
+var deaths: int = 0
+var kills: int = 0
+var lifetime_earned: int = 0
+
 var _save_timer: Timer
 var _is_loading: bool = false
 
@@ -63,7 +80,12 @@ func _ready() -> void:
 	_save_timer.timeout.connect(save_game)
 	add_child(_save_timer)
 
+	EventBus.enemy_killed.connect(_on_enemy_killed)
 	load_game()
+
+
+func _on_enemy_killed(_enemy: Node, _hit_zone: String) -> void:
+	kills += 1
 
 
 func add_run_time(seconds: float) -> void:
@@ -84,10 +106,162 @@ func get_upgrade_level(upgrade_id: String) -> int:
 	return int(upgrades.get(upgrade_id + "_level", 0))
 
 
+func is_weapon_owned(weapon_id: String) -> bool:
+	return owned_weapons.has(weapon_id)
+
+
+func buy_weapon(weapon_id: String) -> bool:
+	if is_weapon_owned(weapon_id):
+		return false
+
+	var data: WeaponData = WeaponRegistry.get_data(weapon_id)
+	if data == null:
+		return false
+	if not spend_money(data.price):
+		return false
+
+	owned_weapons.append(weapon_id)
+	save_game()
+	return true
+
+
+func equip_weapon(weapon_id: String) -> bool:
+	if not is_weapon_owned(weapon_id):
+		return false
+	equipped_weapon = weapon_id
+	save_game()
+	return true
+
+
+func get_skill_level(skill_id: String) -> int:
+	return int(skill_levels.get(skill_id, 0))
+
+
+func is_skill_unlocked(skill_id: String) -> bool:
+	return get_skill_level(skill_id) > 0
+
+
+func is_skill_available(skill_id: String) -> bool:
+	var data: Dictionary = SkillTree.get_node_data(skill_id)
+	if data.is_empty():
+		return false
+
+	var max_level: int = int(data.get("max_level", 1))
+	if get_skill_level(skill_id) >= max_level:
+		return false
+
+	var requires: Array = data.get("requires", [])
+	if requires.is_empty():
+		return true
+
+	for required in requires:
+		if get_skill_level(str(required)) > 0:
+			return true
+	return false
+
+
+func skill_cost(skill_id: String) -> int:
+	var data: Dictionary = SkillTree.get_node_data(skill_id)
+	if data.is_empty():
+		return 0
+
+	return int(data.get("base_cost", 0)) + int(data.get("cost_step", 0)) * get_skill_level(skill_id)
+
+
+func can_upgrade_skill(skill_id: String) -> bool:
+	if not is_skill_available(skill_id):
+		return false
+	return money >= skill_cost(skill_id)
+
+
+func upgrade_skill(skill_id: String) -> bool:
+	if not can_upgrade_skill(skill_id):
+		return false
+
+	var data: Dictionary = SkillTree.get_node_data(skill_id)
+	var cost: int = skill_cost(skill_id)
+	if not spend_money(cost):
+		return false
+
+	skill_levels[skill_id] = get_skill_level(skill_id) + 1
+
+	var effects: Dictionary = data.get("effects", {})
+	for key in effects:
+		var value: float = float(effects[key])
+		skill_bonuses[key] = float(skill_bonuses.get(key, 0.0)) + value
+
+	if effects.has("time_bonus"):
+		add_run_time(float(effects["time_bonus"]))
+
+	save_game()
+	return true
+
+
+func get_unlocked_skill_count() -> int:
+	var count: int = 0
+	for level in skill_levels.values():
+		if int(level) > 0:
+			count += 1
+	return count
+
+
+func _apply_all_skill_effects() -> void:
+	skill_bonuses.clear()
+	for skill_id in skill_levels:
+		var level: int = get_skill_level(str(skill_id))
+		if level <= 0:
+			continue
+
+		var data: Dictionary = SkillTree.get_node_data(str(skill_id))
+		var effects: Dictionary = data.get("effects", {})
+		for key in effects:
+			var value: float = float(effects[key]) * float(level)
+			skill_bonuses[key] = float(skill_bonuses.get(key, 0.0)) + value
+			if key == "time_bonus":
+				add_run_time(float(effects[key]) * float(level))
+
+
+func _migrate_old_skills(old_skills) -> Dictionary:
+	var ids: Array = []
+	if old_skills is Array:
+		ids = old_skills
+	elif old_skills is PackedStringArray:
+		for raw_id in old_skills:
+			ids.append(str(raw_id))
+
+	var mapped: Dictionary = {}
+	for raw_id in ids:
+		match str(raw_id):
+			"dmg_1":
+				mapped["damage_core"] = maxi(int(mapped.get("damage_core", 0)), 1)
+			"dmg_2":
+				mapped["damage_core"] = maxi(int(mapped.get("damage_core", 0)), 2)
+			"fire_rate_1":
+				mapped["cadence"] = maxi(int(mapped.get("cadence", 0)), 1)
+			"hp_1":
+				mapped["vitality"] = maxi(int(mapped.get("vitality", 0)), 1)
+			"hp_2":
+				mapped["vitality"] = maxi(int(mapped.get("vitality", 0)), 2)
+			"time_1":
+				mapped["time"] = maxi(int(mapped.get("time", 0)), 1)
+			"ammo_cap_1":
+				mapped["extended_mag"] = maxi(int(mapped.get("extended_mag", 0)), 1)
+			"ammo_regen_1":
+				mapped["regen"] = maxi(int(mapped.get("regen", 0)), 1)
+			_:
+				pass
+
+	if not ids.is_empty() and not mapped.has("damage_core"):
+		mapped["damage_core"] = 1
+
+	return mapped
+
+
 func add_money(amount: int) -> void:
 	if amount <= 0:
 		return
 	money += amount
+	lifetime_earned += amount
 
 
 func spend_money(amount: int) -> bool:
@@ -101,6 +275,7 @@ func start_run() -> void:
 	is_run_active = true
 	run_start_money = money
 	last_death_penalty = 0
+	runs_started += 1
 	run_timer = base_run_time
 	timer_changed.emit(run_timer)
 	run_started.emit()
@@ -125,6 +300,11 @@ func end_run(reason: String) -> void:
 
 	if reason == "death":
 		_apply_death_penalty()
+		deaths += 1
+	elif reason == "completed":
+		runs_completed += 1
+	elif reason == "timer":
+		runs_timed_out += 1
 	else:
 		last_death_penalty = 0
 	is_run_active = false
@@ -142,20 +322,30 @@ func abandon_run() -> void:
 		return
 
 	_apply_death_penalty()
+	deaths += 1
 	is_run_active = false
 	save_game()
 
 
 func _apply_death_penalty() -> void:
-	last_death_penalty = 0
-	var earned: int = maxi(money - run_start_money, 0)
+	last_death_penalty = get_abandon_penalty()
+	if last_death_penalty > 0:
+		money -= last_death_penalty
+
+
+func get_run_earnings() -> int:
+	if not is_run_active:
+		return 0
+	return maxi(money - run_start_money, 0)
+
+
+func get_abandon_penalty() -> int:
+	var earned: int = get_run_earnings()
 	if earned <= 0:
-		return
+		return 0
 
 	var rate: float = clampf(death_penalty, 0.0, 1.0)
-	var penalty: int = mini(int(round(float(earned) * rate)), money)
-	last_death_penalty = penalty
-	money -= penalty
+	return mini(int(round(float(earned) * rate)), money)
 
 
 func reset_run() -> void:
@@ -175,6 +365,18 @@ func reset_progress() -> void:
 	run_timer = base_run_time
 	run_start_money = 0
 	last_death_penalty = 0
+	skill_levels.clear()
+	skill_bonuses.clear()
+	owned_weapons.clear()
+	owned_weapons.append("basic_rifle")
+	equipped_weapon = "basic_rifle"
+	profile_name = "Jugador"
+	runs_started = 0
+	runs_completed = 0
+	runs_timed_out = 0
+	deaths = 0
+	kills = 0
+	lifetime_earned = 0
 	_is_loading = false
 	save_game()
 
@@ -188,6 +390,17 @@ func save_game() -> void:
 	config.set_value("progress", "money", money)
 	config.set_value("progress", "base_run_time", base_run_time)
 	config.set_value("progress", "upgrades", upgrades)
+	config.set_value("progress", "skill_levels", skill_levels)
+	config.set_value("progress", "skill_bonuses", skill_bonuses)
+	config.set_value("progress", "owned_weapons", owned_weapons)
+	config.set_value("progress", "equipped_weapon", equipped_weapon)
+	config.set_value("profile", "name", profile_name)
+	config.set_value("profile", "runs_started", runs_started)
+	config.set_value("profile", "runs_completed", runs_completed)
+	config.set_value("profile", "runs_timed_out", runs_timed_out)
+	config.set_value("profile", "deaths", deaths)
+	config.set_value("profile", "kills", kills)
+	config.set_value("profile", "lifetime_earned", lifetime_earned)
 
 	var error: int = config.save(save_path)
 	if error != OK:
@@ -211,6 +424,49 @@ func load_game() -> void:
 
 	var saved_upgrades = config.get_value("progress", "upgrades", {})
 	upgrades = saved_upgrades.duplicate() if saved_upgrades is Dictionary else {}
+
+	var saved_levels = null
+	if config.has_section_key("progress", "skill_levels"):
+		saved_levels = config.get_value("progress", "skill_levels")
+
+	if saved_levels is Dictionary:
+		skill_levels = saved_levels.duplicate()
+		var saved_bonuses = config.get_value("progress", "skill_bonuses", {})
+		skill_bonuses = saved_bonuses.duplicate() if saved_bonuses is Dictionary else {}
+	else:
+		# Migración desde el árbol anterior de nodos únicos.
+		var old_skills = config.get_value("progress", "unlocked_skills", [])
+		var old_bonuses = config.get_value("progress", "skill_bonuses", {})
+		var old_time: float = 0.0
+		if old_bonuses is Dictionary:
+			old_time = float(old_bonuses.get("time_bonus", 0.0))
+		base_run_time = maxf(base_run_time - old_time, 1.0)
+		skill_levels = _migrate_old_skills(old_skills)
+		_apply_all_skill_effects()
+
+	var saved_weapons = config.get_value("progress", "owned_weapons", ["basic_rifle"])
+	owned_weapons.clear()
+	if saved_weapons is Array:
+		for weapon_id in saved_weapons:
+			owned_weapons.append(str(weapon_id))
+	elif saved_weapons is PackedStringArray:
+		for weapon_id in saved_weapons:
+			owned_weapons.append(str(weapon_id))
+	if not owned_weapons.has("basic_rifle"):
+		owned_weapons.push_front("basic_rifle")
+
+	equipped_weapon = str(config.get_value("progress", "equipped_weapon", "basic_rifle"))
+	if not owned_weapons.has(equipped_weapon):
+		equipped_weapon = "basic_rifle"
+
+	profile_name = str(config.get_value("profile", "name", "Jugador"))
+	runs_started = maxi(int(config.get_value("profile", "runs_started", 0)), 0)
+	runs_completed = maxi(int(config.get_value("profile", "runs_completed", 0)), 0)
+	runs_timed_out = maxi(int(config.get_value("profile", "runs_timed_out", 0)), 0)
+	deaths = maxi(int(config.get_value("profile", "deaths", 0)), 0)
+	kills = maxi(int(config.get_value("profile", "kills", 0)), 0)
+	lifetime_earned = maxi(int(config.get_value("profile", "lifetime_earned", 0)), 0)
+
 	_is_loading = false
 
 
@@ -224,6 +480,7 @@ func _exit_tree() -> void:
 	# Si se cierra el juego en plena run, también cuenta como abandono.
 	if is_run_active:
 		_apply_death_penalty()
+		deaths += 1
 		is_run_active = false
 
 	# Último intento de guardado al cerrar el juego.

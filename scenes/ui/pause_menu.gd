@@ -1,5 +1,7 @@
 extends Control
 
+enum LeaveAction { NONE, HUB, MENU, RESTART }
+
 const MAIN_MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
 const HUB_SCENE: String = "res://scenes/ui/hub.tscn"
 const SETTINGS_SCENE: PackedScene = preload("res://scenes/ui/settings.tscn")
@@ -9,9 +11,11 @@ const SETTINGS_SCENE: PackedScene = preload("res://scenes/ui/settings.tscn")
 @onready var config_button: Button = $CenterContainer/Menu/ConfigButton
 @onready var hub_button: Button = $CenterContainer/Menu/HubButton
 @onready var main_menu_button: Button = $CenterContainer/Menu/MainMenuButton
+@onready var leave_dialog: ConfirmationDialog = $LeaveDialog
 
 var _settings_menu: Control
 var _settings_open: bool = false
+var _pending_leave: LeaveAction = LeaveAction.NONE
 
 
 func _ready() -> void:
@@ -22,10 +26,11 @@ func _ready() -> void:
 	config_button.pressed.connect(_on_config_pressed)
 	hub_button.pressed.connect(_on_hub_pressed)
 	main_menu_button.pressed.connect(_on_main_menu_pressed)
+	leave_dialog.confirmed.connect(_on_leave_confirmed)
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _settings_open:
+	if _settings_open or leave_dialog.visible:
 		return
 
 	if not event.is_action_pressed("ui_cancel"):
@@ -57,9 +62,7 @@ func _on_resume_pressed() -> void:
 
 
 func _on_restart_pressed() -> void:
-	GameState.abandon_run()
-	get_tree().paused = false
-	get_tree().reload_current_scene()
+	_request_leave(LeaveAction.RESTART)
 
 
 func _on_config_pressed() -> void:
@@ -88,22 +91,70 @@ func _close_settings() -> void:
 
 
 func _on_hub_pressed() -> void:
-	GameState.abandon_run()
-	get_tree().paused = false
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	get_tree().change_scene_to_file(HUB_SCENE)
+	_request_leave(LeaveAction.HUB)
 
 
 func _on_main_menu_pressed() -> void:
+	_request_leave(LeaveAction.MENU)
+
+
+func _request_leave(action: LeaveAction) -> void:
+	if leave_dialog.visible:
+		return
+
+	var penalty: int = GameState.get_abandon_penalty()
+	if penalty <= 0:
+		_execute_leave(action)
+		return
+
+	_pending_leave = action
+	var earned: int = GameState.get_run_earnings()
+	var percent: int = int(round(GameState.death_penalty * 100.0))
+
+	if action == LeaveAction.RESTART:
+		leave_dialog.title = "Reiniciar run"
+		leave_dialog.ok_button_text = "Sí, reiniciar"
+		leave_dialog.dialog_text = "Si reiniciás ahora perderás $%d (%d%% de $%d recaudados en esta run)." % [
+			penalty, percent, earned
+		]
+	else:
+		leave_dialog.title = "Abandonar run"
+		leave_dialog.ok_button_text = "Sí, salir"
+		leave_dialog.dialog_text = "Si vuelves al lobby ahora perderás $%d (%d%% de $%d recaudados en esta run)." % [
+			penalty, percent, earned
+		]
+
+	leave_dialog.popup_centered(Vector2i(580, 170))
+
+
+func _on_leave_confirmed() -> void:
+	var action: LeaveAction = _pending_leave
+	_pending_leave = LeaveAction.NONE
+	_execute_leave(action)
+
+
+func _execute_leave(action: LeaveAction) -> void:
 	GameState.abandon_run()
-	get_tree().paused = false
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+
+	match action:
+		LeaveAction.HUB:
+			get_tree().paused = false
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+			get_tree().change_scene_to_file(HUB_SCENE)
+		LeaveAction.MENU:
+			get_tree().paused = false
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+			get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+		LeaveAction.RESTART:
+			get_tree().paused = false
+			get_tree().reload_current_scene()
 
 
 func set_enabled(enabled: bool) -> void:
 	# Al terminar la run la pausa se desactiva para no competir con fin de run.
 	process_mode = Node.PROCESS_MODE_ALWAYS if enabled else Node.PROCESS_MODE_DISABLED
 	if not enabled:
+		leave_dialog.hide()
+		_pending_leave = LeaveAction.NONE
 		_close_settings()
 		hide()

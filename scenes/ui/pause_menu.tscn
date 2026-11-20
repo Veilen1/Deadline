@@ -65,3 +65,9 @@ text = "Volver al hub"
 custom_minimum_size = Vector2(240, 48)
 layout_mode = 2
 text = "Menú principal"
+
+[node name="LeaveDialog" type="ConfirmationDialog" parent="."]
+title = "Abandonar run"
+dialog_text = "Si vuelves al lobby ahora perderás $0 (30% de $0 recaudados en esta run)."
+ok_button_text = "Sí, salir"
+cancel_button_text = "Cancelar"

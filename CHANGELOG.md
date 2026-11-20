@@ -2,6 +2,19 @@
 
 Todas las versiones relevantes del prototipo.
 
+## v0.3.0 — 2026-11-19
+
+### Agregado
+- Armas con datos: daño, cadencia, cargador, munición y regeneración por segundo.
+- HUD de munición con barra y contador.
+- Tienda de armas con compra, equipamiento y persistencia.
+- Armas nuevas: Avispa (SMG) y Trueno (escopeta slug).
+- Pantalla de perfil con nombre editable y estadísticas persistentes.
+- Medidor de estilo/combo con rangos D–ULTRAKILL, FOV/shake por rango y chispas en críticos.
+- Árbol de habilidades rediseñado: nodo central de daño, cuatro ramas cardinales, nodos cuadrados con nivel, hover con descripción y barras de nivel 5/3/1.
+- Niveles y bonus persistentes, con migración desde el árbol anterior.
+- Documentos de referencia de UX y estilo Ultrakill.
+
 ## v0.2.0 — 2026-11-19
 
 ### Agregado

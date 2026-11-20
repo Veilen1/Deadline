@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/weapons/weapon_data.gd" id="1_weapon"]
+
+[resource]
+script = ExtResource("1_weapon")
+weapon_name = "Trueno"
+description = "Escopeta de slug: lenta, corta y brutal. Un headshot castiga."
+price = 420
+damage = 55.0
+money_per_hit = 25
+range = 40.0
+shots_per_second = 1.1
+magazine_size = 6
+ammo_regen_per_second = 1.2
+regen_delay = 0.4
