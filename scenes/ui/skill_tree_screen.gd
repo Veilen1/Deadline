@@ -7,6 +7,7 @@ const TOOLTIP_SIZE: Vector2 = Vector2(300.0, 180.0)
 
 @onready var map: Control = $Margin/VBox/MapScroll/Map
 @onready var money_label: Label = $Margin/VBox/TopBar/MoneyLabel
+@onready var coins_label: Label = $Margin/VBox/TopBar/CoinsLabel
 @onready var convert_button: Button = $Margin/VBox/TopBar/ConvertButton
 @onready var back_button: Button = $Margin/VBox/TopBar/BackButton
 @onready var status_label: Label = $Margin/VBox/StatusLabel
@@ -90,6 +91,7 @@ func _refresh() -> void:
 			button.modulate = Color(0.72, 0.72, 0.78, 1)
 
 	money_label.text = "◈ %d" % GameState.cores
+	coins_label.text = "$%d" % GameState.money
 	convert_button.disabled = GameState.money < 250
 	map.queue_redraw()
 
