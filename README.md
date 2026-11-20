@@ -373,11 +373,10 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Próximos pasos
 
-1. Dash aéreo y combos de movimiento.
-2. Más capas de ambiente y música dedicada por zona.
-3. Más variantes de eventos de arena y combinaciones por run.
-4. Nuevas variantes de enemigo (torreta móvil, corredor con escudo).
-5. Localización y soporte de controller.
+1. Más variantes de eventos de arena y combinaciones por run.
+2. Nuevas variantes de enemigo (torreta móvil, corredor con escudo).
+3. Mezcla fina de audio y variación de la capa de combate.
+4. Localización y soporte de controller.
 
 ---
 
@@ -737,6 +736,15 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - **Aparición de evento**: alarma grave al aparecer un reactor, campo o torreta.
 - **Destrucción de evento**: boom grave al romperlo.
 - **Ambiente por zona**: el loop cambia de tono y sube un poco de volumen en Zona 2 y 3; el hub/menú vuelven al tono neutral.
+
+### Música por zona y capa de combate
+
+- **Menú/Zona 1:** drone neutro original.
+- **Zona 2:** pad frío con shimmer alto.
+- **Zona 3:** drone oscuro con segunda menor y pulso lento.
+- Dos reproductores de ambiente hacen **crossfade de 0.6 s** al cambiar de zona.
+- Una **capa de combate** a `90 BPM` entra con cada oleada y baja cuando la limpiás; suma presión sin tapar los SFX.
+- El hub y el menú principal vuelven al loop neutro y apagan la capa de combate.
 
 ---
 

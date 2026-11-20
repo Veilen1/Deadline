@@ -4,6 +4,7 @@ extends Node
 ## posicionales disparados por eventos. Respeta el volumen master de Settings.
 
 @export var ambient_volume_db: float = -22.0
+@export var combat_volume_db: float = -17.0
 @export var hit_volume_db: float = -14.0
 @export var crit_volume_db: float = -10.0
 @export var kill_volume_db: float = -11.0
@@ -11,7 +12,12 @@ extends Node
 @export var max_fx_players: int = 16
 @export var hit_min_interval_ms: int = 45
 
-var _ambient: AudioStreamPlayer
+var _ambient_players: Array[AudioStreamPlayer] = []
+var _ambient_streams: Array[AudioStream] = []
+var _ambient_active: int = 0
+var _ambient_tween: Tween
+var _combat_layer: AudioStreamPlayer
+var _combat_tween: Tween
 var _hurt_player: AudioStreamPlayer
 var _upgrade_player: AudioStreamPlayer
 var _hit_stream: AudioStream
@@ -30,12 +36,27 @@ var _last_crit_ms: int = 0
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
-	_ambient = AudioStreamPlayer.new()
-	_ambient.stream = preload("res://assets/audio/ambient_loop.wav")
-	_ambient.volume_db = ambient_volume_db
-	_ambient.bus = "Music"
-	add_child(_ambient)
-	_ambient.play()
+	_ambient_streams = [
+		preload("res://assets/audio/ambient_loop.wav"),
+		preload("res://assets/audio/ambient_cold_loop.wav"),
+		preload("res://assets/audio/ambient_dark_loop.wav"),
+	]
+	for index in 2:
+		var player := AudioStreamPlayer.new()
+		player.bus = "Music"
+		player.volume_db = ambient_volume_db if index == 0 else -60.0
+		if index == 0:
+			player.stream = _ambient_streams[0]
+		add_child(player)
+		_ambient_players.append(player)
+	_ambient_players[0].play()
+
+	_combat_layer = AudioStreamPlayer.new()
+	_combat_layer.stream = preload("res://assets/audio/ambient_combat_loop.wav")
+	_combat_layer.bus = "Music"
+	_combat_layer.volume_db = -60.0
+	add_child(_combat_layer)
+	_combat_layer.play()
 
 	_hit_stream = preload("res://assets/audio/hit.wav")
 	_crit_stream = preload("res://assets/audio/crit.wav")
@@ -61,6 +82,10 @@ func _ready() -> void:
 	EventBus.critical_hit.connect(_on_crit)
 	EventBus.enemy_killed.connect(_on_enemy_killed)
 	EventBus.player_damaged.connect(_on_player_damaged)
+	EventBus.wave_started.connect(_on_wave_started)
+	EventBus.wave_completed.connect(_on_wave_completed)
+	GameState.run_started.connect(_on_run_started)
+	GameState.run_ended.connect(_on_run_ended)
 
 
 func _on_hit(world_position: Vector3, _amount: float) -> void:
@@ -111,27 +136,90 @@ func play_event_destroy(world_position: Vector3) -> void:
 
 
 func set_zone_mood(zone_index: int) -> void:
-	if _ambient == null:
-		return
 	var index: int = clampi(zone_index, 0, 2)
-	var pitches: Array[float] = [0.96, 1.0, 1.05]
 	var boosts: Array[float] = [0.0, 0.5, 1.0]
-	_ambient.pitch_scale = pitches[index]
-	_ambient.volume_db = ambient_volume_db + boosts[index]
+	_crossfade_ambient(_ambient_streams[index], ambient_volume_db + boosts[index])
 
 
 func reset_mood() -> void:
-	if _ambient == null:
+	_crossfade_ambient(_ambient_streams[0], ambient_volume_db)
+	_set_combat(false)
+
+
+func _crossfade_ambient(stream: AudioStream, target_db: float) -> void:
+	if stream == null or _ambient_players.is_empty():
 		return
-	_ambient.pitch_scale = 1.0
-	_ambient.volume_db = ambient_volume_db
+	if _ambient_tween != null and _ambient_tween.is_valid():
+		_ambient_tween.kill()
+
+	var current: AudioStreamPlayer = _ambient_players[_ambient_active]
+	for index in _ambient_players.size():
+		if index == _ambient_active:
+			continue
+		_ambient_players[index].stop()
+		_ambient_players[index].stream = null
+
+	if current.stream == stream:
+		_ambient_tween = create_tween()
+		_ambient_tween.tween_property(current, "volume_db", target_db, 0.4)
+		return
+
+	var next_index: int = 1 - _ambient_active
+	var next: AudioStreamPlayer = _ambient_players[next_index]
+	next.stream = stream
+	next.volume_db = -60.0
+	next.play()
+
+	_ambient_tween = create_tween()
+	_ambient_tween.set_parallel(true)
+	_ambient_tween.tween_property(current, "volume_db", -60.0, 0.6)
+	_ambient_tween.tween_property(next, "volume_db", target_db, 0.6)
+	_ambient_tween.set_parallel(false)
+	_ambient_tween.tween_callback(
+		func() -> void:
+			current.stop()
+			_ambient_active = next_index
+	)
+
+
+func _set_combat(active: bool) -> void:
+	if _combat_layer == null:
+		return
+	if _combat_tween != null and _combat_tween.is_valid():
+		_combat_tween.kill()
+	_combat_tween = create_tween()
+	_combat_tween.tween_property(
+		_combat_layer,
+		"volume_db",
+		combat_volume_db if active else -60.0,
+		0.5 if active else 1.0
+	)
+
+
+func _on_wave_started(_wave_number: int) -> void:
+	_set_combat(true)
+
+
+func _on_wave_completed(_wave_number: int) -> void:
+	_set_combat(false)
+
+
+func _on_run_started() -> void:
+	_set_combat(false)
+
+
+func _on_run_ended(_reason: String) -> void:
+	_set_combat(false)
 
 
 func _exit_tree() -> void:
-	# Evita que el stream quede en uso al cerrar el juego.
-	if _ambient != null:
-		_ambient.stop()
-		_ambient.stream = null
+	# Evita que los streams queden en uso al cerrar el juego.
+	for player in _ambient_players:
+		player.stop()
+		player.stream = null
+	if _combat_layer != null:
+		_combat_layer.stop()
+		_combat_layer.stream = null
 	for player in _fx_players:
 		if is_instance_valid(player):
 			player.stop()

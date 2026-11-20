@@ -57,7 +57,7 @@
 ## Próximas tareas de UX/UI
 
 1. **Movimiento:** dash aéreo y salto desde slide implementados; falta testear combos encadenados.
-2. **Audio:** sliders de música/efectos implementados; falta más variedad de ambiente por zona.
+2. **Audio:** sliders de música/efectos y loops dedicados por zona implementados; falta mezcla fina y variación de la capa de combate.
 3. **Eventos de arena:** implementados Reactor, Campo de hielo y Torreta; faltan variantes y combinaciones.
 4. **Mapas:** seguir iterando layouts verticales, coberturas y legibilidad de la telegrafía.
 5. **Contenido:** torreta móvil y nuevas variantes de enemigo.
