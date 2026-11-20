@@ -67,6 +67,13 @@ theme_override_font_sizes/font_size = 16
 text = "Bonos: +0 daño, +0 vida"
 horizontal_alignment = 1
 
+[node name="ContractLabel" type="Label" parent="CenterContainer/Menu"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "Contrato: sin contrato"
+horizontal_alignment = 1
+
 [node name="SkillTreeButton" type="Button" parent="CenterContainer/Menu"]
 custom_minimum_size = Vector2(340, 40)
 layout_mode = 2

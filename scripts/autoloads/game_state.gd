@@ -71,6 +71,9 @@ var skill_bonuses: Dictionary = {}
 var owned_weapons: Array[String] = ["basic_rifle"]
 var equipped_weapon: String = "basic_rifle"
 
+# Contrato elegido para la próxima run.
+var selected_contract: String = "none"
+
 # Perfil del jugador.
 var profile_name: String = "Jugador"
 var runs_started: int = 0
@@ -152,6 +155,31 @@ func register_zone_cleared() -> void:
 	add_cores(1)
 	challenges_changed.emit()
 	_queue_save()
+
+
+func contract_data() -> Dictionary:
+	if selected_contract == "none" or selected_contract.is_empty():
+		return {}
+	return ContractRegistry.get_data(selected_contract)
+
+
+func contract_modifier(key: String, default_value: float = 1.0) -> float:
+	var data: Dictionary = contract_data()
+	var modifiers: Dictionary = data.get("modifiers", {})
+	return float(modifiers.get(key, default_value))
+
+
+func contract_core_bonus() -> int:
+	return int(contract_data().get("core_bonus", 0))
+
+
+func apply_contract_start() -> void:
+	if not is_run_active:
+		return
+	var penalty: float = contract_modifier("timer_penalty", 0.0)
+	if penalty > 0.0:
+		run_timer = maxf(run_timer - penalty, 5.0)
+		timer_changed.emit(run_timer)
 
 
 func is_weapon_unlocked(weapon_id: String) -> bool:
@@ -439,7 +467,7 @@ func end_run(reason: String) -> void:
 		deaths += 1
 	elif reason == "completed":
 		runs_completed += 1
-		add_cores(3)
+		add_cores(3 + contract_core_bonus())
 	elif reason == "timer":
 		runs_timed_out += 1
 	else:
@@ -524,6 +552,7 @@ func reset_progress() -> void:
 	owned_weapons.clear()
 	owned_weapons.append("basic_rifle")
 	equipped_weapon = "basic_rifle"
+	selected_contract = "none"
 	profile_name = "Jugador"
 	runs_started = 0
 	runs_completed = 0
@@ -551,6 +580,7 @@ func save_game() -> void:
 	config.set_value("progress", "skill_bonuses", skill_bonuses)
 	config.set_value("progress", "owned_weapons", owned_weapons)
 	config.set_value("progress", "equipped_weapon", equipped_weapon)
+	config.set_value("progress", "selected_contract", selected_contract)
 	config.set_value("profile", "name", profile_name)
 	config.set_value("profile", "runs_started", runs_started)
 	config.set_value("profile", "runs_completed", runs_completed)
@@ -633,6 +663,10 @@ func load_game() -> void:
 	equipped_weapon = str(config.get_value("progress", "equipped_weapon", "basic_rifle"))
 	if not owned_weapons.has(equipped_weapon):
 		equipped_weapon = "basic_rifle"
+
+	selected_contract = str(config.get_value("progress", "selected_contract", "none"))
+	if selected_contract != "none" and ContractRegistry.get_data(selected_contract).is_empty():
+		selected_contract = "none"
 
 	profile_name = str(config.get_value("profile", "name", "Jugador"))
 	runs_started = maxi(int(config.get_value("profile", "runs_started", 0)), 0)

@@ -26,8 +26,9 @@ var _attack_timer: float = 0.0
 
 
 func _ready() -> void:
-	max_health *= Settings.enemy_health_multiplier()
-	attack_damage *= Settings.enemy_damage_multiplier()
+	max_health *= Settings.enemy_health_multiplier() * GameState.contract_modifier("enemy_health", 1.0)
+	attack_damage *= Settings.enemy_damage_multiplier() * GameState.contract_modifier("enemy_damage", 1.0)
+	move_speed *= GameState.contract_modifier("enemy_speed", 1.0)
 	current_health = max_health
 
 

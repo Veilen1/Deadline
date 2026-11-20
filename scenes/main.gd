@@ -72,6 +72,7 @@ func _ready() -> void:
 	_update_health_label()
 	_load_zone(_zone_index)
 	GameState.start_run()
+	GameState.apply_contract_start()
 
 
 func _process(delta: float) -> void:
