@@ -360,7 +360,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Limitaciones conocidas
 
-- Hay tres zonas: blanca, celeste y violeta. Todas son arenas planas; todavía no hay plataformas ni puzzles.
+- Hay tres zonas: blanca, celeste y violeta. Ya tienen coberturas, plataformas y torres; faltan eventos de arena y más variaciones de layout.
 - Hay tres armas con munición independiente y regeneración, pero no recarga manual.
 - El volumen es general; no hay sliders separados de música/efectos.
 - La dificultad se aplica a los enemigos que aparecen después del cambio; los ya vivos no se recalculan.
@@ -371,7 +371,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Próximos pasos
 
-1. Rediseñar físicamente las zonas: plataformas, verticalidad y un puzzle o evento por arena.
+1. Eventos de arena por zona (terminales, compuertas o zonas a defender) sin frenar la acción.
 2. Sliders separados de música y efectos, y mezcla por zona.
 3. Movimiento avanzado: dash aéreo y combos de slide/salto.
 4. Nuevas variantes de enemigo (torreta fija, corredor con escudo).
@@ -618,6 +618,36 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - El árbol muestra `$` (plata) y `◈` (núcleos) juntos para evaluar la conversión.
 - Los desafíos completados disparan un **toast arriba a la derecha** con el desbloqueo y la condición cumplida.
 - Los toasts no se repiten y no avisan armas que ya estaban compradas antes.
+
+---
+
+## 21. v0.6.0 (en progreso) — arenas verticales
+
+### Jump pads
+
+- Nuevo `JumpPad`: al pisarlo lanza al jugador hacia arriba con un pequeño empuje hacia el `-Z` local.
+- El jugador conserva el impulso vertical aunque esté en el piso (`launch()` en `player.gd`).
+- Sonido, luz y pulso visual teal para leerlos rápido.
+- El empuje horizontal se puede orientar rotando el pad en cada arena.
+
+### Identidad física por zona
+
+- **Zona 1:** cuatro coberturas bajas de `0.8 m`, un jump pad central y un núcleo sobre una cobertura.
+- **Zona 2:** plataforma elevada de `1.2 m` con núcleo, jump pad de acceso y coberturas alrededor.
+- **Zona 3:** dos torres de `2.4 m` con núcleos, jump pads laterales y coberturas para cortar línea de tiro.
+- Todas las piezas usan `arena_block` y `arena_platform`, reutilizables y escalables.
+
+### Núcleos de arena
+
+- `CorePickup`: esfera dorada que gira y flota sobre las plataformas.
+- Al recogerla da `+1 ◈`, muestra un toast y se elimina hasta la próxima run.
+- Premia usar la verticalidad sin frenar la acción.
+
+### Enemigos y coberturas
+
+- Los enemigos hacen un **salto corto** al chocar con coberturas bajas para no quedar trabados.
+- Tiradores y sabuesos usan la misma lógica de escalada.
+- Las torres de Zona 3 siguen siendo riesgosas porque los tiradores disparan desde el piso.
 
 ---
 

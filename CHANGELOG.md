@@ -2,6 +2,14 @@
 
 Todas las versiones relevantes del prototipo.
 
+## No publicado
+
+### Agregado
+- Jump pads que impulsan al jugador y permiten acceder a plataformas.
+- Coberturas bajas, plataformas elevadas y torres en las tres zonas.
+- Núcleos de arena recogibles sobre las plataformas, con toast y +1 núcleo.
+- Salto corto de enemigos contra coberturas para que no queden trabados.
+
 ## v0.5.1 — 2026-11-20
 
 ### Agregado
