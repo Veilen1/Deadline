@@ -12,6 +12,7 @@ Todas las versiones relevantes del prototipo.
 - Documento de notas de UX/UI y referencias.
 - Tienda de armas con compra, equipamiento y persistencia.
 - Armas nuevas: Avispa (SMG) y Trueno (escopeta slug).
+- Pantalla de perfil con nombre editable y estadísticas persistentes.
 
 ## v0.2.0 — 2026-11-19
 
