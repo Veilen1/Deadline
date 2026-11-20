@@ -453,6 +453,8 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - Pausa, fin de run y configuración aparecen con fade.
 - El tooltip del árbol también aparece con un fade corto.
 - Todas las pantallas usan la transición; no hay cambios secos de escena.
+- Si llega otro pedido durante un fade, se encola en lugar de perderse; un watchdog de 3 s libera el overlay si algo queda colgado.
+- Al mostrar fin de run o la pausa, el cursor se fuerza visible y se coloca sobre el botón principal (`Input.warp_mouse`), así el primer click no se pierde.
 
 ### Sonidos
 
