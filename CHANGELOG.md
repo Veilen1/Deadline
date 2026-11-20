@@ -2,13 +2,17 @@
 
 Todas las versiones relevantes del prototipo.
 
-## No publicado
+## v0.6.0 — 2026-11-20
 
 ### Agregado
 - Jump pads que impulsan al jugador y permiten acceder a plataformas.
 - Coberturas bajas, plataformas elevadas y torres en las tres zonas.
 - Núcleos de arena recogibles sobre las plataformas, con toast y +1 núcleo.
 - Salto corto de enemigos contra coberturas para que no queden trabados.
+- Telegrafía de aparición: calavera roja, anillo y haz de luz en cada punto 2 s antes de la oleada.
+- Eventos de arena por zona: Reactor de pulso, Campo de hielo y Torreta de supresión.
+- Eventos destructibles con vida, etiqueta, recompensa en núcleos y toast de inicio/cierre.
+- Ralentización del jugador para el Campo de hielo (el dash sigue disponible para escapar).
 
 ### Cambiado
 - La dificultad dejó de ser un ciclo fijo: ahora se ajusta con botones `−` y `+` entre 1 y 10, y se puede bajar.
