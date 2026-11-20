@@ -5,7 +5,11 @@ Todas las versiones relevantes del prototipo.
 ## No publicado
 
 ### Agregado
-- Aviso en la pausa con el monto exacto que se pierde al volver al lobby o reiniciar la run.
+- Armas con datos: daño, cadencia, cargador, munición y regeneración por segundo.
+- HUD de munición con barra y contador.
+- Árbol de habilidades con nodos, conexiones y desbloqueo por adyacencia.
+- Nodos de daño, vida, timer, cadencia, cargador y regeneración de munición.
+- Documento de notas de UX/UI y referencias.
 
 ## v0.2.0 — 2026-11-19
 

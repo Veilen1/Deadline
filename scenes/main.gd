@@ -46,7 +46,10 @@ func _ready() -> void:
 	EventBus.boss_health_changed.connect(_on_boss_health_changed)
 	EventBus.boss_defeated.connect(_on_boss_defeated)
 	Settings.settings_changed.connect(_on_settings_changed)
-	player.call("apply_meta_upgrades", GameState.upgrades)
+	var run_upgrades: Dictionary = GameState.upgrades.duplicate()
+	for key in GameState.skill_bonuses:
+		run_upgrades[key] = float(run_upgrades.get(key, 0.0)) + float(GameState.skill_bonuses[key])
+	player.call("apply_meta_upgrades", run_upgrades)
 	_on_ammo_changed(int(player.get("current_ammo")), int(player.get("max_ammo")))
 	minimap.visible = Settings.show_minimap
 	_update_money_label(GameState.money)

@@ -60,26 +60,16 @@ theme_override_font_sizes/font_size = 16
 text = "Bonos: +0 daño, +0 vida"
 horizontal_alignment = 1
 
-[node name="BuyTimeButton" type="Button" parent="CenterContainer/Menu"]
+[node name="SkillTreeButton" type="Button" parent="CenterContainer/Menu"]
 custom_minimum_size = Vector2(340, 40)
 layout_mode = 2
-text = "Timer +10s (nivel 0) — $50"
-
-[node name="BuyDamageButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 40)
-layout_mode = 2
-text = "Daño +5 (nivel 0) — $60"
-
-[node name="BuyHealthButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 40)
-layout_mode = 2
-text = "Vida +20 (nivel 0) — $70"
+text = "Árbol de habilidades"
 
 [node name="HintLabel" type="Label" parent="CenterContainer/Menu"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)
 theme_override_font_sizes/font_size = 14
-text = "Daño y vida se aplican al empezar la próxima run."
+text = "Desbloqueá nodos adyacentes en el árbol."
 horizontal_alignment = 1
 
 [node name="PlayButton" type="Button" parent="CenterContainer/Menu"]
