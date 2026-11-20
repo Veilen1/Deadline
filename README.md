@@ -432,4 +432,35 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ---
 
+## 16. Post v0.3.0 — iconografía, tema global, transiciones y sonidos
+
+### Árbol con símbolos y tooltip
+
+- Cada nodo tiene un **símbolo** propio: `✦` daño, `◎` precisión, `★` ejecutor, `»` cadencia, `≡` cargador, `♥` vitalidad, `◆` armadura, `◷` tiempo y `↻` regeneración.
+- Al pasar el mouse por un cuadrado aparece un **tooltip lateral** con nombre, descripción, efecto por nivel, pips de nivel y costo.
+- **Click directo en el cuadrado** sube de nivel. Ya no hay botón de desbloqueo arriba a la derecha.
+- Los nodos muestran símbolo + nivel y cambian de color según estado.
+
+### Tema global
+
+- `ThemeManager` aplica un tema azul noche + dorado/turquesa a menú, hub, configuración, pausa, fin de run, tienda, árbol y perfil.
+- Botones, paneles, inputs, sliders, checkboxes y barras comparten estilo y estados de hover/pressed/focus.
+- El HUD de partida mantiene texto oscuro sobre la arena blanca para legibilidad; el pulido del HUD queda como deuda.
+
+### Transiciones
+
+- Autoload `Transitions` con fade de 0.18 s al salir y 0.25 s al entrar.
+- Pausa, fin de run y configuración aparecen con fade.
+- El tooltip del árbol también aparece con un fade corto.
+- Todas las pantallas usan la transición; no hay cambios secos de escena.
+
+### Sonidos
+
+- Disparo y pasos regenerados más suaves: menos click filoso, más cuerpo grave y ruido filtrado.
+- Sonidos de UI globales: hover y click automáticos en todos los botones.
+- Volúmenes ajustados para que caminar/disparar no sean agresivos.
+- Los sonidos de UI respetan el volumen general de Configuración.
+
+---
+
 *Documento vivo. Cualquier cambio de dirección debe reflejarse acá.*

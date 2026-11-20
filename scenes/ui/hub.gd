@@ -31,22 +31,22 @@ func _on_money_changed(_new_amount: int) -> void:
 
 func _on_skill_tree_pressed() -> void:
 	GameState.save_game()
-	get_tree().change_scene_to_file(SKILL_TREE_SCENE)
+	Transitions.change_scene_to_file(SKILL_TREE_SCENE)
 
 
 func _on_shop_pressed() -> void:
 	GameState.save_game()
-	get_tree().change_scene_to_file(SHOP_SCENE)
+	Transitions.change_scene_to_file(SHOP_SCENE)
 
 
 func _on_play_pressed() -> void:
 	GameState.save_game()
-	get_tree().change_scene_to_file(GAME_SCENE)
+	Transitions.change_scene_to_file(GAME_SCENE)
 
 
 func _on_main_menu_pressed() -> void:
 	GameState.save_game()
-	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+	Transitions.change_scene_to_file(MAIN_MENU_SCENE)
 
 
 func _update_ui() -> void:

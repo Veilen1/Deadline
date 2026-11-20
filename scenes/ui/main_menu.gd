@@ -18,17 +18,17 @@ func _ready() -> void:
 
 
 func _on_play_pressed() -> void:
-	get_tree().change_scene_to_file(GAME_SCENE)
+	Transitions.change_scene_to_file(GAME_SCENE)
 
 
 func _on_config_pressed() -> void:
 	GameState.save_game()
-	get_tree().change_scene_to_file("res://scenes/ui/settings.tscn")
+	Transitions.change_scene_to_file("res://scenes/ui/settings.tscn")
 
 
 func _on_profile_pressed() -> void:
 	GameState.save_game()
-	get_tree().change_scene_to_file("res://scenes/ui/profile.tscn")
+	Transitions.change_scene_to_file("res://scenes/ui/profile.tscn")
 
 
 func _on_quit_pressed() -> void:
