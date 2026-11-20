@@ -6,6 +6,12 @@ Todas las versiones relevantes del prototipo.
 
 ### Agregado
 - Log de diagnóstico `user://deadline_diag.log` con hitches de frame e hitos de fin de run, pausa y transiciones.
+- Núcleos (`◈`) como moneda exclusiva del árbol de habilidades, con costos exponenciales por nivel.
+- Pantalla de Desafíos con progreso, recompensas y reclamo de núcleos.
+- Desafíos que desbloquean la Avispa (40 headshots) y el Trueno (completar una run).
+- La tienda muestra las armas bloqueadas y su requisito.
+- Conversión de `$250` a `1` núcleo desde el árbol.
+- Estadísticas de headshots, élites, sabuesos y zonas en el perfil.
 - Zona 3 violeta con oleadas `5 / 6 / 4` y seis puntos de aparición.
 - Enemigo tirador: mantiene distancia, strafea y dispara proyectiles telegrafiados con un ojo brillante.
 - Élite tirador con más vida, cadencia y barra de élite.
