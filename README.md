@@ -462,6 +462,17 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - Volúmenes ajustados para que caminar/disparar no sean agresivos.
 - Los sonidos de UI respetan el volumen general de Configuración.
 
+### Audio de combate y música ambiente
+
+- Autoload `AudioDirector`: mezcla central y respeta el volumen master de Configuración.
+- **Música ambiente** procedural en loop de 8 s, con drone grave y brillo suave; suena en menús, hub y run sin cortes entre escenas.
+- **Impacto** posicional al golpear enemigos, con variación de pitch y un mínimo entre repeticiones para no saturar.
+- **Crítico** con campanita brillante sobre el impacto.
+- **Muerte de enemigo** con caída grave y ruido.
+- **Daño al jugador** con pulso sordo.
+- **Compra o subida de nivel** con un chime suave de dos notas.
+- Los sonidos de combate se instancian como `AudioStreamPlayer3D` en la posición del impacto y se liberan al terminar.
+
 ### HUD tematizado
 
 - Paneles oscuros translúcidos detrás de plata/zona, timer/oleada, vida/arma/munición, barra del élite y estilo.
