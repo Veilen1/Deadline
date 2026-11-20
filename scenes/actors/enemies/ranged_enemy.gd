@@ -142,6 +142,7 @@ func _fire(player: Node3D) -> void:
 	projectile.call(
 		"launch", origin, target, projectile_speed, projectile_damage, projectile_lifetime, self
 	)
+	AudioDirector.play_enemy_shot(global_position + Vector3.UP * 1.0)
 
 
 func _has_line_of_sight(player: Node3D) -> bool:

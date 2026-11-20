@@ -12,6 +12,10 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 @export var dash_speed: float = 16.0
 @export var dash_duration: float = 0.13
 @export var dash_cooldown: float = 0.9
+@export var air_dash_charges: int = 1
+@export var air_dash_speed: float = 18.0
+@export var air_dash_duration: float = 0.16
+@export var air_dash_cooldown: float = 0.35
 @export var slide_speed_multiplier: float = 1.7
 @export var slide_duration: float = 0.42
 @export var slide_cooldown: float = 1.0
@@ -70,6 +74,9 @@ var _shake_peak: float = 0.0
 var _dash_timer: float = 0.0
 var _dash_cooldown_timer: float = 0.0
 var _dash_direction: Vector3 = Vector3.ZERO
+var _active_dash_speed: float = 16.0
+var _air_dashes: int = 1
+var _air_dash_cooldown_timer: float = 0.0
 var _dash_fov_kick: float = 0.0
 var _slide_timer: float = 0.0
 var _slide_cooldown_timer: float = 0.0
@@ -89,6 +96,8 @@ var _blessing_health_applied: int = 0
 
 func _ready() -> void:
 	current_health = max_health
+	_active_dash_speed = dash_speed
+	_air_dashes = air_dash_charges
 	_contract_damage_taken = GameState.contract_modifier("player_damage_taken", 1.0)
 	_contract_ammo_regen = GameState.contract_modifier("ammo_regen", 1.0)
 	var equipped_weapon: WeaponData = WeaponRegistry.get_data(GameState.equipped_weapon)
@@ -206,9 +215,34 @@ func apply_slow(multiplier: float, duration: float) -> void:
 	_slow_timer = maxf(_slow_timer, duration)
 
 
+func try_jump() -> void:
+	# Salto normal; si venís de slide, gana altura extra.
+	var slide_jump: bool = _slide_timer > 0.0
+	velocity.y = sqrt(2.0 * gravity * jump_height * (1.25 if slide_jump else 1.0))
+	if slide_jump:
+		_slide_timer = 0.0
+		_slide_cooldown_timer = maxf(_slide_cooldown_timer, 0.25)
+		_dash_fov_kick = 3.0
+
+
 func _try_dash() -> void:
-	if _dash_cooldown_timer > 0.0 or _dash_timer > 0.0:
+	if _dash_timer > 0.0:
 		return
+
+	var in_air: bool = not is_on_floor()
+	if in_air:
+		if _air_dashes <= 0 or _air_dash_cooldown_timer > 0.0:
+			return
+		_air_dashes -= 1
+		_air_dash_cooldown_timer = air_dash_cooldown
+		_dash_timer = air_dash_duration
+		_active_dash_speed = air_dash_speed
+	else:
+		if _dash_cooldown_timer > 0.0:
+			return
+		_dash_cooldown_timer = dash_cooldown
+		_dash_timer = dash_duration
+		_active_dash_speed = dash_speed
 
 	var direction: Vector3 = _input_direction()
 	if direction == Vector3.ZERO:
@@ -217,17 +251,24 @@ func _try_dash() -> void:
 		direction = direction.normalized()
 
 	_dash_direction = direction
-	_dash_timer = dash_duration
-	_dash_cooldown_timer = dash_cooldown
 	_slide_timer = 0.0
 	_shake_time = 0.12
 	_shake_peak = 0.02
-	_dash_fov_kick = 7.0
+	_dash_fov_kick = 9.0 if in_air else 7.0
 	if dash_trail != null:
 		dash_trail.restart()
 		dash_trail.emitting = true
-	dash_player.pitch_scale = randf_range(0.95, 1.05)
+		dash_trail.color = Color(0.45, 0.95, 1.0, 0.85) if in_air else Color(0.3, 0.85, 0.82, 0.85)
+	dash_player.pitch_scale = 1.18 if in_air else randf_range(0.95, 1.05)
 	dash_player.play()
+
+
+func get_air_dash_charges() -> int:
+	return _air_dashes
+
+
+func get_max_air_dash_charges() -> int:
+	return air_dash_charges
 
 
 func _try_slide() -> void:
@@ -325,7 +366,10 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	_fire_timer = maxf(_fire_timer - delta, 0.0)
 	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
+	_air_dash_cooldown_timer = maxf(_air_dash_cooldown_timer - delta, 0.0)
 	_slide_cooldown_timer = maxf(_slide_cooldown_timer - delta, 0.0)
+	if is_on_floor():
+		_air_dashes = air_dash_charges
 	if _slow_timer > 0.0:
 		_slow_timer = maxf(_slow_timer - delta, 0.0)
 		if _slow_timer <= 0.0:
@@ -345,8 +389,8 @@ func _physics_process(delta: float) -> void:
 		direction = direction.normalized()
 
 	if _dash_timer > 0.0:
-		velocity.x = _dash_direction.x * dash_speed
-		velocity.z = _dash_direction.z * dash_speed
+		velocity.x = _dash_direction.x * _active_dash_speed
+		velocity.z = _dash_direction.z * _active_dash_speed
 		_dash_timer = maxf(_dash_timer - delta, 0.0)
 	elif _slide_timer > 0.0:
 		velocity.x = (
@@ -367,8 +411,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y = 0.0
 		if Input.is_action_just_pressed("jump"):
-			# Salto de medio cuerpo: v = sqrt(2 * g * h).
-			velocity.y = sqrt(2.0 * gravity * jump_height)
+			try_jump()
 
 	move_and_slide()
 
