@@ -2,6 +2,11 @@
 
 Todas las versiones relevantes del prototipo.
 
+## No publicado
+
+### Agregado
+- Aviso en la pausa con el monto exacto que se pierde al volver al lobby o reiniciar la run.
+
 ## v0.2.0 — 2026-11-19
 
 ### Agregado
