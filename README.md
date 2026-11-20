@@ -654,4 +654,28 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ---
 
+## 22. Rediseño de menús (v0.6.0 en progreso)
+
+### Jerarquía visual
+
+- **Primario (dorado):** una sola acción importante por pantalla: `JUGAR`, `Reanudar`, `Reintentar`, `Empezar run`.
+- **Secundario (azul):** acciones de apoyo: configuración, perfil, dificultad, abrir tienda/árbol, comprar.
+- **Texto (sin caja):** salir, volver al hub/menú, navegación de bajo peso.
+- Los botones primarios tienen borde dorado y texto claro; los secundarios borde azul y hover turquesa.
+
+### Hub
+
+- Barra superior con título y recursos en tarjetas de **Plata** y **Núcleos**.
+- Tarjeta principal **Siguiente run** con contrato, dificultad, timer, bonos y el CTA `JUGAR`.
+- Tarjetas laterales de **Progresión**, **Arsenal** y **Objetivos** con icono, descripción y acción.
+- Barra inferior con atajos y acceso discreto al menú principal.
+
+### Otras pantallas
+
+- Menú principal, pausa y fin de run ahora viven en una tarjeta con una única acción principal.
+- Todas las pantallas usan el mismo header: título, recursos y **← Volver**.
+- El tema global se propaga también a los menús dentro de la partida (CanvasLayer/Node3D), no solo a las escenas de UI.
+
+---
+
 *Documento vivo. Cualquier cambio de dirección debe reflejarse acá.*

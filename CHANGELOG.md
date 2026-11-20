@@ -15,6 +15,11 @@ Todas las versiones relevantes del prototipo.
 - El botón **Subir ciclo** pasó a **Subir dificultad**, con su par **Bajar dificultad**.
 - Al cambiarla aparece un toast con vida/daño/velocidad enemiga y el multiplicador de núcleos.
 - **Reloj de arena** ahora da `+8 s` por nivel (antes `+5`). Los saves viejos reciben la diferencia automáticamente.
+- **Hub rediseñado** con barra de recursos, tarjeta principal de próxima run y tarjetas de Progresión, Arsenal y Objetivos.
+- **Jerarquía de botones global:** acción primaria dorada, secundaria azul y acciones de texto discretas.
+- Menú principal, pausa y fin de run reorganizados en tarjetas con una única acción principal.
+- El tema global ahora se aplica también a menús que cuelgan de `CanvasLayer`/`Node3D` (pausa, fin de run y HUD).
+- Todos los botones de volver quedaron unificados como **← Volver**.
 
 ## v0.5.1 — 2026-11-20
 

@@ -58,7 +58,7 @@
 
 1. **Eventos de arena:** terminales, compuertas o zonas a defender sin frenar la acción.
 2. **Mapas:** seguir iterando layouts verticales y legibilidad de plataformas.
-3. **HUD:** probar los nuevos indicadores (bendiciones, grado) en resoluciones chicas y UI scale alto.
+3. **Menús:** jerarquía primaria/secundaria aplicada; falta testear navegación con teclado/controller y resoluciones chicas.
 4. **Audio:** sliders separados de música/efectos y mezcla por zona.
 5. **Movimiento:** dash aéreo y combos de slide/salto.
 6. **Contenido:** torreta fija y nuevas variantes de enemigo.

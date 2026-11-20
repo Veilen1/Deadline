@@ -28,44 +28,78 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Menu" type="VBoxContainer" parent="CenterContainer"]
+[node name="Card" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_type_variation = "HeroPanel"
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/Menu"]
+[node name="VBox" type="VBoxContainer" parent="CenterContainer/Card"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/Card/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
-theme_override_font_sizes/font_size = 56
+theme_override_font_sizes/font_size = 54
 text = "DEADLINE"
 horizontal_alignment = 1
 
-[node name="SubtitleLabel" type="Label" parent="CenterContainer/Menu"]
+[node name="SubtitleLabel" type="Label" parent="CenterContainer/Card/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
-theme_override_font_sizes/font_size = 18
-text = "Arena shooter - prototipo"
+theme_override_font_sizes/font_size = 13
+text = "ARENA SHOOTER · PROTOTIPO"
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(0, 24)
+[node name="Spacer" type="Control" parent="CenterContainer/Card/VBox"]
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 
-[node name="PlayButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(240, 48)
+[node name="PlayButton" type="Button" parent="CenterContainer/Card/VBox"]
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-text = "Jugar"
+theme_type_variation = "PrimaryButton"
+theme_override_font_sizes/font_size = 20
+text = "JUGAR"
 
-[node name="ConfigButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(240, 48)
+[node name="SecondaryRow" type="HBoxContainer" parent="CenterContainer/Card/VBox"]
 layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ConfigButton" type="Button" parent="CenterContainer/Card/VBox/SecondaryRow"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = "SecondaryButton"
 text = "Configuración"
 
-[node name="ProfileButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(240, 48)
+[node name="ProfileButton" type="Button" parent="CenterContainer/Card/VBox/SecondaryRow"]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = "SecondaryButton"
 text = "Perfil"
 
-[node name="QuitButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(240, 48)
+[node name="QuitButton" type="Button" parent="CenterContainer/Card/VBox"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
+theme_type_variation = "TextButton"
 text = "Salir"
+
+[node name="Spacer2" type="Control" parent="CenterContainer/Card/VBox"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="HintLabel" type="Label" parent="CenterContainer/Card/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.6, 0.72, 1)
+theme_override_font_sizes/font_size = 12
+text = "WASD · Shift dash · Ctrl slide · 1 / 2 / 3 armas"
+horizontal_alignment = 1
+
+[node name="VersionLabel" type="Label" parent="CenterContainer/Card/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 0.5, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "v0.6.0 · prototipo"
+horizontal_alignment = 1

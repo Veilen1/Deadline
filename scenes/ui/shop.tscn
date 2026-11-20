@@ -58,7 +58,8 @@ vertical_alignment = 1
 [node name="BackButton" type="Button" parent="Margin/VBox/TopBar"]
 custom_minimum_size = Vector2(170, 40)
 layout_mode = 2
-text = "Volver al hub"
+theme_type_variation = "SecondaryButton"
+text = "← Volver"
 
 [node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
 layout_mode = 2
