@@ -23,6 +23,8 @@ extends CharacterBody3D
 
 var current_health: float
 var _attack_timer: float = 0.0
+var _climb_air: float = 0.0
+var _climb_cooldown: float = 0.0
 
 
 func _ready() -> void:
@@ -58,12 +60,9 @@ func _physics_process(delta: float) -> void:
 		velocity.x = 0.0
 		velocity.z = 0.0
 
-	if not is_on_floor():
-		velocity.y -= gravity * delta
-	else:
-		velocity.y = 0.0
-
+	_apply_vertical(delta)
 	move_and_slide()
+	_after_move_climb()
 
 	_attack_timer = maxf(_attack_timer - delta, 0.0)
 	if to_player.length() <= attack_range and _attack_timer <= 0.0:
@@ -72,6 +71,25 @@ func _physics_process(delta: float) -> void:
 			player.call("take_damage", attack_damage)
 
 	# TODO: Fase 4 — comportamiento por zona (élites, composición de oleadas).
+
+
+func _apply_vertical(delta: float) -> void:
+	_climb_cooldown = maxf(_climb_cooldown - delta, 0.0)
+	if _climb_air > 0.0:
+		_climb_air -= delta
+		velocity.y -= gravity * delta
+	elif not is_on_floor():
+		velocity.y -= gravity * delta
+	else:
+		velocity.y = 0.0
+
+
+func _after_move_climb() -> void:
+	# Salto corto contra obstáculos bajos para que no queden trabados.
+	if is_on_wall() and is_on_floor() and _climb_cooldown <= 0.0:
+		velocity.y = 7.5
+		_climb_air = 0.35
+		_climb_cooldown = 1.0
 
 
 func take_hit(hit_zone: String, base_damage: float, base_money: int, hit_position: Vector3 = Vector3.INF) -> void:

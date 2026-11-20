@@ -40,8 +40,9 @@ func _physics_process(delta: float) -> void:
 	if player == null:
 		velocity.x = 0.0
 		velocity.z = 0.0
-		_apply_gravity(delta)
+		_apply_vertical(delta)
 		move_and_slide()
+		_after_move_climb()
 		return
 
 	var to_player: Vector3 = player.global_position - global_position
@@ -63,8 +64,9 @@ func _physics_process(delta: float) -> void:
 		if distance <= fuse_range:
 			_start_fuse()
 
-	_apply_gravity(delta)
+	_apply_vertical(delta)
 	move_and_slide()
+	_after_move_climb()
 
 
 func _start_fuse() -> void:
@@ -104,10 +106,3 @@ func _spawn_wave() -> void:
 	get_parent().add_child(wave)
 	wave.global_position = Vector3(global_position.x, 0.03, global_position.z)
 	wave.call("start", explosion_radius)
-
-
-func _apply_gravity(delta: float) -> void:
-	if not is_on_floor():
-		velocity.y -= gravity * delta
-	else:
-		velocity.y = 0.0

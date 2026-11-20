@@ -1,10 +1,14 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scenes/levels/zone.gd" id="1_zone"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/guard_enemy.tscn" id="2_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/elite_guard_enemy.tscn" id="3_elite"]
 [ext_resource type="PackedScene" path="res://scenes/levels/arena_bounds.tscn" id="4_bounds"]
-[ext_resource type="PackedScene" path="res://scenes/actors/enemies/hound_enemy.tscn" id="5_hound"]
+[ext_resource type="PackedScene" path="res://scenes/levels/arena_block.tscn" id="5_block"]
+[ext_resource type="PackedScene" path="res://scenes/levels/arena_platform.tscn" id="6_platform"]
+[ext_resource type="PackedScene" path="res://scenes/levels/jump_pad.tscn" id="7_pad"]
+[ext_resource type="PackedScene" path="res://scenes/levels/core_pickup.tscn" id="8_core"]
+[ext_resource type="PackedScene" path="res://scenes/actors/enemies/hound_enemy.tscn" id="9_hound"]
 
 [sub_resource type="Environment" id="Environment_cold"]
 background_mode = 1
@@ -26,8 +30,7 @@ size = Vector3(40, 0.2, 40)
 [node name="Zone02" type="Node3D"]
 script = ExtResource("1_zone")
 enemy_scene = ExtResource("2_enemy")
-enemy_scenes = Array[PackedScene]([ExtResource("2_enemy"), ExtResource("2_enemy"), ExtResource("5_hound")])
-elite_scene = ExtResource("3_elite")
+enemy_scenes = Array[PackedScene]([ExtResource("2_enemy"), ExtResource("2_enemy"), ExtResource("9_hound")])elite_scene = ExtResource("3_elite")
 zone_id = "zona_2"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -60,5 +63,29 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 6)
 
 [node name="SpawnPoint4" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 6)
+
+[node name="Platform1" parent="." instance=ExtResource("6_platform")]
+position = Vector3(0, 1, 0)
+scale = Vector3(1.5, 1, 1)
+
+[node name="JumpPad1" parent="." instance=ExtResource("7_pad")]
+position = Vector3(0, 0.02, 5)
+
+[node name="CorePickup1" parent="." instance=ExtResource("8_core")]
+position = Vector3(0, 1.8, 0)
+
+[node name="Cover1" parent="." instance=ExtResource("5_block")]
+position = Vector3(-8, 0.4, -3)
+scale = Vector3(1, 1, 1.5)
+
+[node name="Cover2" parent="." instance=ExtResource("5_block")]
+position = Vector3(8, 0.4, 3)
+scale = Vector3(1.5, 1, 1)
+
+[node name="Cover3" parent="." instance=ExtResource("5_block")]
+position = Vector3(0, 0.4, -7)
+
+[node name="Cover4" parent="." instance=ExtResource("5_block")]
+position = Vector3(-6, 0.4, 6)
 
 [node name="ArenaBounds" parent="." instance=ExtResource("4_bounds")]

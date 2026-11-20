@@ -76,6 +76,7 @@ var _slide_cooldown_timer: float = 0.0
 var _slide_direction: Vector3 = Vector3.ZERO
 var _contract_damage_taken: float = 1.0
 var _contract_ammo_regen: float = 1.0
+var _launch_ignore_floor: int = 0
 var _blessing_damage_mult: float = 1.0
 var _blessing_fire_rate_mult: float = 1.0
 var _blessing_regen_bonus: float = 0.0
@@ -184,6 +185,17 @@ func _input_direction() -> Vector3:
 	if direction.length_squared() <= 0.0:
 		return Vector3.ZERO
 	return direction.normalized()
+
+
+func launch(launch_velocity: Vector3) -> void:
+	# Jump pads: preserva el impulso vertical aunque el jugador esté en el piso.
+	velocity = launch_velocity
+	_launch_ignore_floor = 2
+	_dash_timer = 0.0
+	_slide_timer = 0.0
+	_dash_fov_kick = 6.0
+	_shake_time = 0.1
+	_shake_peak = 0.018
 
 
 func _try_dash() -> void:
@@ -332,7 +344,9 @@ func _physics_process(delta: float) -> void:
 		velocity.x = direction.x * move_speed * _blessing_move_mult
 		velocity.z = direction.z * move_speed * _blessing_move_mult
 
-	if not is_on_floor():
+	if _launch_ignore_floor > 0:
+		_launch_ignore_floor -= 1
+	elif not is_on_floor():
 		velocity.y -= gravity * delta
 	else:
 		velocity.y = 0.0

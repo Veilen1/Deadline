@@ -47,8 +47,9 @@ func _physics_process(delta: float) -> void:
 	if player == null:
 		velocity.x = 0.0
 		velocity.z = 0.0
-		_apply_gravity(delta)
+		_apply_vertical(delta)
 		move_and_slide()
+		_after_move_climb()
 		return
 
 	var to_player: Vector3 = player.global_position - global_position
@@ -74,8 +75,9 @@ func _physics_process(delta: float) -> void:
 			if _state_timer <= 0.0:
 				_state = State.REPOSITION
 
-	_apply_gravity(delta)
+	_apply_vertical(delta)
 	move_and_slide()
+	_after_move_climb()
 
 
 func _process_reposition(direction: Vector3, distance: float, player: Node3D) -> void:
@@ -155,13 +157,6 @@ func _has_line_of_sight(player: Node3D) -> bool:
 		return false
 	var collider: Object = result.get("collider")
 	return collider is Node and (collider as Node).is_in_group("player")
-
-
-func _apply_gravity(delta: float) -> void:
-	if not is_on_floor():
-		velocity.y -= gravity * delta
-	else:
-		velocity.y = 0.0
 
 
 func _get_player() -> Node3D:
