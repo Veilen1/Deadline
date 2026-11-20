@@ -19,11 +19,13 @@ const ZONE_SCENES = [
 @onready var health_label: Label = $CanvasLayer/HealthLabel
 @onready var ammo_label: Label = $CanvasLayer/AmmoLabel
 @onready var ammo_bar: ProgressBar = $CanvasLayer/AmmoBar
+@onready var weapon_label: Label = $CanvasLayer/WeaponLabel
 @onready var style_label: Label = $CanvasLayer/StyleLabel
 @onready var style_bar: ProgressBar = $CanvasLayer/StyleBar
 @onready var boss_label: Label = $CanvasLayer/BossLabel
 @onready var boss_bar: ProgressBar = $CanvasLayer/BossBar
 @onready var boss_hp_label: Label = $CanvasLayer/BossHpLabel
+@onready var boss_panel: Panel = $CanvasLayer/PanelBoss
 @onready var zone_banner: Label = $CanvasLayer/ZoneBanner
 @onready var pause_menu: Control = $CanvasLayer/PauseMenu
 @onready var game_over_menu: Control = $CanvasLayer/GameOverMenu
@@ -42,6 +44,7 @@ func _ready() -> void:
 	EventBus.player_damaged.connect(_on_player_damaged)
 	EventBus.player_died.connect(_on_player_died)
 	EventBus.ammo_changed.connect(_on_ammo_changed)
+	EventBus.weapon_changed.connect(_on_weapon_changed)
 	EventBus.critical_hit.connect(_on_critical_hit)
 	StyleSystem.style_changed.connect(_on_style_changed)
 	EventBus.wave_started.connect(_on_wave_started)
@@ -55,6 +58,9 @@ func _ready() -> void:
 	for key in GameState.skill_bonuses:
 		run_upgrades[key] = float(run_upgrades.get(key, 0.0)) + float(GameState.skill_bonuses[key])
 	player.call("apply_meta_upgrades", run_upgrades)
+	var player_weapon: WeaponData = player.get("weapon_data") as WeaponData
+	if player_weapon != null:
+		weapon_label.text = player_weapon.weapon_name
 	_on_ammo_changed(int(player.get("current_ammo")), int(player.get("max_ammo")))
 	minimap.visible = Settings.show_minimap
 	_update_money_label(GameState.money)
@@ -166,6 +172,7 @@ func _on_boss_spawned(_boss: Node, max_health: float) -> void:
 	boss_label.show()
 	boss_bar.show()
 	boss_hp_label.show()
+	boss_panel.show()
 
 
 func _on_boss_health_changed(current_health: float, max_health: float) -> void:
@@ -186,6 +193,10 @@ func _on_ammo_changed(current: int, maximum: int) -> void:
 	ammo_label.text = "%d / %d" % [current, maximum]
 	ammo_bar.max_value = maximum
 	ammo_bar.value = current
+
+
+func _on_weapon_changed(weapon_name: String) -> void:
+	weapon_label.text = weapon_name
 
 
 func _on_style_changed(rank: String, rank_index: int, progress: float, combo: int) -> void:
@@ -237,6 +248,7 @@ func _hide_boss_ui() -> void:
 	boss_label.hide()
 	boss_bar.hide()
 	boss_hp_label.hide()
+	boss_panel.hide()
 
 
 func _update_money_label(amount: int) -> void:

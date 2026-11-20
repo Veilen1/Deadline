@@ -48,8 +48,9 @@
 
 ## Próximas tareas de UX/UI
 
-1. **HUD**: unificar el HUD de partida con el tema sin perder legibilidad sobre la arena blanca.
-2. **Tema global:** menú, hub, pausa, configuración, tienda, árbol y perfil ya usan el tema; falta pulir el HUD.
-3. **Transiciones:** fades implementados; falta feedback de sonido en transiciones y más animaciones de botones/nodos.
-4. **Feedback:** sonidos de UI y de disparo/pasos suavizados; falta música/ambiente y sonidos de rango.
+1. **HUD**: tematizado con paneles oscuros; falta pulir densidad y tamaños en resoluciones chicas.
+2. **Tema global:** aplicado a menús, hub, configuración, pausa, tienda, árbol y perfil.
+3. **Transiciones:** fades y sonidos de UI implementados; falta música/ambiente.
+4. **Feedback:** disparo/pasos suavizados, dash/rango/cambio de arma con sonido.
 5. **Accesibilidad:** tamaño de texto, contraste, navegación con teclado/controller.
+6. **Contenido:** más armas/consumibles, Zona 3 y modo dash/slide combinado.

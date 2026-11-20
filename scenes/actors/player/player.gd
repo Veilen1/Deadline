@@ -9,6 +9,13 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 @export var move_speed: float = 5.0
 @export var gravity: float = 20.0
 @export var jump_height: float = 0.9
+@export var dash_speed: float = 16.0
+@export var dash_duration: float = 0.14
+@export var dash_cooldown: float = 0.7
+@export var slide_speed_multiplier: float = 1.7
+@export var slide_duration: float = 0.45
+@export var slide_cooldown: float = 0.8
+@export var slide_camera_height: float = 0.9
 
 @export_group("Camera")
 @export var mouse_sensitivity: float = 0.003
@@ -31,6 +38,9 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 @onready var shoot_origin: Marker3D = $Camera3D/ShootOrigin
 @onready var shoot_player: AudioStreamPlayer = $ShootPlayer
 @onready var footstep_player: AudioStreamPlayer = $FootstepPlayer
+@onready var dash_player: AudioStreamPlayer = $DashPlayer
+@onready var rank_up_player: AudioStreamPlayer = $RankUpPlayer
+@onready var weapon_switch_player: AudioStreamPlayer = $WeaponSwitchPlayer
 
 var current_health: float
 var damage_bonus: float = 0.0
@@ -38,10 +48,13 @@ var crit_bonus: float = 0.0
 var crit_refund: float = 0.0
 var damage_reduction: float = 0.0
 var max_ammo: int = 0
+var ammo_capacity_bonus: int = 0
 var current_ammo: int = 0
 var ammo_regen_bonus: float = 0.0
 var fire_rate_bonus: float = 0.0
 
+var _weapon_ids: Array[String] = []
+var _current_weapon_id: String = ""
 var _footstep_timer: float = 0.0
 var _fire_timer: float = 0.0
 var _regen_delay_timer: float = 0.0
@@ -51,6 +64,12 @@ var _target_fov: float = 75.0
 var _style_rank: int = 0
 var _shake_time: float = 0.0
 var _shake_peak: float = 0.0
+var _dash_timer: float = 0.0
+var _dash_cooldown_timer: float = 0.0
+var _dash_direction: Vector3 = Vector3.ZERO
+var _slide_timer: float = 0.0
+var _slide_cooldown_timer: float = 0.0
+var _slide_direction: Vector3 = Vector3.ZERO
 
 
 func _ready() -> void:
@@ -63,6 +82,11 @@ func _ready() -> void:
 		current_ammo = max_ammo
 	else:
 		push_warning("Player: falta weapon_data")
+
+	_weapon_ids = GameState.owned_weapons.duplicate()
+	_current_weapon_id = GameState.equipped_weapon
+	if not _weapon_ids.has(_current_weapon_id):
+		_weapon_ids.append(_current_weapon_id)
 
 	Settings.settings_changed.connect(_apply_live_settings)
 	StyleSystem.style_changed.connect(_on_style_changed)
@@ -78,6 +102,9 @@ func _process(delta: float) -> void:
 		return
 
 	camera.fov = lerpf(camera.fov, _target_fov, 1.0 - exp(-10.0 * delta))
+
+	var target_height: float = slide_camera_height if _slide_timer > 0.0 else camera_height
+	camera.position.y = lerpf(camera.position.y, target_height, 1.0 - exp(-12.0 * delta))
 
 	if _shake_time > 0.0:
 		_shake_time = maxf(_shake_time - delta, 0.0)
@@ -97,6 +124,85 @@ func _on_style_changed(_rank: String, rank_index: int, _progress: float, _combo:
 func _on_rank_up(_rank: String, rank_index: int) -> void:
 	_shake_time = shake_duration
 	_shake_peak = shake_strength * (1.0 + float(rank_index) * 0.25)
+	rank_up_player.play()
+
+
+func _input_direction() -> Vector3:
+	var input_vector: Vector2 = Input.get_vector(
+		"move_left", "move_right", "move_forward", "move_back"
+	)
+	var body_basis: Basis = global_basis
+	var direction: Vector3 = body_basis.x * input_vector.x + body_basis.z * input_vector.y
+	direction.y = 0.0
+	if direction.length_squared() <= 0.0:
+		return Vector3.ZERO
+	return direction.normalized()
+
+
+func _try_dash() -> void:
+	if _dash_cooldown_timer > 0.0 or _dash_timer > 0.0:
+		return
+
+	var direction: Vector3 = _input_direction()
+	if direction == Vector3.ZERO:
+		direction = -global_basis.z
+		direction.y = 0.0
+		direction = direction.normalized()
+
+	_dash_direction = direction
+	_dash_timer = dash_duration
+	_dash_cooldown_timer = dash_cooldown
+	_slide_timer = 0.0
+	_shake_time = 0.12
+	_shake_peak = 0.02
+	dash_player.pitch_scale = randf_range(0.95, 1.05)
+	dash_player.play()
+
+
+func _try_slide() -> void:
+	if _slide_cooldown_timer > 0.0 or _slide_timer > 0.0 or not is_on_floor():
+		return
+
+	var direction: Vector3 = _input_direction()
+	if direction == Vector3.ZERO:
+		direction = Vector3(velocity.x, 0.0, velocity.z)
+		if direction.length_squared() <= 0.01:
+			direction = -global_basis.z
+			direction.y = 0.0
+		direction = direction.normalized()
+
+	_slide_direction = direction
+	_slide_timer = slide_duration
+	_slide_cooldown_timer = slide_cooldown
+	_dash_timer = 0.0
+	_shake_time = 0.08
+	_shake_peak = 0.012
+	dash_player.pitch_scale = 0.78
+	dash_player.play()
+
+
+func _switch_weapon(index: int) -> void:
+	if index < 0 or index >= _weapon_ids.size():
+		return
+
+	var weapon_id: String = _weapon_ids[index]
+	if weapon_id == _current_weapon_id:
+		return
+
+	var data: WeaponData = WeaponRegistry.get_data(weapon_id)
+	if data == null:
+		return
+
+	_current_weapon_id = weapon_id
+	weapon_data = data
+	max_ammo = data.magazine_size + ammo_capacity_bonus
+	current_ammo = max_ammo
+	_fire_timer = 0.0
+	_regen_delay_timer = 0.0
+	_ammo_regen_accumulator = 0.0
+	EventBus.ammo_changed.emit(current_ammo, max_ammo)
+	EventBus.weapon_changed.emit(data.weapon_name)
+	weapon_switch_player.play()
 
 
 func _apply_live_settings() -> void:
@@ -109,6 +215,20 @@ func _apply_live_settings() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+		return
+
+	if event is InputEventKey and event.pressed and not event.echo:
+		match event.physical_keycode:
+			KEY_SHIFT:
+				_try_dash()
+			KEY_CTRL:
+				_try_slide()
+			KEY_1:
+				_switch_weapon(0)
+			KEY_2:
+				_switch_weapon(1)
+			KEY_3:
+				_switch_weapon(2)
 		return
 
 	if event.is_action_pressed("shoot"):
@@ -129,6 +249,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	_fire_timer = maxf(_fire_timer - delta, 0.0)
+	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
+	_slide_cooldown_timer = maxf(_slide_cooldown_timer - delta, 0.0)
 	_update_ammo_regen(delta)
 
 	var input_vector: Vector2 = Input.get_vector(
@@ -141,8 +263,17 @@ func _physics_process(delta: float) -> void:
 	if direction.length_squared() > 0.0:
 		direction = direction.normalized()
 
-	velocity.x = direction.x * move_speed
-	velocity.z = direction.z * move_speed
+	if _dash_timer > 0.0:
+		velocity.x = _dash_direction.x * dash_speed
+		velocity.z = _dash_direction.z * dash_speed
+		_dash_timer = maxf(_dash_timer - delta, 0.0)
+	elif _slide_timer > 0.0:
+		velocity.x = _slide_direction.x * move_speed * slide_speed_multiplier
+		velocity.z = _slide_direction.z * move_speed * slide_speed_multiplier
+		_slide_timer = maxf(_slide_timer - delta, 0.0)
+	else:
+		velocity.x = direction.x * move_speed
+		velocity.z = direction.z * move_speed
 
 	if not is_on_floor():
 		velocity.y -= gravity * delta
@@ -195,7 +326,9 @@ func apply_meta_upgrades(upgrades: Dictionary) -> void:
 	crit_refund += float(upgrades.get("crit_refund", 0.0))
 	damage_reduction += float(upgrades.get("damage_reduction", 0.0))
 	max_health += float(upgrades.get("health_bonus", 0.0))
-	max_ammo += int(upgrades.get("ammo_capacity_bonus", 0))
+	ammo_capacity_bonus += int(upgrades.get("ammo_capacity_bonus", 0))
+	if weapon_data != null:
+		max_ammo = weapon_data.magazine_size + ammo_capacity_bonus
 	ammo_regen_bonus += float(upgrades.get("ammo_regen_bonus", 0.0))
 	fire_rate_bonus += float(upgrades.get("fire_rate_bonus", 0.0))
 	current_health = max_health

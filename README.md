@@ -458,8 +458,27 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 - Disparo y pasos regenerados más suaves: menos click filoso, más cuerpo grave y ruido filtrado.
 - Sonidos de UI globales: hover y click automáticos en todos los botones.
+- Sonidos de dash, subida de rango y cambio de arma.
 - Volúmenes ajustados para que caminar/disparar no sean agresivos.
 - Los sonidos de UI respetan el volumen general de Configuración.
+
+### HUD tematizado
+
+- Paneles oscuros translúcidos detrás de plata/zona, timer/oleada, vida/arma/munición, barra del élite y estilo.
+- Texto claro sobre panel oscuro, manteniendo legibilidad sobre la arena blanca.
+- Etiqueta de arma equipada y color de munición dentro del HUD.
+
+### Movimiento
+
+- **Dash:** `Shift`, burst rápido con cooldown y shake de cámara.
+- **Slide:** `Ctrl`, acelera y baja la cámara durante un instante.
+- Ambos respetan la pausa y suenan con un whoosh suave.
+
+### Cambio de armas
+
+- `1`, `2`, `3` cambian entre las armas compradas.
+- La HUD muestra el arma equipada y la munición correspondiente.
+- El cambio rellena el cargador del arma nueva (provisorio para el prototipo).
 
 ---
 

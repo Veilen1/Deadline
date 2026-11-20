@@ -1,9 +1,12 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scenes/actors/player/player.gd" id="1_player"]
 [ext_resource type="AudioStream" path="res://assets/audio/shoot.wav" id="2_shoot"]
 [ext_resource type="AudioStream" path="res://assets/audio/footstep.wav" id="3_footstep"]
 [ext_resource type="Resource" path="res://resources/weapons/basic_rifle.tres" id="4_weapon"]
+[ext_resource type="AudioStream" path="res://assets/audio/dash.wav" id="5_dash"]
+[ext_resource type="AudioStream" path="res://assets/audio/rank_up.wav" id="6_rank_up"]
+[ext_resource type="AudioStream" path="res://assets/audio/ui_click.wav" id="7_switch"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -68,3 +71,15 @@ volume_db = -10.0
 [node name="FootstepPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_footstep")
 volume_db = -17.0
+
+[node name="DashPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_dash")
+volume_db = -14.0
+
+[node name="RankUpPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_rank_up")
+volume_db = -10.0
+
+[node name="WeaponSwitchPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_switch")
+volume_db = -14.0
