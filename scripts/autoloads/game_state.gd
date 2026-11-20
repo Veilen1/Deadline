@@ -93,6 +93,17 @@ var hounds_killed: int = 0
 var zones_cleared: int = 0
 var claimed_challenges: Array[String] = []
 
+# Ciclos de dificultad y grado de la última run.
+var cycle: int = 1
+var best_grade: String = "C"
+var last_grade: String = "C"
+var last_grade_cores: int = 0
+
+# Contadores de la run actual para calcular el grado.
+var run_shots: int = 0
+var run_hits: int = 0
+var run_kills: int = 0
+
 var _save_timer: Timer
 var _is_loading: bool = false
 
@@ -114,6 +125,7 @@ func _ready() -> void:
 
 func _on_enemy_killed(enemy: Node, _hit_zone: String) -> void:
 	kills += 1
+	run_kills += 1
 	if enemy != null and is_instance_valid(enemy):
 		if enemy.is_in_group("elites"):
 			elites_killed += 1
@@ -125,6 +137,7 @@ func _on_enemy_killed(enemy: Node, _hit_zone: String) -> void:
 
 
 func _on_enemy_hit(_enemy: Node, hit_zone: String, _damage: float, _money: int) -> void:
+	run_hits += 1
 	if hit_zone != "head":
 		return
 	headshots += 1
@@ -174,6 +187,76 @@ func contract_modifier(key: String, default_value: float = 1.0) -> float:
 
 func contract_core_bonus() -> int:
 	return int(contract_data().get("core_bonus", 0))
+
+
+func cycle_enemy_health_mult() -> float:
+	return 1.0 + 0.12 * float(cycle - 1)
+
+
+func cycle_enemy_damage_mult() -> float:
+	return 1.0 + 0.08 * float(cycle - 1)
+
+
+func cycle_enemy_speed_mult() -> float:
+	return 1.0 + 0.04 * float(cycle - 1)
+
+
+func cycle_core_mult() -> float:
+	return 1.0 + 0.25 * float(cycle - 1)
+
+
+func advance_cycle() -> bool:
+	# Subir de ciclo es opcional; se habilita al completar la primera run.
+	if runs_completed < 1 or cycle >= 10:
+		return false
+	cycle += 1
+	save_game()
+	return true
+
+
+func _accuracy() -> float:
+	return float(run_hits) / maxf(float(run_shots), 1.0)
+
+
+func _compute_grade(reason: String) -> String:
+	var accuracy: float = _accuracy()
+	if reason == "completed" and accuracy >= 0.55 and run_kills >= 20:
+		return "S"
+	if reason == "completed" or (accuracy >= 0.5 and run_kills >= 15):
+		return "A"
+	if run_kills >= 8:
+		return "B"
+	return "C"
+
+
+func _grade_cores(grade: String) -> int:
+	match grade:
+		"S":
+			return 3
+		"A":
+			return 2
+		"B":
+			return 1
+		_:
+			return 0
+
+
+func _grade_rank(grade: String) -> int:
+	match grade:
+		"S":
+			return 4
+		"A":
+			return 3
+		"B":
+			return 2
+		_:
+			return 1
+
+
+func _update_best_grade(grade: String) -> void:
+	if _grade_rank(grade) > _grade_rank(best_grade):
+		best_grade = grade
+		_queue_save()
 
 
 func apply_contract_start() -> void:
@@ -453,6 +536,11 @@ func start_run() -> void:
 	runs_started += 1
 	run_timer = base_run_time
 	run_blessings.clear()
+	run_shots = 0
+	run_hits = 0
+	run_kills = 0
+	last_grade = "C"
+	last_grade_cores = 0
 	timer_changed.emit(run_timer)
 	run_started.emit()
 
@@ -474,12 +562,17 @@ func end_run(reason: String) -> void:
 	if not is_run_active:
 		return
 
+	last_grade = _compute_grade(reason)
+	last_grade_cores = _grade_cores(last_grade) if reason == "completed" else 0
+	_update_best_grade(last_grade)
+
 	if reason == "death":
 		_apply_death_penalty()
 		deaths += 1
 	elif reason == "completed":
 		runs_completed += 1
-		add_cores(3 + contract_core_bonus())
+		var earned: int = 3 + contract_core_bonus() + last_grade_cores
+		add_cores(int(round(float(earned) * cycle_core_mult())))
 	elif reason == "timer":
 		runs_timed_out += 1
 	else:
@@ -490,8 +583,14 @@ func end_run(reason: String) -> void:
 	# TODO: Fase 2.4 — aplicar consecuencias específicas por motivo.
 	if not VALID_END_REASONS.has(reason):
 		push_warning("GameState.end_run: motivo desconocido '%s'" % reason)
+	Diagnostics.mark("end_run", {
+		"reason": reason,
+		"money": money,
+		"grade": last_grade,
+		"accuracy": _accuracy(),
+		"kills": run_kills,
+	})
 	run_ended.emit(reason)
-	Diagnostics.mark("end_run", {"reason": reason, "money": money})
 	# Guarda fuera del frame crítico para no demorar el menú de fin de run.
 	save_game.call_deferred()
 
@@ -549,6 +648,13 @@ func reset_progress() -> void:
 	money = 0
 	cores = 0
 	claimed_challenges.clear()
+	cycle = 1
+	best_grade = "C"
+	last_grade = "C"
+	last_grade_cores = 0
+	run_shots = 0
+	run_hits = 0
+	run_kills = 0
 	headshots = 0
 	elites_killed = 0
 	hounds_killed = 0
@@ -586,6 +692,8 @@ func save_game() -> void:
 	config.set_value("progress", "money", money)
 	config.set_value("progress", "cores", cores)
 	config.set_value("progress", "claimed_challenges", claimed_challenges)
+	config.set_value("progress", "cycle", cycle)
+	config.set_value("progress", "best_grade", best_grade)
 	config.set_value("progress", "base_run_time", base_run_time)
 	config.set_value("progress", "upgrades", upgrades)
 	config.set_value("progress", "skill_levels", skill_levels)
@@ -630,6 +738,8 @@ func load_game() -> void:
 	if saved_claims is Array or saved_claims is PackedStringArray:
 		for claim in saved_claims:
 			claimed_challenges.append(str(claim))
+	cycle = clampi(int(config.get_value("progress", "cycle", 1)), 1, 10)
+	best_grade = str(config.get_value("progress", "best_grade", "C"))
 
 	var saved_time: float = float(config.get_value("progress", "base_run_time", default_run_time))
 	base_run_time = saved_time if saved_time > 0.0 else default_run_time
