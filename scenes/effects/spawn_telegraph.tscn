@@ -55,6 +55,17 @@ text = "☠"
 font_size = 160
 outline_size = 12
 
+[node name="NameLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+billboard = 1
+no_depth_test = true
+modulate = Color(1, 0.2, 0.12, 1)
+outline_modulate = Color(0, 0, 0, 1)
+text = "BÁSICO"
+font_size = 56
+pixel_size = 0.006
+outline_size = 8
+
 [node name="Light" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
 light_color = Color(1, 0.15, 0.08, 1)
