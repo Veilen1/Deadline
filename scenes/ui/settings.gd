@@ -52,6 +52,9 @@ func _ready() -> void:
 		# Borrar progreso en plena run dejaría la partida en un estado inválido.
 		reset_button.disabled = true
 		reset_button.tooltip_text = "Terminá la run para borrar el progreso."
+		modulate.a = 0.0
+		var tween: Tween = create_tween()
+		tween.tween_property(self, "modulate:a", 1.0, 0.15)
 
 	back_button.grab_focus()
 
@@ -177,7 +180,7 @@ func _on_back_pressed() -> void:
 		hide()
 		closed.emit()
 		return
-	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+	Transitions.change_scene_to_file(MAIN_MENU_SCENE)
 
 
 func _unhandled_input(event: InputEvent) -> void:

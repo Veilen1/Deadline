@@ -63,4 +63,4 @@ func _add_stat(label_text: String, value_text: String) -> void:
 
 func _on_back_pressed() -> void:
 	GameState.save_game()
-	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+	Transitions.change_scene_to_file(MAIN_MENU_SCENE)

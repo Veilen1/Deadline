@@ -29,6 +29,9 @@ func show_result(reason: String, money: int) -> void:
 		penalty_label.hide()
 
 	show()
+	modulate.a = 0.0
+	var tween: Tween = create_tween()
+	tween.tween_property(self, "modulate:a", 1.0, 0.18)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	retry_button.grab_focus()
 
@@ -47,10 +50,10 @@ func _reason_text(reason: String) -> String:
 
 func _on_retry_pressed() -> void:
 	get_tree().paused = false
-	get_tree().reload_current_scene()
+	Transitions.reload_current_scene()
 
 
 func _on_hub_pressed() -> void:
 	get_tree().paused = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	get_tree().change_scene_to_file(HUB_SCENE)
+	Transitions.change_scene_to_file(HUB_SCENE)

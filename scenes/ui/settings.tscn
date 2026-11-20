@@ -18,7 +18,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.94, 0.94, 0.94, 1)
+color = Color(0.043, 0.071, 0.125, 1)
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -34,7 +34,7 @@ theme_override_constants/separation = 12
 
 [node name="TitleLabel" type="Label" parent="CenterContainer/Menu"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
 theme_override_font_sizes/font_size = 36
 text = "CONFIGURACIÓN"
 horizontal_alignment = 1
@@ -57,7 +57,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/FovRow"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.9, 0.94, 0.99, 1)
 theme_override_font_sizes/font_size = 18
 text = "Campo de visión (FOV)"
 
@@ -73,7 +73,7 @@ value = 75.0
 [node name="FovValue" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/FovRow"]
 custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.35, 0.35, 0.35, 1)
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
 theme_override_font_sizes/font_size = 16
 text = "75°"
 horizontal_alignment = 2
@@ -85,7 +85,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/SensitivityRow"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.9, 0.94, 0.99, 1)
 theme_override_font_sizes/font_size = 18
 text = "Sensibilidad del mouse"
 
@@ -101,7 +101,7 @@ value = 0.003
 [node name="SensitivityValue" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/SensitivityRow"]
 custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.35, 0.35, 0.35, 1)
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
 theme_override_font_sizes/font_size = 16
 text = "0.0030"
 horizontal_alignment = 2
@@ -113,7 +113,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/UIScaleRow"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.9, 0.94, 0.99, 1)
 theme_override_font_sizes/font_size = 18
 text = "Tamaño de la interfaz"
 
@@ -129,7 +129,7 @@ value = 1.0
 [node name="UIScaleValue" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/UIScaleRow"]
 custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.35, 0.35, 0.35, 1)
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
 theme_override_font_sizes/font_size = 16
 text = "100%"
 horizontal_alignment = 2
@@ -141,7 +141,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/VolumeRow"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.9, 0.94, 0.99, 1)
 theme_override_font_sizes/font_size = 18
 text = "Volumen general"
 
@@ -157,7 +157,7 @@ value = 1.0
 [node name="VolumeValue" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/VolumeRow"]
 custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.35, 0.35, 0.35, 1)
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
 theme_override_font_sizes/font_size = 16
 text = "100%"
 horizontal_alignment = 2
@@ -169,7 +169,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/InvertRow"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.9, 0.94, 0.99, 1)
 theme_override_font_sizes/font_size = 18
 text = "Invertir eje Y"
 
@@ -184,7 +184,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/FullscreenRow"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.9, 0.94, 0.99, 1)
 theme_override_font_sizes/font_size = 18
 text = "Pantalla completa"
 
@@ -199,7 +199,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/VsyncRow"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.9, 0.94, 0.99, 1)
 theme_override_font_sizes/font_size = 18
 text = "V-Sync"
 
@@ -214,7 +214,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/MinimapRow"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.9, 0.94, 0.99, 1)
 theme_override_font_sizes/font_size = 18
 text = "Mostrar minimapa"
 
@@ -229,7 +229,7 @@ theme_override_constants/separation = 12
 [node name="Label" type="Label" parent="CenterContainer/Menu/OptionsScroll/Options/DifficultyRow"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.9, 0.94, 0.99, 1)
 theme_override_font_sizes/font_size = 18
 text = "Dificultad (balance)"
 
@@ -237,10 +237,11 @@ text = "Dificultad (balance)"
 custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.94, 0.99, 1)
 
 [node name="HintLabel" type="Label" parent="CenterContainer/Menu"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
 theme_override_font_sizes/font_size = 14
 text = "FOV, sensibilidad, dificultad y minimapa se aplican en la próxima run."
 horizontal_alignment = 1
@@ -268,7 +269,7 @@ text = "Volver"
 
 [node name="StatusLabel" type="Label" parent="CenterContainer/Menu"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
 theme_override_font_sizes/font_size = 14
 text = "Los cambios se guardan automáticamente."
 horizontal_alignment = 1

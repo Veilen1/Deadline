@@ -21,6 +21,9 @@ GameState="*res://scripts/autoloads/game_state.gd"
 EventBus="*res://scripts/autoloads/event_bus.gd"
 Settings="*res://scripts/autoloads/settings.gd"
 StyleSystem="*res://scripts/autoloads/style_system.gd"
+ThemeManager="*res://scripts/autoloads/theme_manager.gd"
+Transitions="*res://scripts/autoloads/transitions.gd"
+UISound="*res://scripts/autoloads/ui_sound.gd"
 
 [input]
 

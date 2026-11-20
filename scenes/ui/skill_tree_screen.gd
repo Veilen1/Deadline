@@ -216,4 +216,4 @@ func _on_money_changed(_new_amount: int) -> void:
 
 func _on_back_pressed() -> void:
 	GameState.save_game()
-	get_tree().change_scene_to_file(HUB_SCENE)
+	Transitions.change_scene_to_file(HUB_SCENE)
