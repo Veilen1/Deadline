@@ -1,6 +1,6 @@
 extends Control
 
-const MAP_SIZE: Vector2 = Vector2(1000.0, 360.0)
+const MAP_SIZE: Vector2 = Vector2(1000.0, 520.0)
 
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, MAP_SIZE), Color(0.055, 0.08, 0.12, 1.0), true)
