@@ -5,9 +5,11 @@ const SPARK_BURST_SCENE: PackedScene = preload("res://scenes/effects/spark_burst
 const ZONE_SCENES = [
 	preload("res://scenes/levels/zone_01.tscn"),
 	preload("res://scenes/levels/zone_02.tscn"),
+	preload("res://scenes/levels/zone_03.tscn"),
 ]
 
 @export var zone_banner_hold: float = 1.2
+@export var zone_time_bonus: float = 10.0
 
 @onready var player: Node = $Player
 @onready var zones_root: Node3D = $Zones
@@ -105,6 +107,8 @@ func _on_zone_completed(_zone_id: String) -> void:
 		GameState.end_run("completed")
 		return
 
+	# Completar una zona premia con tiempo extra para la siguiente.
+	GameState.grant_run_time(zone_time_bonus)
 	_advance_zone()
 
 

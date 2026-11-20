@@ -1,0 +1,71 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scenes/levels/zone.gd" id="1_zone"]
+[ext_resource type="PackedScene" path="res://scenes/actors/enemies/ranged_enemy.tscn" id="2_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/actors/enemies/elite_shooter_enemy.tscn" id="3_elite"]
+[ext_resource type="PackedScene" path="res://scenes/levels/arena_bounds.tscn" id="4_bounds"]
+
+[sub_resource type="Environment" id="Environment_violet"]
+background_mode = 1
+background_color = Color(0.08, 0.06, 0.12, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.72, 0.62, 0.82, 1)
+ambient_light_energy = 1.1
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(40, 0.2, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.42, 0.38, 0.5, 1)
+roughness = 1.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(40, 0.2, 40)
+
+[node name="Zone03" type="Node3D"]
+script = ExtResource("1_zone")
+enemy_scene = ExtResource("2_enemy")
+elite_scene = ExtResource("3_elite")
+enemies_per_wave = Array[int]([5, 6, 4])
+wave_delay = 1.1
+completion_bonus = 80
+zone_id = "zona_3"
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_violet")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 8, 0)
+light_color = Color(1, 0.86, 1, 1)
+light_energy = 1.2
+shadow_enabled = false
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = SubResource("StandardMaterial3D_floor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="SpawnPoint1" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1, -9)
+
+[node name="SpawnPoint2" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 1, -9)
+
+[node name="SpawnPoint3" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1, 9)
+
+[node name="SpawnPoint4" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 1, 9)
+
+[node name="SpawnPoint5" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -12)
+
+[node name="SpawnPoint6" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 12)
+
+[node name="ArenaBounds" parent="." instance=ExtResource("4_bounds")]

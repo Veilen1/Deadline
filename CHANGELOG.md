@@ -2,6 +2,15 @@
 
 Todas las versiones relevantes del prototipo.
 
+## No publicado
+
+### Agregado
+- Zona 3 violeta con oleadas `5 / 6 / 4` y seis puntos de aparición.
+- Enemigo tirador: mantiene distancia, strafea y dispara proyectiles telegrafiados con un ojo brillante.
+- Élite tirador con más vida, cadencia y barra de élite.
+- Proyectiles enemigos visibles que se destruyen contra paredes y enemigos.
+- Bonus de **+10 s** al completar cada zona.
+
 ## v0.4.0 — 2026-11-20
 
 ### Agregado

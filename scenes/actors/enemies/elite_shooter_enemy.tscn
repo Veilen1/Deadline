@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/actors/enemies/ranged_enemy.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scenes/actors/enemies/elite_shooter_enemy.gd" id="2_elite"]
+
+[node name="EliteRangedEnemy" instance=ExtResource("1_base")]
+scale = Vector3(1.5, 1.5, 1.5)
+script = ExtResource("2_elite")
+max_health = 700.0
+move_speed = 2.0
+shot_interval = 1.5
+projectile_damage = 18.0
+preferred_min_distance = 7.0
+preferred_max_distance = 13.0
+
+[node name="Aura" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+light_color = Color(1, 0.5, 0.15, 1)
+light_energy = 0.7
+omni_range = 4.5
+
+[node name="EliteLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+billboard = 1
+no_depth_test = true
+modulate = Color(1, 0.7, 0.3, 1)
+outline_modulate = Color(0, 0, 0, 1)
+text = "ELITE"
+font_size = 40
+outline_size = 8

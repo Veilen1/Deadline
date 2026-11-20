@@ -61,5 +61,5 @@
 3. **Transiciones:** fades y sonidos de UI implementados; falta feedback de sonido en transiciones y más animaciones de botones/nodos.
 4. **Feedback:** disparo/pasos suavizados, dash/rango/cambio de arma con sonido, muzzle flash y speed lines; impacto, crítico, muerte y daño tienen audio posicional.
 5. **Accesibilidad:** tamaño de texto, contraste, navegación con teclado/controller.
-6. **Contenido:** más armas/consumibles, Zona 3 y modo dash/slide combinado.
+6. **Contenido:** Zona 3 con tiradores implementada; falta más variedad (corredor explosivo, torreta) y dash aéreo.
 7. **Audio:** música ambiente en loop continuo; falta mezcla por categorías (música/SFX) y variación por zona.
