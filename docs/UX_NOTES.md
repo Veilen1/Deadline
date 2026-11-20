@@ -58,7 +58,8 @@
 
 1. **HUD**: tematizado, con slots y cooldown de dash; falta probar en resoluciones chicas y con UI scale alto.
 2. **Tema global:** aplicado a menús, hub, configuración, pausa, tienda, árbol y perfil.
-3. **Transiciones:** fades y sonidos de UI implementados; falta música/ambiente.
-4. **Feedback:** disparo/pasos suavizados, dash/rango/cambio de arma con sonido, muzzle flash y speed lines.
+3. **Transiciones:** fades y sonidos de UI implementados; falta feedback de sonido en transiciones y más animaciones de botones/nodos.
+4. **Feedback:** disparo/pasos suavizados, dash/rango/cambio de arma con sonido, muzzle flash y speed lines; impacto, crítico, muerte y daño tienen audio posicional.
 5. **Accesibilidad:** tamaño de texto, contraste, navegación con teclado/controller.
 6. **Contenido:** más armas/consumibles, Zona 3 y modo dash/slide combinado.
+7. **Audio:** música ambiente en loop continuo; falta mezcla por categorías (música/SFX) y variación por zona.

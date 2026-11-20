@@ -20,6 +20,9 @@ Todas las versiones relevantes del prototipo.
 - Líneas de velocidad y kick de FOV durante el dash.
 - Indicador de cooldown de dash y slots de armas en el HUD.
 - Tiempo entre oleadas reducido de `2.5 s` a `1.2 s`.
+- Música ambiente procedural en loop continuo entre escenas.
+- Sonidos posicionales de impacto, crítico y muerte, más daño al jugador.
+- Chime de compra y subida de nivel.
 
 ## v0.3.0 — 2026-11-19
 
