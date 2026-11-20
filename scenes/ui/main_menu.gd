@@ -2,10 +2,10 @@ extends Control
 
 const GAME_SCENE: String = "res://scenes/ui/hub.tscn"
 
-@onready var play_button: Button = $CenterContainer/Menu/PlayButton
-@onready var config_button: Button = $CenterContainer/Menu/ConfigButton
-@onready var profile_button: Button = $CenterContainer/Menu/ProfileButton
-@onready var quit_button: Button = $CenterContainer/Menu/QuitButton
+@onready var play_button: Button = $CenterContainer/Card/VBox/PlayButton
+@onready var config_button: Button = $CenterContainer/Card/VBox/SecondaryRow/ConfigButton
+@onready var profile_button: Button = $CenterContainer/Card/VBox/SecondaryRow/ProfileButton
+@onready var quit_button: Button = $CenterContainer/Card/VBox/QuitButton
 
 
 func _ready() -> void:

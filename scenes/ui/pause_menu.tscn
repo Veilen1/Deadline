@@ -30,40 +30,61 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Menu" type="VBoxContainer" parent="CenterContainer"]
+[node name="Card" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(380, 0)
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_type_variation = "HeroPanel"
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/Menu"]
+[node name="Menu" type="VBoxContainer" parent="CenterContainer/Card"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 40
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/Card/Menu"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 36
 text = "PAUSA"
 horizontal_alignment = 1
 
-[node name="ResumeButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(240, 48)
+[node name="SubtitleLabel" type="Label" parent="CenterContainer/Card/Menu"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 13
+text = "El timer no corre mientras está en pausa."
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="CenterContainer/Card/Menu"]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="ResumeButton" type="Button" parent="CenterContainer/Card/Menu"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_type_variation = "PrimaryButton"
 text = "Reanudar"
 
-[node name="RestartButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(240, 48)
+[node name="RestartButton" type="Button" parent="CenterContainer/Card/Menu"]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
+theme_type_variation = "SecondaryButton"
 text = "Reiniciar"
 
-[node name="ConfigButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(240, 48)
+[node name="ConfigButton" type="Button" parent="CenterContainer/Card/Menu"]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
+theme_type_variation = "SecondaryButton"
 text = "Configuración"
 
-[node name="HubButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(240, 48)
+[node name="HubButton" type="Button" parent="CenterContainer/Card/Menu"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
+theme_type_variation = "TextButton"
 text = "Volver al hub"
 
-[node name="MainMenuButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(240, 48)
+[node name="MainMenuButton" type="Button" parent="CenterContainer/Card/Menu"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
+theme_type_variation = "TextButton"
 text = "Menú principal"
 
 [node name="LeaveDialog" type="ConfirmationDialog" parent="."]

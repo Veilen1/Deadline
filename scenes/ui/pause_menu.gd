@@ -6,11 +6,11 @@ const MAIN_MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
 const HUB_SCENE: String = "res://scenes/ui/hub.tscn"
 const SETTINGS_SCENE: PackedScene = preload("res://scenes/ui/settings.tscn")
 
-@onready var resume_button: Button = $CenterContainer/Menu/ResumeButton
-@onready var restart_button: Button = $CenterContainer/Menu/RestartButton
-@onready var config_button: Button = $CenterContainer/Menu/ConfigButton
-@onready var hub_button: Button = $CenterContainer/Menu/HubButton
-@onready var main_menu_button: Button = $CenterContainer/Menu/MainMenuButton
+@onready var resume_button: Button = $CenterContainer/Card/Menu/ResumeButton
+@onready var restart_button: Button = $CenterContainer/Card/Menu/RestartButton
+@onready var config_button: Button = $CenterContainer/Card/Menu/ConfigButton
+@onready var hub_button: Button = $CenterContainer/Card/Menu/HubButton
+@onready var main_menu_button: Button = $CenterContainer/Card/Menu/MainMenuButton
 @onready var leave_dialog: ConfirmationDialog = $LeaveDialog
 
 var _settings_menu: Control
