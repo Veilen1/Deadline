@@ -9,10 +9,10 @@ const SLAM_WAVE_SCENE: PackedScene = preload("res://scenes/effects/slam_wave.tsc
 enum State { CHASE, TELEGRAPH, JUMP, RECOVER }
 
 @export_group("Elite Jump")
-@export var jump_interval: float = 3.5
+@export var jump_interval: float = 3.0
 @export var jump_trigger_range: float = 12.0
 @export var jump_radius: float = 3.5
-@export var jump_damage: float = 30.0
+@export var jump_damage: float = 36.0
 @export var jump_height: float = 3.0
 @export var air_time: float = 0.55
 @export var recover_time: float = 0.5

@@ -12,11 +12,11 @@ enum State { REPOSITION, CHARGE, RECOVER }
 @export var preferred_min_distance: float = 6.0
 @export var preferred_max_distance: float = 11.0
 @export var strafe_speed_multiplier: float = 0.75
-@export var shot_interval: float = 2.2
-@export var charge_time: float = 0.55
+@export var shot_interval: float = 1.9
+@export var charge_time: float = 0.5
 @export var recover_time: float = 0.25
-@export var projectile_speed: float = 19.0
-@export var projectile_damage: float = 12.0
+@export var projectile_speed: float = 22.0
+@export var projectile_damage: float = 14.0
 @export var projectile_lifetime: float = 3.5
 @export var aim_height: float = 0.9
 

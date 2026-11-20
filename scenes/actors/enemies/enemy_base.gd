@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 @export_group("Movement")
-@export var move_speed: float = 3.0
+@export var move_speed: float = 3.5
 @export var gravity: float = 20.0
 @export var stop_distance: float = 1.5
 
@@ -9,9 +9,9 @@ extends CharacterBody3D
 @export var max_health: float = 100.0
 
 @export_group("Attack")
-@export var attack_range: float = 2.0
-@export var attack_damage: float = 15.0
-@export var attack_cooldown: float = 0.7
+@export var attack_range: float = 2.2
+@export var attack_damage: float = 18.0
+@export var attack_cooldown: float = 0.6
 
 @export_group("Zone Multipliers")
 @export var damage_mult_head: float = 2.5
