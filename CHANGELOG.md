@@ -2,7 +2,7 @@
 
 Todas las versiones relevantes del prototipo.
 
-## No publicado
+## v0.5.1 — 2026-11-20
 
 ### Agregado
 - Toasts arriba a la derecha al completar un desafío, con el desbloqueo y la condición cumplida.
