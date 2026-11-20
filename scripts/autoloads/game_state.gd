@@ -13,7 +13,7 @@ signal run_ended(reason: String)
 
 const VALID_END_REASONS: PackedStringArray = ["timer", "death", "completed"]
 const DEFAULT_SAVE_PATH: String = "user://deadline_progress.cfg"
-const SAVE_VERSION: int = 3
+const SAVE_VERSION: int = 4
 const SAVE_DEBOUNCE: float = 0.5
 const SKILL_COST_GROWTH: float = 1.35
 
@@ -809,6 +809,9 @@ func load_game() -> void:
 		skill_levels = saved_levels.duplicate()
 		var saved_bonuses = config.get_value("progress", "skill_bonuses", {})
 		skill_bonuses = saved_bonuses.duplicate() if saved_bonuses is Dictionary else {}
+		if saved_version < 4:
+			# v0.6: Reloj de arena pasa de +5 a +8 s por nivel.
+			base_run_time += 3.0 * float(get_skill_level("time"))
 	else:
 		# Migración desde el árbol anterior de nodos únicos.
 		var old_skills = config.get_value("progress", "unlocked_skills", [])
