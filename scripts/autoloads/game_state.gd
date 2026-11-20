@@ -57,6 +57,15 @@ var skill_bonuses: Dictionary = {}
 var owned_weapons: Array[String] = ["basic_rifle"]
 var equipped_weapon: String = "basic_rifle"
 
+# Perfil del jugador.
+var profile_name: String = "Jugador"
+var runs_started: int = 0
+var runs_completed: int = 0
+var runs_timed_out: int = 0
+var deaths: int = 0
+var kills: int = 0
+var lifetime_earned: int = 0
+
 var _save_timer: Timer
 var _is_loading: bool = false
 
@@ -71,7 +80,12 @@ func _ready() -> void:
 	_save_timer.timeout.connect(save_game)
 	add_child(_save_timer)
 
+	EventBus.enemy_killed.connect(_on_enemy_killed)
 	load_game()
+
+
+func _on_enemy_killed(_enemy: Node, _hit_zone: String) -> void:
+	kills += 1
 
 
 func add_run_time(seconds: float) -> void:
@@ -172,6 +186,7 @@ func add_money(amount: int) -> void:
 	if amount <= 0:
 		return
 	money += amount
+	lifetime_earned += amount
 
 
 func spend_money(amount: int) -> bool:
@@ -185,6 +200,7 @@ func start_run() -> void:
 	is_run_active = true
 	run_start_money = money
 	last_death_penalty = 0
+	runs_started += 1
 	run_timer = base_run_time
 	timer_changed.emit(run_timer)
 	run_started.emit()
@@ -209,6 +225,11 @@ func end_run(reason: String) -> void:
 
 	if reason == "death":
 		_apply_death_penalty()
+		deaths += 1
+	elif reason == "completed":
+		runs_completed += 1
+	elif reason == "timer":
+		runs_timed_out += 1
 	else:
 		last_death_penalty = 0
 	is_run_active = false
@@ -226,6 +247,7 @@ func abandon_run() -> void:
 		return
 
 	_apply_death_penalty()
+	deaths += 1
 	is_run_active = false
 	save_game()
 
@@ -274,6 +296,13 @@ func reset_progress() -> void:
 	owned_weapons.clear()
 	owned_weapons.append("basic_rifle")
 	equipped_weapon = "basic_rifle"
+	profile_name = "Jugador"
+	runs_started = 0
+	runs_completed = 0
+	runs_timed_out = 0
+	deaths = 0
+	kills = 0
+	lifetime_earned = 0
 	_is_loading = false
 	save_game()
 
@@ -291,6 +320,13 @@ func save_game() -> void:
 	config.set_value("progress", "skill_bonuses", skill_bonuses)
 	config.set_value("progress", "owned_weapons", owned_weapons)
 	config.set_value("progress", "equipped_weapon", equipped_weapon)
+	config.set_value("profile", "name", profile_name)
+	config.set_value("profile", "runs_started", runs_started)
+	config.set_value("profile", "runs_completed", runs_completed)
+	config.set_value("profile", "runs_timed_out", runs_timed_out)
+	config.set_value("profile", "deaths", deaths)
+	config.set_value("profile", "kills", kills)
+	config.set_value("profile", "lifetime_earned", lifetime_earned)
 
 	var error: int = config.save(save_path)
 	if error != OK:
@@ -344,6 +380,14 @@ func load_game() -> void:
 	if not owned_weapons.has(equipped_weapon):
 		equipped_weapon = "basic_rifle"
 
+	profile_name = str(config.get_value("profile", "name", "Jugador"))
+	runs_started = maxi(int(config.get_value("profile", "runs_started", 0)), 0)
+	runs_completed = maxi(int(config.get_value("profile", "runs_completed", 0)), 0)
+	runs_timed_out = maxi(int(config.get_value("profile", "runs_timed_out", 0)), 0)
+	deaths = maxi(int(config.get_value("profile", "deaths", 0)), 0)
+	kills = maxi(int(config.get_value("profile", "kills", 0)), 0)
+	lifetime_earned = maxi(int(config.get_value("profile", "lifetime_earned", 0)), 0)
+
 	_is_loading = false
 
 
@@ -357,6 +401,7 @@ func _exit_tree() -> void:
 	# Si se cierra el juego en plena run, también cuenta como abandono.
 	if is_run_active:
 		_apply_death_penalty()
+		deaths += 1
 		is_run_active = false
 
 	# Último intento de guardado al cerrar el juego.

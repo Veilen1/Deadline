@@ -413,6 +413,13 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - Persistencia de armas compradas y equipada.
 - La UI muestra daño, cadencia, cargador y regeneración por arma.
 
+### Perfil del jugador
+
+- Accesible desde el menú principal.
+- Nombre editable (máx. 20 caracteres).
+- Estadísticas persistentes: plata actual, plata total recaudada, runs iniciadas/completadas, muertes/abandonos, veces sin tiempo, enemigos eliminados, nodos desbloqueados, armas compradas y arma equipada.
+- El perfil se guarda automáticamente.
+
 ---
 
 *Documento vivo. Cualquier cambio de dirección debe reflejarse acá.*
