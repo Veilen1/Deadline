@@ -10,6 +10,7 @@ signal damage_number_requested(world_position: Vector3, amount: float)
 signal player_damaged(amount: float)
 signal player_died
 signal ammo_changed(current: int, maximum: int)
+signal weapon_changed(weapon_name: String)
 signal critical_hit(world_position: Vector3, damage: float)
 
 signal boss_spawned(boss: Node, max_health: float)

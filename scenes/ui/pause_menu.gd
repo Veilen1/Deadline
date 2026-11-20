@@ -47,14 +47,23 @@ func _unhandled_input(event: InputEvent) -> void:
 func _pause_game() -> void:
 	get_tree().paused = true
 	show()
+	modulate.a = 0.0
+	var tween: Tween = create_tween()
+	tween.tween_property(self, "modulate:a", 1.0, 0.12)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	# Igual que en fin de run: fuerza el cursor visible y sobre el botón.
+	await get_tree().process_frame
+	if DisplayServer.get_name() != "headless":
+		Input.warp_mouse(resume_button.get_global_rect().get_center())
 	resume_button.grab_focus()
 
 
 func _resume_game() -> void:
-	hide()
 	get_tree().paused = false
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	var tween: Tween = create_tween()
+	tween.tween_property(self, "modulate:a", 0.0, 0.1)
+	tween.tween_callback(hide)
 
 
 func _on_resume_pressed() -> void:
@@ -140,14 +149,14 @@ func _execute_leave(action: LeaveAction) -> void:
 		LeaveAction.HUB:
 			get_tree().paused = false
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-			get_tree().change_scene_to_file(HUB_SCENE)
+			Transitions.change_scene_to_file(HUB_SCENE)
 		LeaveAction.MENU:
 			get_tree().paused = false
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-			get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+			Transitions.change_scene_to_file(MAIN_MENU_SCENE)
 		LeaveAction.RESTART:
 			get_tree().paused = false
-			get_tree().reload_current_scene()
+			Transitions.reload_current_scene()
 
 
 func set_enabled(enabled: bool) -> void:

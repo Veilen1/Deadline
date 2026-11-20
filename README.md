@@ -2,8 +2,8 @@
 
 > **Estado del documento:** vivo y en construcción. Todo lo que está acá está sujeto a cambios durante el prototipado y el testeo. Las decisiones cerradas se marcan con ✅ y las que están abiertas o en revisión se marcan con 🟡.
 >
-> **Última actualización:** 19/11/2026
-> **Versión:** 0.1 — Pre-prototipo
+> **Última actualización:** 20/11/2026
+> **Versión:** 0.4.0 — Prototipo jugable
 
 ---
 
@@ -351,12 +351,12 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - `main`: releases estables.
 - `dev`: integración de features.
 - Una rama por feature: `feature/<nombre>` desde `dev`, commits atómicos, merge `--no-ff` a `dev`.
-- Tags: `v0.1.0` (core loop, zonas, hub, guardado) y `v0.2.0` (minimapa, configuración, penalización y límites).
+- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol) y `v0.4.0` (armas con skins, audio, HUD y pulido).
 
 ### Limitaciones conocidas
 
 - Solo hay dos zonas.
-- No hay variedad de armas, munición ni recarga.
+- Hay tres armas con munición independiente y regeneración, pero no recarga manual.
 - El volumen es general; no hay sliders separados de música/efectos.
 - La dificultad se aplica a los enemigos que aparecen después del cambio; los ya vivos no se recalculan.
 - Los élites comparten el patrón de salto; los enemigos verdes son los únicos con escudo.
@@ -365,9 +365,9 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Próximos pasos
 
-1. Zona 3 y nuevas variantes de enemigo.
-2. Armas, munición y recarga.
-3. Música y sliders separados de audio.
+1. Zona 3 y nuevas variantes de enemigo (tirador a distancia).
+2. Sliders separados de música y efectos, y mezcla por zona.
+3. Movimiento avanzado: dash aéreo y combos de slide/salto.
 4. Balance fino con la dificultad y los costos del hub.
 5. Localización y soporte de controller.
 
@@ -429,6 +429,79 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - FOV y shake de cámara aumentan con el rango.
 - Headshots críticos: chispas, estilo extra y feedback visual.
 - Ver `docs/STYLE_REFERENCE.md`.
+
+---
+
+## 16. v0.4.0 — armas, audio y pulido
+
+### Árbol con símbolos y tooltip
+
+- Cada nodo tiene un **símbolo** propio: `✦` daño, `◎` precisión, `★` ejecutor, `»` cadencia, `≡` cargador, `♥` vitalidad, `◆` armadura, `◷` tiempo y `↻` regeneración.
+- Al pasar el mouse por un cuadrado aparece un **tooltip lateral** con nombre, descripción, efecto por nivel, pips de nivel y costo.
+- **Click directo en el cuadrado** sube de nivel. Ya no hay botón de desbloqueo arriba a la derecha.
+- Los nodos muestran símbolo + nivel y cambian de color según estado.
+
+### Tema global
+
+- `ThemeManager` aplica un tema azul noche + dorado/turquesa a menú, hub, configuración, pausa, fin de run, tienda, árbol y perfil.
+- Botones, paneles, inputs, sliders, checkboxes y barras comparten estilo y estados de hover/pressed/focus.
+- El HUD de partida mantiene texto oscuro sobre la arena blanca para legibilidad; el pulido del HUD queda como deuda.
+
+### Transiciones
+
+- Autoload `Transitions` con fade de 0.18 s al salir y 0.25 s al entrar.
+- Pausa, fin de run y configuración aparecen con fade.
+- El tooltip del árbol también aparece con un fade corto.
+- Todas las pantallas usan la transición; no hay cambios secos de escena.
+- Si llega otro pedido durante un fade, se encola en lugar de perderse; un watchdog de 3 s libera el overlay si algo queda colgado.
+- Al mostrar fin de run o la pausa, el cursor se fuerza visible y se coloca sobre el botón principal (`Input.warp_mouse`), así el primer click no se pierde.
+
+### Sonidos
+
+- Disparo y pasos regenerados más suaves: menos click filoso, más cuerpo grave y ruido filtrado.
+- Sonidos de UI globales: hover y click automáticos en todos los botones.
+- Sonidos de dash, subida de rango y cambio de arma.
+- Volúmenes ajustados para que caminar/disparar no sean agresivos.
+- Los sonidos de UI respetan el volumen general de Configuración.
+
+### Audio de combate y música ambiente
+
+- Autoload `AudioDirector`: mezcla central y respeta el volumen master de Configuración.
+- **Música ambiente** procedural en loop de 8 s, con drone grave y brillo suave; suena en menús, hub y run sin cortes entre escenas.
+- **Impacto** posicional al golpear enemigos, con variación de pitch y un mínimo entre repeticiones para no saturar.
+- **Crítico** con campanita brillante sobre el impacto.
+- **Muerte de enemigo** con caída grave y ruido.
+- **Daño al jugador** con pulso sordo.
+- **Compra o subida de nivel** con un chime suave de dos notas.
+- Los sonidos de combate se instancian como `AudioStreamPlayer3D` en la posición del impacto y se liberan al terminar.
+
+### HUD tematizado
+
+- Paneles oscuros translúcidos detrás de plata/zona, timer/oleada, vida/arma/munición, barra del élite y estilo.
+- Texto claro sobre panel oscuro, manteniendo legibilidad sobre la arena blanca.
+- Etiqueta de arma equipada y color de munición dentro del HUD.
+- Indicador de **cooldown del dash** abajo al centro, que se llena al estar listo.
+- Fila de **slots de armas** (`1`, `2`, `3`) con el arma activa resaltada en dorado.
+
+### Movimiento
+
+- **Dash:** `Shift`, burst rápido con cooldown, shake de cámara y líneas de velocidad en primera persona.
+- **Slide:** `Ctrl`, acelera y baja la cámara durante un instante.
+- Ambos respetan la pausa y suenan con un whoosh suave.
+- El dash suma un pequeño kick de FOV para reforzar la sensación de velocidad.
+
+### Cambio de armas
+
+- `1`, `2`, `3` cambian entre las armas compradas.
+- La HUD muestra el arma equipada, su munición y el slot activo.
+- Cada arma tiene **skin propia** (rifle, SMG y escopeta) con colores y acentos distintos.
+- Al cambiar se anima el viewmodel: baja, rota y vuelve con un pequeño rebote.
+- Cada disparo enciende un **muzzle flash** en la punta del arma.
+- La munición es **independiente por arma**: cada cargador conserva lo que le queda y no se rellena al cambiar. La regeneración de cada arma sigue funcionando con su propia cadencia y retardo.
+
+### Ritmo de oleadas
+
+- El tiempo entre oleadas bajó de `2.5 s` a `1.2 s` para que la run sea más frenética.
 
 ---
 

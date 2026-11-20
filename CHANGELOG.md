@@ -2,6 +2,34 @@
 
 Todas las versiones relevantes del prototipo.
 
+## v0.4.0 — 2026-11-20
+
+### Agregado
+- Símbolos por nodo del árbol y tooltip lateral con descripción, nivel y pips.
+- Subida de nivel haciendo click directo en el nodo.
+- Tema global azul noche, dorado y turquesa para todas las pantallas.
+- Transiciones con fade entre escenas, pausa, fin de run, configuración y tooltip.
+- Sonidos de UI (hover/click) auto-conectados a todos los botones.
+- Disparo y pasos regenerados con un timbre más suave y menos agresivo.
+- HUD tematizado con paneles oscuros y etiqueta de arma.
+- Dash (`Shift`), slide (`Ctrl`) y cambio de armas (`1/2/3`).
+- Sonidos de dash, subida de rango y cambio de arma.
+- Skins propias para rifle, SMG y escopeta con muzzle flash.
+- Animación de cambio de arma en el viewmodel.
+- Munición independiente por arma, sin relleno al cambiar.
+- Líneas de velocidad y kick de FOV durante el dash.
+- Indicador de cooldown de dash y slots de armas en el HUD.
+- Tiempo entre oleadas reducido de `2.5 s` a `1.2 s`.
+- Música ambiente procedural en loop continuo entre escenas.
+- Sonidos posicionales de impacto, crítico y muerte, más daño al jugador.
+- Chime de compra y subida de nivel.
+
+### Corregido
+- El menú de fin de run ahora libera el cursor y lo coloca sobre **Reintentar** al aparecer, así el primer click responde sin esperar a mover el mouse.
+- La pausa también deja el cursor sobre **Reanudar**.
+- `Transitions` ya no descarta pedidos mientras hay un fade en curso: los encola y tiene un watchdog de 3 s para liberar el overlay si una transición queda colgada.
+- El guardado de fin de run se difiere al frame siguiente para no demorar el menú.
+
 ## v0.3.0 — 2026-11-19
 
 ### Agregado
