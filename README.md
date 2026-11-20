@@ -373,4 +373,35 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ---
 
+## 15. En desarrollo (post v0.2.0)
+
+### Armas y munición
+
+- Recurso `WeaponData` con daño, plata por impacto, alcance, cadencia, cargador, regeneración y delay de regeneración.
+- Arma inicial: **Rifle básico** (20 daño, 4 disparos/s, 12 balas, 3 balas/s, delay 0.25 s).
+- Disparo automático manteniendo el click y respuesta inmediata al click.
+- HUD de munición: contador `actual / máximo` y barra.
+- Al quedarse sin balas se puede seguir apuntando; la regeneración repone munición tras el delay.
+- Los bonus de cargador/regeneración/cadencia se aplican al empezar la run.
+
+### Árbol de habilidades
+
+- Pantalla propia desde el hub: nodos, líneas de conexión y panel de detalle.
+- Estados: bloqueado, disponible y desbloqueado.
+- Solo se habilitan nodos adyacentes a uno desbloqueado.
+- Nodos actuales:
+  - `Calibre` (+5 daño) → `Munición pesada` (+5 daño) y `Gatillo rápido` (+15% cadencia).
+  - `Resistencia` (+20 vida) → `Segundo aire` (+20 vida).
+  - `Reloj de arena` (+10 s) → `Cargador extendido` (+4 balas) → `Recarga viva` (+1.5 balas/s).
+- Los nodos y bonus se guardan en el progreso.
+- Las mejoras lineales anteriores siguen aplicándose como bonus heredados para no perder progreso.
+
+### UX/UI
+
+- El árbol usa una primera dirección visual oscura con dorado/turquesa y conexiones por estado.
+- Ver `docs/UX_NOTES.md` para principios, referencias y próximos pasos.
+- Pendiente: tienda, perfiles (definir slots vs perfil de jugador), tema global, transiciones y feedback de UI.
+
+---
+
 *Documento vivo. Cualquier cambio de dirección debe reflejarse acá.*
