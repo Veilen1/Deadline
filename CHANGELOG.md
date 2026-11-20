@@ -15,12 +15,16 @@ Todas las versiones relevantes del prototipo.
 - Estela turquesa y kick de FOV distintos para el dash aéreo.
 - **Salto potenciado desde slide**: +25% de altura.
 - Salto separado en `try_jump()` para poder testearlo y reutilizarlo.
+- **Música dedicada por zona**: loops frío y oscuro para Zona 2 y 3.
+- **Capa de combate** con pulso rítmico que entra con las oleadas y baja al limpiarlas.
+- Crossfade de `0.6 s` entre ambientes de zona.
 
 ### Cambiado
 - El disparo, los pasos, el dash, el cambio de arma, la UI y los efectos ahora se rutean a **SFX**.
 - El loop ambiente se rutea a **Music**; el hub y el menú principal lo devuelven al tono neutral.
 - Valores por defecto: música `80%`, efectos `100%`, master `100%`.
 - El dash en el aire ahora consume una carga y no depende solo del cooldown del dash terrestre.
+- La música por zona reemplaza la variación de pitch por loops dedicados.
 
 ## v0.6.1 — 2026-11-20
 
