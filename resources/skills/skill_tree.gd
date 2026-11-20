@@ -9,6 +9,7 @@ const ROOT_ID: String = "damage_core"
 const NODES: Dictionary = {
 	"damage_core": {
 		"title": "Núcleo de daño",
+		"symbol": "✦",
 		"description": "Aumenta el daño básico del arma. Es el centro del árbol.",
 		"max_level": 5,
 		"base_cost": 40,
@@ -19,6 +20,7 @@ const NODES: Dictionary = {
 	},
 	"precision": {
 		"title": "Precisión",
+		"symbol": "◎",
 		"description": "Los headshots hacen más daño y alimentan mejor el estilo.",
 		"max_level": 3,
 		"base_cost": 70,
@@ -29,6 +31,7 @@ const NODES: Dictionary = {
 	},
 	"executioner": {
 		"title": "Ejecutor",
+		"symbol": "★",
 		"description": "Cada headshot devuelve una bala al cargador.",
 		"max_level": 1,
 		"base_cost": 200,
@@ -39,6 +42,7 @@ const NODES: Dictionary = {
 	},
 	"cadence": {
 		"title": "Cadencia",
+		"symbol": "»",
 		"description": "Reduce el intervalo entre disparos.",
 		"max_level": 5,
 		"base_cost": 60,
@@ -49,6 +53,7 @@ const NODES: Dictionary = {
 	},
 	"extended_mag": {
 		"title": "Cargador",
+		"symbol": "≡",
 		"description": "Más balas por cargador.",
 		"max_level": 3,
 		"base_cost": 90,
@@ -59,6 +64,7 @@ const NODES: Dictionary = {
 	},
 	"vitality": {
 		"title": "Vitalidad",
+		"symbol": "♥",
 		"description": "Más vida máxima para la próxima run.",
 		"max_level": 5,
 		"base_cost": 60,
@@ -69,6 +75,7 @@ const NODES: Dictionary = {
 	},
 	"armor": {
 		"title": "Armadura",
+		"symbol": "◆",
 		"description": "Reduce el daño recibido en un 15%.",
 		"max_level": 1,
 		"base_cost": 220,
@@ -79,6 +86,7 @@ const NODES: Dictionary = {
 	},
 	"time": {
 		"title": "Reloj de arena",
+		"symbol": "◷",
 		"description": "Más tiempo base para cada run.",
 		"max_level": 3,
 		"base_cost": 50,
@@ -89,6 +97,7 @@ const NODES: Dictionary = {
 	},
 	"regen": {
 		"title": "Recarga viva",
+		"symbol": "↻",
 		"description": "Las balas vuelven más rápido.",
 		"max_level": 5,
 		"base_cost": 80,
