@@ -2,6 +2,20 @@
 
 Todas las versiones relevantes del prototipo.
 
+## No publicado
+
+### Agregado
+- Buses separados **Music** y **SFX** con volúmenes independientes.
+- Sliders de **Música** y **Efectos de sonido** en Configuración, además del volumen general.
+- Sonido posicional de disparo para tiradores y torretas.
+- Sonidos de aparición y destrucción de eventos de arena.
+- Variación de tono/volumen del ambiente según la zona.
+
+### Cambiado
+- El disparo, los pasos, el dash, el cambio de arma, la UI y los efectos ahora se rutean a **SFX**.
+- El loop ambiente se rutea a **Music**; el hub y el menú principal lo devuelven al tono neutral.
+- Valores por defecto: música `80%`, efectos `100%`, master `100%`.
+
 ## v0.6.1 — 2026-11-20
 
 ### Agregado
