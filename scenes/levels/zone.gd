@@ -3,6 +3,8 @@ extends Node3D
 # Oleadas de la zona. Cada vez que muere un enemigo se descuenta del conteo;
 # al limpiar la última oleada se completa la zona.
 
+const SPAWN_TELEGRAPH_SCENE: PackedScene = preload("res://scenes/effects/spawn_telegraph.tscn")
+
 @export var enemy_scene: PackedScene
 @export var enemy_scenes: Array[PackedScene] = []
 @export var elite_scene: PackedScene
@@ -10,6 +12,7 @@ extends Node3D
 @export var enemies_per_wave: Array[int] = [4, 5, 3]
 @export var wave_delay: float = 0.8
 @export var completion_bonus: int = 35
+@export var spawn_telegraph_time: float = 2.0
 @export var zone_id: String = "zona_1"
 
 var current_wave: int = 0
@@ -41,11 +44,39 @@ func _start_wave() -> void:
 	_alive_enemies = regular_count + (1 if spawn_elite else 0)
 	EventBus.wave_started.emit(current_wave)
 
+	# Primero se marcan los puntos de aparición; los enemigos salen 2 s después.
+	_show_spawn_telegraphs(regular_count, spawn_elite)
+	await get_tree().create_timer(spawn_telegraph_time, false).timeout
+	if not GameState.is_run_active or _completed:
+		return
+
 	for index in regular_count:
 		_spawn_enemy(index)
 
 	if spawn_elite:
 		_spawn_elite()
+
+
+func _show_spawn_telegraphs(count: int, spawn_elite: bool) -> void:
+	var used: Array[int] = []
+	for index in count:
+		var point_index: int = index % spawn_points.size()
+		if used.has(point_index):
+			continue
+		used.append(point_index)
+		_spawn_telegraph(spawn_points[point_index].global_position)
+
+	if spawn_elite and not used.has(0):
+		_spawn_telegraph(spawn_points[0].global_position)
+
+
+func _spawn_telegraph(world_position: Vector3) -> void:
+	var telegraph: Node3D = SPAWN_TELEGRAPH_SCENE.instantiate() as Node3D
+	if telegraph == null:
+		return
+	add_child(telegraph)
+	telegraph.global_position = Vector3(world_position.x, 0.03, world_position.z)
+	telegraph.call("start", spawn_telegraph_time)
 
 
 func _spawn_enemy(index: int) -> void:

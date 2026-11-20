@@ -2,6 +2,29 @@
 
 Todas las versiones relevantes del prototipo.
 
+## v0.6.0 — 2026-11-20
+
+### Agregado
+- Jump pads que impulsan al jugador y permiten acceder a plataformas.
+- Coberturas bajas, plataformas elevadas y torres en las tres zonas.
+- Núcleos de arena recogibles sobre las plataformas, con toast y +1 núcleo.
+- Salto corto de enemigos contra coberturas para que no queden trabados.
+- Telegrafía de aparición: calavera roja, anillo y haz de luz en cada punto 2 s antes de la oleada.
+- Eventos de arena por zona: Reactor de pulso, Campo de hielo y Torreta de supresión.
+- Eventos destructibles con vida, etiqueta, recompensa en núcleos y toast de inicio/cierre.
+- Ralentización del jugador para el Campo de hielo (el dash sigue disponible para escapar).
+
+### Cambiado
+- La dificultad dejó de ser un ciclo fijo: ahora se ajusta con botones `−` y `+` entre 1 y 10, y se puede bajar.
+- El botón **Subir ciclo** pasó a **Subir dificultad**, con su par **Bajar dificultad**.
+- Al cambiarla aparece un toast con vida/daño/velocidad enemiga y el multiplicador de núcleos.
+- **Reloj de arena** ahora da `+8 s` por nivel (antes `+5`). Los saves viejos reciben la diferencia automáticamente.
+- **Hub rediseñado** con barra de recursos, tarjeta principal de próxima run y tarjetas de Progresión, Arsenal y Objetivos.
+- **Jerarquía de botones global:** acción primaria dorada, secundaria azul y acciones de texto discretas.
+- Menú principal, pausa y fin de run reorganizados en tarjetas con una única acción principal.
+- El tema global ahora se aplica también a menús que cuelgan de `CanvasLayer`/`Node3D` (pausa, fin de run y HUD).
+- Todos los botones de volver quedaron unificados como **← Volver**.
+
 ## v0.5.1 — 2026-11-20
 
 ### Agregado

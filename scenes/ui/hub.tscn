@@ -20,100 +20,323 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.043, 0.071, 0.125, 1)
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
 
-[node name="Menu" type="VBoxContainer" parent="CenterContainer"]
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TopBar" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="VBoxContainer" parent="Margin/VBox/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="TitleLabel" type="Label" parent="Margin/VBox/TopBar/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 38
+text = "HUB"
+
+[node name="SubtitleLabel" type="Label" parent="Margin/VBox/TopBar/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "Prepará la próxima run"
+
+[node name="Resources" type="HBoxContainer" parent="Margin/VBox/TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="MoneyCard" type="PanelContainer" parent="Margin/VBox/TopBar/Resources"]
+custom_minimum_size = Vector2(150, 64)
+layout_mode = 2
+theme_type_variation = "CardPanel"
+
+[node name="VBox" type="VBoxContainer" parent="Margin/VBox/TopBar/Resources/MoneyCard"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Caption" type="Label" parent="Margin/VBox/TopBar/Resources/MoneyCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 11
+text = "PLATA"
+
+[node name="MoneyLabel" type="Label" parent="Margin/VBox/TopBar/Resources/MoneyCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.85, 0.8, 1)
+theme_override_font_sizes/font_size = 22
+text = "$0"
+
+[node name="CoresCard" type="PanelContainer" parent="Margin/VBox/TopBar/Resources"]
+custom_minimum_size = Vector2(150, 64)
+layout_mode = 2
+theme_type_variation = "CardPanel"
+
+[node name="VBox" type="VBoxContainer" parent="Margin/VBox/TopBar/Resources/CoresCard"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Caption" type="Label" parent="Margin/VBox/TopBar/Resources/CoresCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 11
+text = "NÚCLEOS"
+
+[node name="CoresLabel" type="Label" parent="Margin/VBox/TopBar/Resources/CoresCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 22
+text = "◈ 0"
+
+[node name="Content" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="PlayCard" type="PanelContainer" parent="Margin/VBox/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.7
+theme_type_variation = "HeroPanel"
+
+[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Content/PlayCard"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/Menu"]
+[node name="SectionLabel" type="Label" parent="Margin/VBox/Content/PlayCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
-theme_override_font_sizes/font_size = 34
-text = "HUB"
-horizontal_alignment = 1
+theme_override_font_sizes/font_size = 11
+text = "SIGUIENTE RUN"
 
-[node name="MoneyLabel" type="Label" parent="CenterContainer/Menu"]
+[node name="HeroTitle" type="Label" parent="Margin/VBox/Content/PlayCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.97, 1, 1)
+theme_override_font_sizes/font_size = 26
+text = "Prepará tu build"
+
+[node name="ContractLabel" type="Label" parent="Margin/VBox/Content/PlayCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.77, 0.87, 1)
+theme_override_font_sizes/font_size = 15
+text = "Contrato: sin contrato"
+autowrap_mode = 2
+
+[node name="CycleLabel" type="Label" parent="Margin/VBox/Content/PlayCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 13
+text = "Dificultad 1 · grado máximo C"
+
+[node name="CycleRow" type="HBoxContainer" parent="Margin/VBox/Content/PlayCard/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CycleDownButton" type="Button" parent="Margin/VBox/Content/PlayCard/VBox/CycleRow"]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = "SecondaryButton"
+text = "Bajar dificultad"
+
+[node name="CycleUpButton" type="Button" parent="Margin/VBox/Content/PlayCard/VBox/CycleRow"]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = "SecondaryButton"
+text = "Subir dificultad"
+
+[node name="TimerLabel" type="Label" parent="Margin/VBox/Content/PlayCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.85, 0.8, 1)
-theme_override_font_sizes/font_size = 24
-text = "$0"
-horizontal_alignment = 1
+theme_override_font_sizes/font_size = 18
+text = "Timer inicial: 50 s"
 
-[node name="CoresLabel" type="Label" parent="CenterContainer/Menu"]
+[node name="BonusLabel" type="Label" parent="Margin/VBox/Content/PlayCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 13
+text = "Bonos: +0 daño, +0 vida · 0 nodos"
+
+[node name="TipsLabel" type="Label" parent="Margin/VBox/Content/PlayCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.6, 0.72, 1)
+theme_override_font_sizes/font_size = 12
+text = "Completar una zona da +5 s y una bendición.
+El grado S paga núcleos extra.
+Los contratos pagan solo si terminás la run."
+autowrap_mode = 2
+
+[node name="PlaySpacer" type="Control" parent="Margin/VBox/Content/PlayCard/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayButton" type="Button" parent="Margin/VBox/Content/PlayCard/VBox"]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+theme_type_variation = "PrimaryButton"
+theme_override_font_sizes/font_size = 20
+text = "JUGAR"
+
+[node name="Side" type="VBoxContainer" parent="Margin/VBox/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="ProgressCard" type="PanelContainer" parent="Margin/VBox/Content/Side"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = "CardPanel"
+
+[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Content/Side/ProgressCard"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TitleRow" type="HBoxContainer" parent="Margin/VBox/Content/Side/ProgressCard/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="Label" parent="Margin/VBox/Content/Side/ProgressCard/VBox/TitleRow"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
 theme_override_font_sizes/font_size = 20
-text = "◈ 0 núcleos"
-horizontal_alignment = 1
+text = "✦"
 
-[node name="TimerLabel" type="Label" parent="CenterContainer/Menu"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
-theme_override_font_sizes/font_size = 18
-text = "Timer inicial: 60 s"
-horizontal_alignment = 1
-
-[node name="BonusLabel" type="Label" parent="CenterContainer/Menu"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
-theme_override_font_sizes/font_size = 16
-text = "Bonos: +0 daño, +0 vida"
-horizontal_alignment = 1
-
-[node name="ContractLabel" type="Label" parent="CenterContainer/Menu"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
-theme_override_font_sizes/font_size = 14
-text = "Contrato: sin contrato"
-horizontal_alignment = 1
-
-[node name="CycleLabel" type="Label" parent="CenterContainer/Menu"]
+[node name="Title" type="Label" parent="Margin/VBox/Content/Side/ProgressCard/VBox/TitleRow"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
 theme_override_font_sizes/font_size = 14
-text = "Ciclo 1 · grado máximo C"
-horizontal_alignment = 1
+text = "PROGRESIÓN"
 
-[node name="CycleButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 32)
-layout_mode = 2
-text = "Subir ciclo"
-
-[node name="SkillTreeButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 36)
-layout_mode = 2
-text = "Árbol de habilidades"
-
-[node name="ShopButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 36)
-layout_mode = 2
-text = "Tienda"
-
-[node name="ChallengesButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 36)
-layout_mode = 2
-text = "Desafíos"
-
-[node name="HintLabel" type="Label" parent="CenterContainer/Menu"]
+[node name="Desc" type="Label" parent="Margin/VBox/Content/Side/ProgressCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 12
+text = "Mejorá daño, cadencia y tiempo con núcleos."
+autowrap_mode = 2
+
+[node name="Spacer" type="Control" parent="Margin/VBox/Content/Side/ProgressCard/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SkillTreeButton" type="Button" parent="Margin/VBox/Content/Side/ProgressCard/VBox"]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+theme_type_variation = "SecondaryButton"
+text = "Abrir árbol"
+
+[node name="ArsenalCard" type="PanelContainer" parent="Margin/VBox/Content/Side"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = "CardPanel"
+
+[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Content/Side/ArsenalCard"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TitleRow" type="HBoxContainer" parent="Margin/VBox/Content/Side/ArsenalCard/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="Label" parent="Margin/VBox/Content/Side/ArsenalCard/VBox/TitleRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 20
+text = "≡"
+
+[node name="Title" type="Label" parent="Margin/VBox/Content/Side/ArsenalCard/VBox/TitleRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
 theme_override_font_sizes/font_size = 14
-text = "Desbloqueá nodos adyacentes en el árbol."
-horizontal_alignment = 1
+text = "ARSENAL"
 
-[node name="PlayButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 36)
+[node name="Desc" type="Label" parent="Margin/VBox/Content/Side/ArsenalCard/VBox"]
 layout_mode = 2
-text = "Jugar"
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 12
+text = "Comprá y equipá armas con la plata de tus runs."
+autowrap_mode = 2
 
-[node name="MainMenuButton" type="Button" parent="CenterContainer/Menu"]
-custom_minimum_size = Vector2(340, 36)
+[node name="Spacer" type="Control" parent="Margin/VBox/Content/Side/ArsenalCard/VBox"]
 layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ShopButton" type="Button" parent="Margin/VBox/Content/Side/ArsenalCard/VBox"]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+theme_type_variation = "SecondaryButton"
+text = "Abrir tienda"
+
+[node name="ChallengesCard" type="PanelContainer" parent="Margin/VBox/Content/Side"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = "CardPanel"
+
+[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Content/Side/ChallengesCard"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TitleRow" type="HBoxContainer" parent="Margin/VBox/Content/Side/ChallengesCard/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="Label" parent="Margin/VBox/Content/Side/ChallengesCard/VBox/TitleRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 20
+text = "★"
+
+[node name="Title" type="Label" parent="Margin/VBox/Content/Side/ChallengesCard/VBox/TitleRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 14
+text = "OBJETIVOS"
+
+[node name="Desc" type="Label" parent="Margin/VBox/Content/Side/ChallengesCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 12
+text = "Desafíos que desbloquean armas y núcleos."
+autowrap_mode = 2
+
+[node name="Spacer" type="Control" parent="Margin/VBox/Content/Side/ChallengesCard/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ChallengesButton" type="Button" parent="Margin/VBox/Content/Side/ChallengesCard/VBox"]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+theme_type_variation = "SecondaryButton"
+text = "Ver desafíos"
+
+[node name="BottomBar" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HintLabel" type="Label" parent="Margin/VBox/BottomBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.5, 0.6, 0.72, 1)
+theme_override_font_sizes/font_size = 12
+text = "Shift dash · Ctrl slide · 1 / 2 / 3 armas"
+
+[node name="MainMenuButton" type="Button" parent="Margin/VBox/BottomBar"]
+custom_minimum_size = Vector2(160, 30)
+layout_mode = 2
+theme_type_variation = "TextButton"
 text = "Menú principal"

@@ -13,7 +13,7 @@ signal run_ended(reason: String)
 
 const VALID_END_REASONS: PackedStringArray = ["timer", "death", "completed"]
 const DEFAULT_SAVE_PATH: String = "user://deadline_progress.cfg"
-const SAVE_VERSION: int = 3
+const SAVE_VERSION: int = 4
 const SAVE_DEBOUNCE: float = 0.5
 const SKILL_COST_GROWTH: float = 1.35
 
@@ -235,11 +235,22 @@ func cycle_core_mult() -> float:
 	return 1.0 + 0.25 * float(cycle - 1)
 
 
-func advance_cycle() -> bool:
-	# Subir de ciclo es opcional; se habilita al completar la primera run.
-	if runs_completed < 1 or cycle >= 10:
+func increase_cycle() -> bool:
+	return set_cycle(cycle + 1)
+
+
+func decrease_cycle() -> bool:
+	return set_cycle(cycle - 1)
+
+
+func set_cycle(value: int) -> bool:
+	# La dificultad se puede subir o bajar; subir requiere haber completado una run.
+	var target: int = clampi(value, 1, 10)
+	if target == cycle:
 		return false
-	cycle += 1
+	if target > cycle and runs_completed < 1:
+		return false
+	cycle = target
 	save_game()
 	return true
 
@@ -798,6 +809,9 @@ func load_game() -> void:
 		skill_levels = saved_levels.duplicate()
 		var saved_bonuses = config.get_value("progress", "skill_bonuses", {})
 		skill_bonuses = saved_bonuses.duplicate() if saved_bonuses is Dictionary else {}
+		if saved_version < 4:
+			# v0.6: Reloj de arena pasa de +5 a +8 s por nivel.
+			base_run_time += 3.0 * float(get_skill_level("time"))
 	else:
 		# Migración desde el árbol anterior de nodos únicos.
 		var old_skills = config.get_value("progress", "unlocked_skills", [])

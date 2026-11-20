@@ -56,9 +56,9 @@
 
 ## Próximas tareas de UX/UI
 
-1. **Mapas y zonas:** rediseñar las arenas con plataformas, verticalidad y un puzzle/evento por zona.
-2. **HUD:** probar los nuevos indicadores (bendiciones, grado) en resoluciones chicas y UI scale alto.
-3. **Audio:** sliders separados de música/efectos y mezcla por zona.
-4. **Feedback:** dash aéreo y combos de movimiento.
-5. **Accesibilidad:** navegación con teclado/controller y contraste.
-6. **Contenido:** torreta fija y nuevas variantes de enemigo.
+1. **Eventos de arena:** implementados Reactor, Campo de hielo y Torreta; faltan variantes y combinaciones.
+2. **Mapas:** seguir iterando layouts verticales, coberturas y legibilidad de la telegrafía.
+3. **Menús:** jerarquía primaria/secundaria aplicada; falta testear navegación con teclado/controller y resoluciones chicas.
+4. **Audio:** sliders separados de música/efectos y mezcla por zona.
+5. **Movimiento:** dash aéreo y combos de slide/salto.
+6. **Contenido:** torreta móvil y nuevas variantes de enemigo.

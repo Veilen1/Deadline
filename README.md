@@ -3,7 +3,7 @@
 > **Estado del documento:** vivo y en construcción. Todo lo que está acá está sujeto a cambios durante el prototipado y el testeo. Las decisiones cerradas se marcan con ✅ y las que están abiertas o en revisión se marcan con 🟡.
 >
 > **Última actualización:** 20/11/2026
-> **Versión:** 0.5.1 — Prototipo jugable
+> **Versión:** 0.6.0 — Prototipo jugable
 
 ---
 
@@ -356,25 +356,26 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - `main`: releases estables.
 - `dev`: integración de features.
 - Una rama por feature: `feature/<nombre>` desde `dev`, commits atómicos, merge `--no-ff` a `dev`.
-- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos) y `v0.5.1` (perfil desplazable, monedas en el árbol y toasts).
+- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos), `v0.5.1` (perfil desplazable, monedas en el árbol y toasts) y `v0.6.0` (arenas verticales, telegrafía y eventos).
 
 ### Limitaciones conocidas
 
-- Hay tres zonas: blanca, celeste y violeta. Todas son arenas planas; todavía no hay plataformas ni puzzles.
+- Hay tres zonas: blanca, celeste y violeta. Tienen coberturas, plataformas, torres, telegrafía de spawn y un evento de arena fijo por zona.
 - Hay tres armas con munición independiente y regeneración, pero no recarga manual.
 - El volumen es general; no hay sliders separados de música/efectos.
 - La dificultad se aplica a los enemigos que aparecen después del cambio; los ya vivos no se recalculan.
 - Los élites comparten mecánicas base; la Zona 3 suma un élite tirador.
 - No hay guardado de run en curso, multijugador, controller ni localización.
-- No hay leaderboard ni semilla diaria; el ciclo se sube manualmente hasta 10.
+- No hay leaderboard ni semilla diaria; la dificultad se ajusta manualmente hasta 10.
+- Los eventos de arena son uno fijo por zona; faltan variantes y combinaciones.
 - Los menús y modelos son provisorios.
 
 ### Próximos pasos
 
-1. Rediseñar físicamente las zonas: plataformas, verticalidad y un puzzle o evento por arena.
+1. Más variantes de eventos de arena y combinaciones por run.
 2. Sliders separados de música y efectos, y mezcla por zona.
 3. Movimiento avanzado: dash aéreo y combos de slide/salto.
-4. Nuevas variantes de enemigo (torreta fija, corredor con escudo).
+4. Nuevas variantes de enemigo (torreta móvil, corredor con escudo).
 5. Localización y soporte de controller.
 
 ---
@@ -573,6 +574,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - `◈ Núcleos` es la moneda exclusiva del árbol de habilidades. La plata queda para armas y la conversión.
 - Se ganan `+1` por élite, `+1` por zona completada y `+3` por run completada, más contrato y grado.
 - Los costos del árbol son exponenciales (`×1.35` por nivel).
+- **Reloj de arena** suma `+8 s` de timer base por nivel; los saves viejos reciben la diferencia automáticamente.
 - Conversión manual de `$250 → ◈1` desde el árbol para darle uso a la plata sobrante.
 - Los saves viejos conservan sus niveles; la economía nueva empieza desde cero.
 
@@ -600,10 +602,12 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Ciclos y grado
 
-- El ciclo se sube manualmente desde el hub, hasta 10.
-- Cada ciclo suma `+12%` vida enemiga, `+8%` daño enemigo, `+4%` velocidad y `+25%` núcleos al completar.
+- La **dificultad** se ajusta con `−` y `+` desde el hub, entre 1 y 10, y **no es permanente**: podés bajarla cuando quieras.
+- Cada nivel suma `+12%` vida enemiga, `+8%` daño enemigo, `+4%` velocidad y `+25%` núcleos al completar.
+- Al cambiarla aparece un toast con los porcentajes y el multiplicador de núcleos.
 - El **grado de run** (`S/A/B/C`) sale de la precisión, las kills y si se completó.
 - `S/A/B` pagan `3/2/1` núcleos extra; el mejor grado queda guardado.
+- La dificultad se ajusta con botones `−` y `+` (1–10) y no es definitiva; cada cambio muestra un toast con vida/daño/velocidad enemiga y el multiplicador de núcleos.
 
 ### Diagnóstico
 
@@ -618,6 +622,75 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - El árbol muestra `$` (plata) y `◈` (núcleos) juntos para evaluar la conversión.
 - Los desafíos completados disparan un **toast arriba a la derecha** con el desbloqueo y la condición cumplida.
 - Los toasts no se repiten y no avisan armas que ya estaban compradas antes.
+
+---
+
+## 21. v0.6.0 — arenas verticales, telegrafía y eventos
+
+### Jump pads
+
+- Nuevo `JumpPad`: al pisarlo lanza al jugador hacia arriba con un pequeño empuje hacia el `-Z` local.
+- El jugador conserva el impulso vertical aunque esté en el piso (`launch()` en `player.gd`).
+- Sonido, luz y pulso visual teal para leerlos rápido.
+- El empuje horizontal se puede orientar rotando el pad en cada arena.
+
+### Identidad física por zona
+
+- **Zona 1:** cuatro coberturas bajas de `0.8 m`, un jump pad central y un núcleo sobre una cobertura.
+- **Zona 2:** plataforma elevada de `1.2 m` con núcleo, jump pad de acceso y coberturas alrededor.
+- **Zona 3:** dos torres de `2.4 m` con núcleos, jump pads laterales y coberturas para cortar línea de tiro.
+- Todas las piezas usan `arena_block` y `arena_platform`, reutilizables y escalables.
+
+### Núcleos de arena
+
+- `CorePickup`: esfera dorada que gira y flota sobre las plataformas.
+- Al recogerla da `+1 ◈`, muestra un toast y se elimina hasta la próxima run.
+- Premia usar la verticalidad sin frenar la acción.
+
+### Enemigos y coberturas
+
+- Los enemigos hacen un **salto corto** al chocar con coberturas bajas para no quedar trabados.
+- Tiradores y sabuesos usan la misma lógica de escalada.
+- Las torres de Zona 3 siguen siendo riesgosas porque los tiradores disparan desde el piso.
+
+### Telegrafía de aparición
+
+- Antes de cada oleada se marcan los puntos de aparición con una **calavera roja**, un anillo y un haz de luz.
+- Los enemigos salen **2 segundos después**; el HUD muestra la oleada al empezar el aviso.
+- Aplica también a la primera oleada de cada zona y al élite.
+- Si la run termina durante el aviso, los enemigos no llegan a spawnear.
+
+### Eventos de arena
+
+- **Zona 1 — Reactor inestable:** `150` de vida; pulsa `8` de daño cada `3 s` en un radio de `6 m`. Recompensa `+2 ◈`.
+- **Zona 2 — Campo de hielo:** `200` de vida; ralentiza al jugador al `60%` dentro de `7 m`. El dash sigue permitiendo escapar. Recompensa `+2 ◈`.
+- **Zona 3 — Torreta de supresión:** `220` de vida; dispara proyectiles cada `1.4 s`. Recompensa `+3 ◈`.
+- Se pueden destruir disparándoles y muestran nombre y vida en una etiqueta 3D.
+- Al aparecer y al destruirse muestran un toast; su vida/daño escalan con dificultad, ciclo y contrato.
+
+---
+
+## 22. Rediseño de menús
+
+### Jerarquía visual
+
+- **Primario (dorado):** una sola acción importante por pantalla: `JUGAR`, `Reanudar`, `Reintentar`, `Empezar run`.
+- **Secundario (azul):** acciones de apoyo: configuración, perfil, dificultad, abrir tienda/árbol, comprar.
+- **Texto (sin caja):** salir, volver al hub/menú, navegación de bajo peso.
+- Los botones primarios tienen borde dorado y texto claro; los secundarios borde azul y hover turquesa.
+
+### Hub
+
+- Barra superior con título y recursos en tarjetas de **Plata** y **Núcleos**.
+- Tarjeta principal **Siguiente run** con contrato, dificultad, timer, bonos y el CTA `JUGAR`.
+- Tarjetas laterales de **Progresión**, **Arsenal** y **Objetivos** con icono, descripción y acción.
+- Barra inferior con atajos y acceso discreto al menú principal.
+
+### Otras pantallas
+
+- Menú principal, pausa y fin de run ahora viven en una tarjeta con una única acción principal.
+- Todas las pantallas usan el mismo header: título, recursos y **← Volver**.
+- El tema global se propaga también a los menús dentro de la partida (CanvasLayer/Node3D), no solo a las escenas de UI.
 
 ---
 

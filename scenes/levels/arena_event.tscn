@@ -1,0 +1,72 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/levels/arena_event.gd" id="1_event"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_core"]
+top_radius = 0.45
+bottom_radius = 0.62
+height = 2.4
+radial_segments = 16
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_core"]
+shading_mode = 0
+albedo_color = Color(1, 0.2, 0.12, 1)
+emission_enabled = true
+emission = Color(1, 0.12, 0.06, 1)
+emission_energy_multiplier = 2.5
+
+[sub_resource type="TorusMesh" id="TorusMesh_ring"]
+inner_radius = 0.95
+outer_radius = 1.15
+rings = 48
+ring_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ring"]
+shading_mode = 0
+albedo_color = Color(1, 0.2, 0.12, 1)
+emission_enabled = true
+emission = Color(1, 0.12, 0.06, 1)
+emission_energy_multiplier = 2.5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
+size = Vector3(1.5, 2.6, 1.5)
+
+[node name="ArenaEvent" type="Node3D" groups=["arena_events"]]
+script = ExtResource("1_event")
+
+[node name="Core" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("CylinderMesh_core")
+material_override = SubResource("StandardMaterial3D_core")
+cast_shadow = 0
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+mesh = SubResource("TorusMesh_ring")
+material_override = SubResource("StandardMaterial3D_ring")
+cast_shadow = 0
+
+[node name="TorsoHitbox" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TorsoHitbox"]
+shape = SubResource("BoxShape3D_hitbox")
+
+[node name="Label" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
+billboard = 1
+no_depth_test = true
+modulate = Color(1, 0.2, 0.12, 1)
+outline_modulate = Color(0, 0, 0, 1)
+text = "Reactor inestable\n150 / 150"
+font_size = 64
+pixel_size = 0.01
+outline_size = 10
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+light_color = Color(1, 0.18, 0.1, 1)
+light_energy = 0.8
+omni_range = 5.0

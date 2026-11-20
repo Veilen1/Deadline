@@ -58,7 +58,8 @@ vertical_alignment = 1
 [node name="BackButton" type="Button" parent="Margin/VBox/TopBar"]
 custom_minimum_size = Vector2(170, 40)
 layout_mode = 2
-text = "Volver al hub"
+theme_type_variation = "SecondaryButton"
+text = "← Volver"
 
 [node name="HintLabel" type="Label" parent="Margin/VBox"]
 layout_mode = 2
@@ -91,9 +92,11 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_type_variation = "SecondaryButton"
 text = "Sin contrato · run estándar"
 
 [node name="StartButton" type="Button" parent="Margin/VBox/Bottom"]
 custom_minimum_size = Vector2(220, 48)
 layout_mode = 2
+theme_type_variation = "PrimaryButton"
 text = "Empezar run"

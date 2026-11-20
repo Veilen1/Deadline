@@ -2,12 +2,12 @@ extends Control
 
 const HUB_SCENE: String = "res://scenes/ui/hub.tscn"
 
-@onready var reason_label: Label = $CenterContainer/Menu/ReasonLabel
-@onready var penalty_label: Label = $CenterContainer/Menu/PenaltyLabel
-@onready var money_label: Label = $CenterContainer/Menu/MoneyLabel
-@onready var grade_label: Label = $CenterContainer/Menu/GradeLabel
-@onready var retry_button: Button = $CenterContainer/Menu/RetryButton
-@onready var hub_button: Button = $CenterContainer/Menu/HubButton
+@onready var reason_label: Label = $CenterContainer/Card/Menu/ReasonLabel
+@onready var penalty_label: Label = $CenterContainer/Card/Menu/PenaltyLabel
+@onready var money_label: Label = $CenterContainer/Card/Menu/MoneyLabel
+@onready var grade_label: Label = $CenterContainer/Card/Menu/GradeLabel
+@onready var retry_button: Button = $CenterContainer/Card/Menu/RetryButton
+@onready var hub_button: Button = $CenterContainer/Card/Menu/HubButton
 
 
 func _ready() -> void:

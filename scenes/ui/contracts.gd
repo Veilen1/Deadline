@@ -45,6 +45,7 @@ func _build_choices() -> void:
 		button.button_group = _group
 		button.custom_minimum_size = Vector2(0, 88)
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.theme_type_variation = "SecondaryButton"
 		button.add_theme_font_size_override("font_size", 16)
 		button.text = "%s\n%s\nRecompensa: +%d núcleos" % [
 			str(data.get("title", contract_id)),

@@ -76,6 +76,9 @@ var _slide_cooldown_timer: float = 0.0
 var _slide_direction: Vector3 = Vector3.ZERO
 var _contract_damage_taken: float = 1.0
 var _contract_ammo_regen: float = 1.0
+var _launch_ignore_floor: int = 0
+var _slow_timer: float = 0.0
+var _slow_mult: float = 1.0
 var _blessing_damage_mult: float = 1.0
 var _blessing_fire_rate_mult: float = 1.0
 var _blessing_regen_bonus: float = 0.0
@@ -184,6 +187,23 @@ func _input_direction() -> Vector3:
 	if direction.length_squared() <= 0.0:
 		return Vector3.ZERO
 	return direction.normalized()
+
+
+func launch(launch_velocity: Vector3) -> void:
+	# Jump pads: preserva el impulso vertical aunque el jugador esté en el piso.
+	velocity = launch_velocity
+	_launch_ignore_floor = 2
+	_dash_timer = 0.0
+	_slide_timer = 0.0
+	_dash_fov_kick = 6.0
+	_shake_time = 0.1
+	_shake_peak = 0.018
+
+
+func apply_slow(multiplier: float, duration: float) -> void:
+	# Campo de hielo de Zona 2: frena el movimiento, no el dash.
+	_slow_mult = minf(_slow_mult, clampf(multiplier, 0.1, 1.0))
+	_slow_timer = maxf(_slow_timer, duration)
 
 
 func _try_dash() -> void:
@@ -306,6 +326,10 @@ func _physics_process(delta: float) -> void:
 	_fire_timer = maxf(_fire_timer - delta, 0.0)
 	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
 	_slide_cooldown_timer = maxf(_slide_cooldown_timer - delta, 0.0)
+	if _slow_timer > 0.0:
+		_slow_timer = maxf(_slow_timer - delta, 0.0)
+		if _slow_timer <= 0.0:
+			_slow_mult = 1.0
 	if dash_trail != null:
 		dash_trail.emitting = _dash_timer > 0.0
 	_update_ammo_regen(delta)
@@ -325,14 +349,20 @@ func _physics_process(delta: float) -> void:
 		velocity.z = _dash_direction.z * dash_speed
 		_dash_timer = maxf(_dash_timer - delta, 0.0)
 	elif _slide_timer > 0.0:
-		velocity.x = _slide_direction.x * move_speed * slide_speed_multiplier * _blessing_move_mult
-		velocity.z = _slide_direction.z * move_speed * slide_speed_multiplier * _blessing_move_mult
+		velocity.x = (
+			_slide_direction.x * move_speed * slide_speed_multiplier * _blessing_move_mult * _slow_mult
+		)
+		velocity.z = (
+			_slide_direction.z * move_speed * slide_speed_multiplier * _blessing_move_mult * _slow_mult
+		)
 		_slide_timer = maxf(_slide_timer - delta, 0.0)
 	else:
-		velocity.x = direction.x * move_speed * _blessing_move_mult
-		velocity.z = direction.z * move_speed * _blessing_move_mult
+		velocity.x = direction.x * move_speed * _blessing_move_mult * _slow_mult
+		velocity.z = direction.z * move_speed * _blessing_move_mult * _slow_mult
 
-	if not is_on_floor():
+	if _launch_ignore_floor > 0:
+		_launch_ignore_floor -= 1
+	elif not is_on_floor():
 		velocity.y -= gravity * delta
 	else:
 		velocity.y = 0.0
