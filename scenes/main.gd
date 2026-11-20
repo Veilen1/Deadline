@@ -16,6 +16,8 @@ const ZONE_SCENES = [
 @onready var timer_label: Label = $CanvasLayer/TimerLabel
 @onready var wave_label: Label = $CanvasLayer/WaveLabel
 @onready var health_label: Label = $CanvasLayer/HealthLabel
+@onready var ammo_label: Label = $CanvasLayer/AmmoLabel
+@onready var ammo_bar: ProgressBar = $CanvasLayer/AmmoBar
 @onready var boss_label: Label = $CanvasLayer/BossLabel
 @onready var boss_bar: ProgressBar = $CanvasLayer/BossBar
 @onready var boss_hp_label: Label = $CanvasLayer/BossHpLabel
@@ -36,6 +38,7 @@ func _ready() -> void:
 	EventBus.enemy_hit.connect(_on_enemy_hit)
 	EventBus.player_damaged.connect(_on_player_damaged)
 	EventBus.player_died.connect(_on_player_died)
+	EventBus.ammo_changed.connect(_on_ammo_changed)
 	EventBus.wave_started.connect(_on_wave_started)
 	EventBus.zone_completed.connect(_on_zone_completed)
 	EventBus.damage_number_requested.connect(_on_damage_number_requested)
@@ -44,6 +47,7 @@ func _ready() -> void:
 	EventBus.boss_defeated.connect(_on_boss_defeated)
 	Settings.settings_changed.connect(_on_settings_changed)
 	player.call("apply_meta_upgrades", GameState.upgrades)
+	_on_ammo_changed(int(player.get("current_ammo")), int(player.get("max_ammo")))
 	minimap.visible = Settings.show_minimap
 	_update_money_label(GameState.money)
 	_update_health_label()
@@ -168,6 +172,12 @@ func _on_boss_defeated() -> void:
 
 func _on_player_damaged(_amount: float) -> void:
 	_update_health_label()
+
+
+func _on_ammo_changed(current: int, maximum: int) -> void:
+	ammo_label.text = "%d / %d" % [current, maximum]
+	ammo_bar.max_value = maximum
+	ammo_bar.value = current
 
 
 func _on_player_died() -> void:

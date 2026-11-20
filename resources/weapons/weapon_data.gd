@@ -1,0 +1,14 @@
+class_name WeaponData
+extends Resource
+
+## Datos de un arma. El jugador consume estas stats y el hub/árbol puede
+## agregar bonus encima.
+
+@export var weapon_name: String = "Rifle básico"
+@export var damage: float = 20.0
+@export var money_per_hit: int = 10
+@export var range: float = 100.0
+@export var shots_per_second: float = 4.0
+@export var magazine_size: int = 12
+@export var ammo_regen_per_second: float = 3.0
+@export var regen_delay: float = 0.25

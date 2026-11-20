@@ -16,9 +16,7 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 @export var camera_pitch_limit_deg: float = 80.0
 
 @export_group("Weapon")
-@export var shoot_range: float = 100.0
-@export var weapon_damage: float = 20.0
-@export var weapon_money: int = 10
+@export var weapon_data: WeaponData
 
 @export_group("Audio")
 @export var footstep_interval: float = 0.42
@@ -30,11 +28,26 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 @onready var footstep_player: AudioStreamPlayer = $FootstepPlayer
 
 var current_health: float
+var damage_bonus: float = 0.0
+var max_ammo: int = 0
+var current_ammo: int = 0
+var ammo_regen_bonus: float = 0.0
+var fire_rate_bonus: float = 0.0
+
 var _footstep_timer: float = 0.0
+var _fire_timer: float = 0.0
+var _regen_delay_timer: float = 0.0
+var _ammo_regen_accumulator: float = 0.0
 
 
 func _ready() -> void:
 	current_health = max_health
+	if weapon_data != null:
+		max_ammo = weapon_data.magazine_size
+		current_ammo = max_ammo
+	else:
+		push_warning("Player: falta weapon_data")
+
 	Settings.settings_changed.connect(_apply_live_settings)
 	_apply_live_settings()
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -69,6 +82,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	_fire_timer = maxf(_fire_timer - delta, 0.0)
+	_update_ammo_regen(delta)
+
 	var input_vector: Vector2 = Input.get_vector(
 		"move_left", "move_right", "move_forward", "move_back"
 	)
@@ -93,6 +109,9 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 	_update_footsteps(delta)
+
+	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and Input.is_action_pressed("shoot"):
+		shoot()
 
 
 func _update_footsteps(delta: float) -> void:
@@ -124,12 +143,48 @@ func take_damage(amount: float) -> void:
 
 func apply_meta_upgrades(upgrades: Dictionary) -> void:
 	# Aplica los bonus comprados en el hub. Se llama una vez al empezar la run.
-	weapon_damage += float(upgrades.get("damage_bonus", 0.0))
+	damage_bonus += float(upgrades.get("damage_bonus", 0.0))
 	max_health += float(upgrades.get("health_bonus", 0.0))
+	max_ammo += int(upgrades.get("ammo_capacity_bonus", 0))
+	ammo_regen_bonus += float(upgrades.get("ammo_regen_bonus", 0.0))
+	fire_rate_bonus += float(upgrades.get("fire_rate_bonus", 0.0))
 	current_health = max_health
+	current_ammo = max_ammo
+
+
+func _update_ammo_regen(delta: float) -> void:
+	if weapon_data == null or current_ammo >= max_ammo:
+		_ammo_regen_accumulator = 0.0
+		return
+
+	if _regen_delay_timer > 0.0:
+		_regen_delay_timer -= delta
+		return
+
+	var rate: float = maxf(weapon_data.ammo_regen_per_second + ammo_regen_bonus, 0.0)
+	if rate <= 0.0:
+		return
+
+	_ammo_regen_accumulator += rate * delta
+	var rounds: int = int(_ammo_regen_accumulator)
+	if rounds <= 0:
+		return
+
+	_ammo_regen_accumulator -= float(rounds)
+	current_ammo = mini(current_ammo + rounds, max_ammo)
+	EventBus.ammo_changed.emit(current_ammo, max_ammo)
 
 
 func shoot() -> void:
+	if weapon_data == null or _fire_timer > 0.0 or current_ammo <= 0:
+		return
+
+	current_ammo -= 1
+	_fire_timer = 1.0 / maxf(weapon_data.shots_per_second * (1.0 + fire_rate_bonus), 0.01)
+	_regen_delay_timer = weapon_data.regen_delay
+	_ammo_regen_accumulator = 0.0
+	EventBus.ammo_changed.emit(current_ammo, max_ammo)
+
 	# Raycast desde el centro de la cámara hacia donde se mira.
 	var screen_center: Vector2 = get_viewport().get_visible_rect().size * 0.5
 	var origin: Vector3 = camera.project_ray_origin(screen_center)
@@ -137,7 +192,7 @@ func shoot() -> void:
 
 	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
 		origin,
-		origin + direction * shoot_range
+		origin + direction * weapon_data.range
 	)
 	query.collide_with_areas = true
 	query.exclude = _build_ray_exclude_list()
@@ -146,7 +201,7 @@ func shoot() -> void:
 	var result: Dictionary = space_state.intersect_ray(query)
 
 	# El tracer llega hasta el impacto o hasta el alcance máximo si falla.
-	var end_point: Vector3 = origin + direction * shoot_range
+	var end_point: Vector3 = origin + direction * weapon_data.range
 	if not result.is_empty():
 		end_point = result.get("position", end_point)
 
@@ -157,12 +212,12 @@ func shoot() -> void:
 				var enemy: Node = collider.get_parent()
 				if enemy != null and enemy.has_method("take_hit"):
 					var hit_position: Vector3 = result.get("position", Vector3.INF)
-					enemy.call("take_hit", hit_zone, weapon_damage, weapon_money, hit_position)
+					var damage: float = weapon_data.damage + damage_bonus
+					enemy.call("take_hit", hit_zone, damage, weapon_data.money_per_hit, hit_position)
 
 	_spawn_tracer(end_point)
 	shoot_player.pitch_scale = randf_range(0.95, 1.05)
 	shoot_player.play()
-	# TODO: Fase 1.4 — cooldown y retroceso del arma.
 
 
 func _spawn_tracer(to: Vector3) -> void:
