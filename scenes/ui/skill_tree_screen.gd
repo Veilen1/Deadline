@@ -7,6 +7,7 @@ const TOOLTIP_SIZE: Vector2 = Vector2(300.0, 180.0)
 
 @onready var map: Control = $Margin/VBox/MapScroll/Map
 @onready var money_label: Label = $Margin/VBox/TopBar/MoneyLabel
+@onready var convert_button: Button = $Margin/VBox/TopBar/ConvertButton
 @onready var back_button: Button = $Margin/VBox/TopBar/BackButton
 @onready var status_label: Label = $Margin/VBox/StatusLabel
 @onready var tooltip: PanelContainer = $Margin/VBox/MapScroll/Map/Tooltip
@@ -35,7 +36,9 @@ func _ready() -> void:
 	tooltip.hide()
 
 	GameState.money_changed.connect(_on_money_changed)
+	GameState.cores_changed.connect(_on_cores_changed)
 	back_button.pressed.connect(_on_back_pressed)
+	convert_button.pressed.connect(_on_convert_pressed)
 	_refresh()
 
 
@@ -86,7 +89,8 @@ func _refresh() -> void:
 			button.add_theme_color_override("font_color", Color(0.42, 0.48, 0.58, 1))
 			button.modulate = Color(0.72, 0.72, 0.78, 1)
 
-	money_label.text = "$%d" % GameState.money
+	money_label.text = "◈ %d" % GameState.cores
+	convert_button.disabled = GameState.money < 250
 	map.queue_redraw()
 
 	if tooltip.visible:
@@ -125,8 +129,8 @@ func _on_node_pressed(skill_id: String) -> void:
 		status_label.text = "%s ya está al máximo." % title
 	elif not GameState.is_skill_available(skill_id):
 		status_label.text = "Bloqueado: mejorá un nodo adyacente."
-	elif GameState.money < cost:
-		status_label.text = "Te faltan $%d para %s." % [cost - GameState.money, title]
+	elif GameState.cores < cost:
+		status_label.text = "Te faltan ◈%d para %s." % [cost - GameState.cores, title]
 	elif GameState.upgrade_skill(skill_id):
 		AudioDirector.play_upgrade()
 		_refresh()
@@ -160,12 +164,12 @@ func _update_tooltip() -> void:
 		tooltip_state.text = "Nivel %d/%d · MÁXIMO" % [level, max_level]
 	elif not GameState.is_skill_available(_selected_id):
 		tooltip_state.text = "Nivel %d/%d · Bloqueado: mejorá un nodo adyacente" % [level, max_level]
-	elif GameState.money < cost:
-		tooltip_state.text = "Nivel %d/%d · Costo $%d · faltan $%d" % [
-			level, max_level, cost, cost - GameState.money
+	elif GameState.cores < cost:
+		tooltip_state.text = "Nivel %d/%d · Costo ◈%d · faltan ◈%d" % [
+			level, max_level, cost, cost - GameState.cores
 		]
 	else:
-		tooltip_state.text = "Nivel %d/%d · Costo $%d · click para subir" % [level, max_level, cost]
+		tooltip_state.text = "Nivel %d/%d · Costo ◈%d · click para subir" % [level, max_level, cost]
 
 
 func _position_tooltip(skill_id: String) -> void:
@@ -215,6 +219,19 @@ func _effects_text(effects: Dictionary) -> String:
 
 
 func _on_money_changed(_new_amount: int) -> void:
+	_refresh()
+
+
+func _on_cores_changed(_new_amount: int) -> void:
+	_refresh()
+
+
+func _on_convert_pressed() -> void:
+	if GameState.convert_money_to_core():
+		AudioDirector.play_upgrade()
+		status_label.text = "Convertiste $250 en 1 núcleo."
+	else:
+		status_label.text = "Necesitás $250 para convertir en un núcleo."
 	_refresh()
 
 

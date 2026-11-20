@@ -4,14 +4,17 @@ extends Node
 ## No spawnea enemigos, no maneja zonas y no conoce escenas.
 
 signal money_changed(new_amount: int)
+signal cores_changed(new_amount: int)
+signal challenges_changed
 signal timer_changed(remaining: float)
 signal run_started
 signal run_ended(reason: String)
 
 const VALID_END_REASONS: PackedStringArray = ["timer", "death", "completed"]
 const DEFAULT_SAVE_PATH: String = "user://deadline_progress.cfg"
-const SAVE_VERSION: int = 2
+const SAVE_VERSION: int = 3
 const SAVE_DEBOUNCE: float = 0.5
+const SKILL_COST_GROWTH: float = 1.35
 
 # Tiempo base por defecto, antes de mejoras.
 @export var default_run_time: float = 50.0
@@ -34,6 +37,17 @@ var money: int = 0:
 			return
 		money = clamped_value
 		money_changed.emit(money)
+		_queue_save()
+
+# Núcleos: moneda exclusiva del árbol de habilidades.
+var cores: int = 0:
+	set(value):
+		var clamped_value: int = maxi(value, 0)
+		if clamped_value == cores:
+			return
+		cores = clamped_value
+		cores_changed.emit(cores)
+		challenges_changed.emit()
 		_queue_save()
 
 # True mientras la run está en curso. Evita emitir run_ended más de una vez.
@@ -66,6 +80,13 @@ var deaths: int = 0
 var kills: int = 0
 var lifetime_earned: int = 0
 
+# Estadísticas de desafíos.
+var headshots: int = 0
+var elites_killed: int = 0
+var hounds_killed: int = 0
+var zones_cleared: int = 0
+var claimed_challenges: Array[String] = []
+
 var _save_timer: Timer
 var _is_loading: bool = false
 
@@ -81,11 +102,121 @@ func _ready() -> void:
 	add_child(_save_timer)
 
 	EventBus.enemy_killed.connect(_on_enemy_killed)
+	EventBus.enemy_hit.connect(_on_enemy_hit)
 	load_game()
 
 
-func _on_enemy_killed(_enemy: Node, _hit_zone: String) -> void:
+func _on_enemy_killed(enemy: Node, _hit_zone: String) -> void:
 	kills += 1
+	if enemy != null and is_instance_valid(enemy):
+		if enemy.is_in_group("elites"):
+			elites_killed += 1
+			add_cores(1)
+		if enemy.is_in_group("hound_enemies"):
+			hounds_killed += 1
+	challenges_changed.emit()
+	_queue_save()
+
+
+func _on_enemy_hit(_enemy: Node, hit_zone: String, _damage: float, _money: int) -> void:
+	if hit_zone != "head":
+		return
+	headshots += 1
+	challenges_changed.emit()
+	_queue_save()
+
+
+func add_cores(amount: int) -> void:
+	if amount > 0:
+		cores += amount
+
+
+func spend_cores(amount: int) -> bool:
+	if amount < 0 or cores < amount:
+		return false
+	cores -= amount
+	return true
+
+
+func convert_money_to_core() -> bool:
+	# Cambio pensado para darle uso a la plata cuando ya tenés las armas.
+	const CONVERSION_PRICE: int = 250
+	if not spend_money(CONVERSION_PRICE):
+		return false
+	add_cores(1)
+	return true
+
+
+func register_zone_cleared() -> void:
+	zones_cleared += 1
+	add_cores(1)
+	challenges_changed.emit()
+	_queue_save()
+
+
+func is_weapon_unlocked(weapon_id: String) -> bool:
+	if weapon_id == "basic_rifle" or is_weapon_owned(weapon_id):
+		return true
+	var challenge_id: String = ChallengeRegistry.weapon_unlock_for(weapon_id)
+	if challenge_id.is_empty():
+		return true
+	return is_challenge_completed(challenge_id)
+
+
+func is_weapon_challenge(weapon_id: String) -> bool:
+	return not ChallengeRegistry.weapon_unlock_for(weapon_id).is_empty()
+
+
+func get_challenge_progress(challenge_id: String) -> int:
+	var data: Dictionary = ChallengeRegistry.get_data(challenge_id)
+	if data.is_empty():
+		return 0
+	var target: int = int(data.get("target", 1))
+	return mini(stat_value(str(data.get("stat", ""))), target)
+
+
+func is_challenge_completed(challenge_id: String) -> bool:
+	var data: Dictionary = ChallengeRegistry.get_data(challenge_id)
+	if data.is_empty():
+		return false
+	return get_challenge_progress(challenge_id) >= int(data.get("target", 1))
+
+
+func is_challenge_claimed(challenge_id: String) -> bool:
+	return claimed_challenges.has(challenge_id)
+
+
+func claim_challenge(challenge_id: String) -> bool:
+	if not is_challenge_completed(challenge_id) or is_challenge_claimed(challenge_id):
+		return false
+	var data: Dictionary = ChallengeRegistry.get_data(challenge_id)
+	if str(data.get("reward_type", "")) != "cores":
+		return false
+	add_cores(int(data.get("reward_id", "0")))
+	claimed_challenges.append(challenge_id)
+	challenges_changed.emit()
+	save_game()
+	return true
+
+
+func stat_value(stat: String) -> int:
+	match stat:
+		"headshots":
+			return headshots
+		"kills":
+			return kills
+		"elites_killed":
+			return elites_killed
+		"hounds_killed":
+			return hounds_killed
+		"zones_cleared":
+			return zones_cleared
+		"runs_completed":
+			return runs_completed
+		"runs_started":
+			return runs_started
+		_:
+			return 0
 
 
 func add_run_time(seconds: float) -> void:
@@ -112,6 +243,8 @@ func is_weapon_owned(weapon_id: String) -> bool:
 
 func buy_weapon(weapon_id: String) -> bool:
 	if is_weapon_owned(weapon_id):
+		return false
+	if not is_weapon_unlocked(weapon_id):
 		return false
 
 	var data: WeaponData = WeaponRegistry.get_data(weapon_id)
@@ -165,13 +298,16 @@ func skill_cost(skill_id: String) -> int:
 	if data.is_empty():
 		return 0
 
-	return int(data.get("base_cost", 0)) + int(data.get("cost_step", 0)) * get_skill_level(skill_id)
+	# Costo exponencial en núcleos: cada nivel sale más caro que el anterior.
+	var base: int = int(data.get("base_cost", 1))
+	var level: int = get_skill_level(skill_id)
+	return maxi(1, int(ceil(float(base) * pow(SKILL_COST_GROWTH, float(level)))))
 
 
 func can_upgrade_skill(skill_id: String) -> bool:
 	if not is_skill_available(skill_id):
 		return false
-	return money >= skill_cost(skill_id)
+	return cores >= skill_cost(skill_id)
 
 
 func upgrade_skill(skill_id: String) -> bool:
@@ -180,7 +316,7 @@ func upgrade_skill(skill_id: String) -> bool:
 
 	var data: Dictionary = SkillTree.get_node_data(skill_id)
 	var cost: int = skill_cost(skill_id)
-	if not spend_money(cost):
+	if not spend_cores(cost):
 		return false
 
 	skill_levels[skill_id] = get_skill_level(skill_id) + 1
@@ -303,11 +439,13 @@ func end_run(reason: String) -> void:
 		deaths += 1
 	elif reason == "completed":
 		runs_completed += 1
+		add_cores(3)
 	elif reason == "timer":
 		runs_timed_out += 1
 	else:
 		last_death_penalty = 0
 	is_run_active = false
+	challenges_changed.emit()
 
 	# TODO: Fase 2.4 — aplicar consecuencias específicas por motivo.
 	if not VALID_END_REASONS.has(reason):
@@ -369,6 +507,12 @@ func reset_progress() -> void:
 	# Borra plata, mejoras y tiempo comprado. Deja el guardado en cero.
 	_is_loading = true
 	money = 0
+	cores = 0
+	claimed_challenges.clear()
+	headshots = 0
+	elites_killed = 0
+	hounds_killed = 0
+	zones_cleared = 0
 	upgrades.clear()
 	base_run_time = default_run_time
 	is_run_active = false
@@ -399,6 +543,8 @@ func save_game() -> void:
 	var config := ConfigFile.new()
 	config.set_value("progress", "version", SAVE_VERSION)
 	config.set_value("progress", "money", money)
+	config.set_value("progress", "cores", cores)
+	config.set_value("progress", "claimed_challenges", claimed_challenges)
 	config.set_value("progress", "base_run_time", base_run_time)
 	config.set_value("progress", "upgrades", upgrades)
 	config.set_value("progress", "skill_levels", skill_levels)
@@ -411,6 +557,10 @@ func save_game() -> void:
 	config.set_value("profile", "runs_timed_out", runs_timed_out)
 	config.set_value("profile", "deaths", deaths)
 	config.set_value("profile", "kills", kills)
+	config.set_value("profile", "headshots", headshots)
+	config.set_value("profile", "elites_killed", elites_killed)
+	config.set_value("profile", "hounds_killed", hounds_killed)
+	config.set_value("profile", "zones_cleared", zones_cleared)
 	config.set_value("profile", "lifetime_earned", lifetime_earned)
 
 	var error: int = config.save(save_path)
@@ -432,6 +582,12 @@ func load_game() -> void:
 
 	_is_loading = true
 	money = int(config.get_value("progress", "money", 0))
+	cores = maxi(int(config.get_value("progress", "cores", 0)), 0)
+	claimed_challenges.clear()
+	var saved_claims = config.get_value("progress", "claimed_challenges", [])
+	if saved_claims is Array or saved_claims is PackedStringArray:
+		for claim in saved_claims:
+			claimed_challenges.append(str(claim))
 
 	var saved_time: float = float(config.get_value("progress", "base_run_time", default_run_time))
 	base_run_time = saved_time if saved_time > 0.0 else default_run_time
@@ -484,9 +640,14 @@ func load_game() -> void:
 	runs_timed_out = maxi(int(config.get_value("profile", "runs_timed_out", 0)), 0)
 	deaths = maxi(int(config.get_value("profile", "deaths", 0)), 0)
 	kills = maxi(int(config.get_value("profile", "kills", 0)), 0)
+	headshots = maxi(int(config.get_value("profile", "headshots", 0)), 0)
+	elites_killed = maxi(int(config.get_value("profile", "elites_killed", 0)), 0)
+	hounds_killed = maxi(int(config.get_value("profile", "hounds_killed", 0)), 0)
+	zones_cleared = maxi(int(config.get_value("profile", "zones_cleared", 0)), 0)
 	lifetime_earned = maxi(int(config.get_value("profile", "lifetime_earned", 0)), 0)
 
 	_is_loading = false
+	challenges_changed.emit()
 
 
 func _queue_save() -> void:

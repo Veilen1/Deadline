@@ -106,6 +106,7 @@ func _finish_zone() -> void:
 		return
 	_completed = true
 	GameState.add_money(completion_bonus)
+	GameState.register_zone_cleared()
 	EventBus.zone_completed.emit(zone_id)
 
 

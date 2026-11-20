@@ -4,12 +4,15 @@ const MAIN_MENU_SCENE: String = "res://scenes/ui/main_menu.tscn"
 const GAME_SCENE: String = "res://scenes/main.tscn"
 const SKILL_TREE_SCENE: String = "res://scenes/ui/skill_tree.tscn"
 const SHOP_SCENE: String = "res://scenes/ui/shop.tscn"
+const CHALLENGES_SCENE: String = "res://scenes/ui/challenges.tscn"
 
 @onready var money_label: Label = $CenterContainer/Menu/MoneyLabel
+@onready var cores_label: Label = $CenterContainer/Menu/CoresLabel
 @onready var timer_label: Label = $CenterContainer/Menu/TimerLabel
 @onready var bonus_label: Label = $CenterContainer/Menu/BonusLabel
 @onready var skill_tree_button: Button = $CenterContainer/Menu/SkillTreeButton
 @onready var shop_button: Button = $CenterContainer/Menu/ShopButton
+@onready var challenges_button: Button = $CenterContainer/Menu/ChallengesButton
 @onready var play_button: Button = $CenterContainer/Menu/PlayButton
 @onready var main_menu_button: Button = $CenterContainer/Menu/MainMenuButton
 
@@ -17,8 +20,11 @@ const SHOP_SCENE: String = "res://scenes/ui/shop.tscn"
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	GameState.money_changed.connect(_on_money_changed)
+	GameState.cores_changed.connect(_on_cores_changed)
+	GameState.challenges_changed.connect(_update_ui)
 	skill_tree_button.pressed.connect(_on_skill_tree_pressed)
 	shop_button.pressed.connect(_on_shop_pressed)
+	challenges_button.pressed.connect(_on_challenges_pressed)
 	play_button.pressed.connect(_on_play_pressed)
 	main_menu_button.pressed.connect(_on_main_menu_pressed)
 	_update_ui()
@@ -26,6 +32,10 @@ func _ready() -> void:
 
 
 func _on_money_changed(_new_amount: int) -> void:
+	_update_ui()
+
+
+func _on_cores_changed(_new_amount: int) -> void:
 	_update_ui()
 
 
@@ -37,6 +47,11 @@ func _on_skill_tree_pressed() -> void:
 func _on_shop_pressed() -> void:
 	GameState.save_game()
 	Transitions.change_scene_to_file(SHOP_SCENE)
+
+
+func _on_challenges_pressed() -> void:
+	GameState.save_game()
+	Transitions.change_scene_to_file(CHALLENGES_SCENE)
 
 
 func _on_play_pressed() -> void:
@@ -51,6 +66,7 @@ func _on_main_menu_pressed() -> void:
 
 func _update_ui() -> void:
 	money_label.text = "$%d" % GameState.money
+	cores_label.text = "◈ %d núcleos" % GameState.cores
 	timer_label.text = "Timer inicial: %.0f s" % GameState.base_run_time
 
 	var damage_bonus: float = (

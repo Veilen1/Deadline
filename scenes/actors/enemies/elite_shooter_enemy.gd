@@ -6,6 +6,7 @@ extends "res://scenes/actors/enemies/ranged_enemy.gd"
 
 func _ready() -> void:
 	super._ready()
+	add_to_group("elites")
 	EventBus.boss_spawned.emit(self, max_health)
 
 

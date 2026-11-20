@@ -46,6 +46,13 @@ theme_override_font_sizes/font_size = 24
 text = "$0"
 horizontal_alignment = 1
 
+[node name="CoresLabel" type="Label" parent="CenterContainer/Menu"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 20
+text = "◈ 0 núcleos"
+horizontal_alignment = 1
+
 [node name="TimerLabel" type="Label" parent="CenterContainer/Menu"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
@@ -69,6 +76,11 @@ text = "Árbol de habilidades"
 custom_minimum_size = Vector2(340, 40)
 layout_mode = 2
 text = "Tienda"
+
+[node name="ChallengesButton" type="Button" parent="CenterContainer/Menu"]
+custom_minimum_size = Vector2(340, 40)
+layout_mode = 2
+text = "Desafíos"
 
 [node name="HintLabel" type="Label" parent="CenterContainer/Menu"]
 layout_mode = 2
