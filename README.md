@@ -240,6 +240,136 @@ Tres monedas con roles distintos, **no se mezclan**:
 - La prioridad es **validar el bucle central** antes de agregar capas de progresión complejas. Si el bucle de "disparar → ganar plata → comprar → volver a jugar" no es divertido, ningún sistema adicional lo va a salvar.
 - Se recomienda mantener un **changelog de decisiones de diseño** a medida que el proyecto avance.
 
+## 14. Estado del prototipo (v0.2.0)
+
+> Esta sección documenta lo efectivamente implementado. El resto del documento sigue siendo el diseño de referencia.
+
+### Cómo ejecutar
+
+```powershell
+godot --path .
+```
+
+La escena inicial es el menú principal. **F5** desde Godot abre el menú.
+
+### Controles
+
+| Acción | Control |
+|---|---|
+| Moverse | `WASD` |
+| Mirar | Mouse |
+| Disparar | Click izquierdo |
+| Saltar | `Espacio` |
+| Pausa / volver | `Escape` |
+
+### Sistemas implementados
+
+- **Loop completo:** menú → hub → run → fin de run → hub.
+- **Combate hitscan:** raycast desde la cámara, hitboxes de cabeza/torso/piernas y tracer visual.
+- **Economía:** plata por impacto según zona; multiplicadores de daño y plata.
+- **Oleadas:** 3 por zona (`4`, `5`, `3` + élite), spawner con puntos de aparición.
+- **Zonas:** Zona 1 blanca y Zona 2 fría, con transición, banner y timer pausado durante el cambio.
+- **Élite:** enemigo grande con salto telegrafiado, diana en el piso, onda de impacto y barra de vida.
+- **Enemigo verde (Zona 2):** alterna persecución y escudo; daño reducido salvo headshot.
+- **Hub:** mejoras de tiempo, daño y vida con costos escalonados.
+- **Guardado en disco:** plata, mejoras y tiempo; configuración separada.
+- **Configuración:** FOV, sensibilidad, invertir Y, tamaño de interfaz, volumen, pantalla completa, V-Sync, minimapa y dificultad.
+- **Configuración en pausa:** overlay sobre la partida, con FOV/sensibilidad/minimapa en vivo.
+- **Minimapa:** radar centrado en el jugador, con flechas para enemigos y élites.
+- **HUD:** plata, zona, timer, oleada, vida, barra de élite, minimapa y mirilla.
+- **Audio:** disparo y pasos genéricos, generados proceduralmente.
+- **Límites de arena:** paredes invisibles de 4 m y bordes visuales; no se puede caer.
+
+### Balance actual
+
+**Jugador**
+
+| Stat | Valor |
+|---|---:|
+| Vida | 100 |
+| Velocidad | 5 m/s |
+| Salto | 0.9 m |
+| Daño base del arma | 20 |
+| Plata base por impacto | $10 |
+| Cadencia | 1 disparo por click |
+
+**Enemigos**
+
+| Enemigo | Vida | Daño | Notas |
+|---|---:|---:|---|
+| Rojo | 100 | 15 / 0.7 s | Melee básico |
+| Verde | 100 | 15 / 0.7 s | Escudo: 25% de daño y plata, salvo cabeza |
+| Élite | 800 | 30 por salto | Salto telegrafiado, radio 3.5 m |
+
+**Zonas**
+
+| Dato | Valor |
+|---|---:|
+| Timer base | 60 s |
+| Oleadas | 4 / 5 / 3 + élite |
+| Espera entre oleadas | 2.5 s |
+| Bonus por zona | $50 |
+
+**Mejoras del hub**
+
+| Mejora | Bonus | Costo base | Aumento |
+|---|---:|---:|---:|
+| Timer | +10 s | $50 | +$25 |
+| Daño | +5 | $60 | +$30 |
+| Vida | +20 | $70 | +$35 |
+
+**Dificultad**
+
+| Dificultad | Vida enemiga | Daño enemigo |
+|---|---:|---:|
+| Fácil | ×0.8 | ×0.75 |
+| Normal | ×1.0 | ×1.0 |
+| Difícil | ×1.25 | ×1.3 |
+
+### Economía y penalización
+
+- La plata es persistente entre runs.
+- Morir, abandonar la run desde la pausa (hub, menú o reiniciar) o cerrar el juego en plena run aplica una **penalización del 30% de la plata recaudada en esa run**.
+- El 30% se calcula sobre lo recaudado, no sobre el total acumulado. Se configura con `death_penalty` en `GameState`.
+- Terminar por timer o completar las dos zonas **no** aplica penalización.
+- El fin de run por muerte muestra la penalización aplicada.
+
+### Guardado
+
+| Archivo | Contenido |
+|---|---|
+| `user://deadline_progress.cfg` | Plata, mejoras compradas y timer base |
+| `user://deadline_settings.cfg` | Ajustes de pantalla, controles, audio, HUD y dificultad |
+
+- En Windows: `%APPDATA%\Godot\app_userdata\Deadline\`.
+- No se guarda una run en curso; al reabrir se empieza desde el hub.
+- `Borrar progreso` está en Configuración y pide confirmación. En pausa se deshabilita para no romper la run.
+
+### Flujo de ramas y versiones
+
+- `main`: releases estables.
+- `dev`: integración de features.
+- Una rama por feature: `feature/<nombre>` desde `dev`, commits atómicos, merge `--no-ff` a `dev`.
+- Tags: `v0.1.0` (core loop, zonas, hub, guardado) y `v0.2.0` (minimapa, configuración, penalización y límites).
+
+### Limitaciones conocidas
+
+- Solo hay dos zonas.
+- No hay variedad de armas, munición ni recarga.
+- El volumen es general; no hay sliders separados de música/efectos.
+- La dificultad se aplica a los enemigos que aparecen después del cambio; los ya vivos no se recalculan.
+- Los élites comparten el patrón de salto; los enemigos verdes son los únicos con escudo.
+- No hay guardado de run en curso, multijugador, controller ni localización.
+- Los menús y modelos son provisorios.
+
+### Próximos pasos
+
+1. Zona 3 y nuevas variantes de enemigo.
+2. Armas, munición y recarga.
+3. Música y sliders separados de audio.
+4. Balance fino con la dificultad y los costos del hub.
+5. Localización y soporte de controller.
+
 ---
 
 *Documento vivo. Cualquier cambio de dirección debe reflejarse acá.*

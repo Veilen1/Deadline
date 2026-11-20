@@ -48,6 +48,11 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back_pressed)
 	reset_dialog.confirmed.connect(_on_reset_confirmed)
 
+	if overlay_mode:
+		# Borrar progreso en plena run dejaría la partida en un estado inválido.
+		reset_button.disabled = true
+		reset_button.tooltip_text = "Terminá la run para borrar el progreso."
+
 	back_button.grab_focus()
 
 
