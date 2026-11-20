@@ -33,6 +33,8 @@ const ZONE_SCENES = [
 @onready var zone_banner: Label = $CanvasLayer/ZoneBanner
 @onready var pause_menu: Control = $CanvasLayer/PauseMenu
 @onready var game_over_menu: Control = $CanvasLayer/GameOverMenu
+@onready var blessing_panel: Control = $CanvasLayer/BlessingPanel
+@onready var blessing_label: Label = $CanvasLayer/BlessingLabel
 
 var _zone_index: int = 0
 var _current_zone: Node3D
@@ -73,6 +75,7 @@ func _ready() -> void:
 	_load_zone(_zone_index)
 	GameState.start_run()
 	GameState.apply_contract_start()
+	_update_blessing_label()
 
 
 func _process(delta: float) -> void:
@@ -103,15 +106,51 @@ func _on_wave_started(wave_number: int) -> void:
 func _on_zone_completed(_zone_id: String) -> void:
 	if not GameState.is_run_active or _transitioning:
 		return
+	_transitioning = true
 	Diagnostics.mark("zone_completed", {"zone": _zone_id, "index": _zone_index})
 
 	if _zone_index + 1 >= ZONE_SCENES.size():
 		GameState.end_run("completed")
+		_transitioning = false
 		return
 
 	# Completar una zona premia con tiempo extra para la siguiente.
 	GameState.grant_run_time(zone_time_bonus)
+	await _choose_blessing()
 	_advance_zone()
+
+
+func _choose_blessing() -> void:
+	# La elección se hace con el árbol pausado para que el timer no corra.
+	get_tree().paused = true
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	var blessing_id: String = await blessing_panel.call("choose")
+	GameState.add_blessing(blessing_id)
+	player.call("apply_blessings")
+	_update_blessing_label()
+	get_tree().paused = false
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+
+func _update_blessing_label() -> void:
+	var parts: Array[String] = []
+	for id in GameState.run_blessings:
+		var count: int = int(GameState.run_blessings[id])
+		if count <= 0:
+			continue
+		var data: Dictionary = BlessingRegistry.get_data(str(id))
+		var label_text: String = "%s %s" % [
+			str(data.get("symbol", "?")),
+			str(data.get("title", id)),
+		]
+		if count > 1:
+			label_text += " x%d" % count
+		parts.append(label_text)
+
+	if parts.is_empty():
+		blessing_label.text = "Bendiciones: ninguna"
+	else:
+		blessing_label.text = "Bendiciones: " + " · ".join(PackedStringArray(parts))
 
 
 func _advance_zone() -> void:

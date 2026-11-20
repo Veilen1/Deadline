@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/actors/player/player.tscn" id="2_player"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/crosshair.tscn" id="5_crosshair"]
 [ext_resource type="PackedScene" path="res://scenes/ui/game_over_menu.tscn" id="6_game_over"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap.tscn" id="7_minimap"]
+[ext_resource type="PackedScene" path="res://scenes/ui/blessing_panel.tscn" id="8_blessing"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_boss_bg"]
 bg_color = Color(0.05, 0.05, 0.05, 0.75)
@@ -386,6 +387,22 @@ show_percentage = false
 theme_override_styles/background = SubResource("StyleBoxFlat_style_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_ammo_fill")
 
+[node name="BlessingLabel" type="Label" parent="CanvasLayer"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -260.0
+offset_top = -132.0
+offset_right = 120.0
+offset_bottom = -112.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.62, 0.72, 0.82, 1)
+theme_override_font_sizes/font_size = 12
+text = "Bendiciones: ninguna"
+horizontal_alignment = 1
+
 [node name="ZoneBanner" type="Label" parent="CanvasLayer"]
 visible = false
 anchor_left = 0.5
@@ -412,3 +429,5 @@ vertical_alignment = 1
 [node name="PauseMenu" parent="CanvasLayer" instance=ExtResource("4_pause")]
 
 [node name="GameOverMenu" parent="CanvasLayer" instance=ExtResource("6_game_over")]
+
+[node name="BlessingPanel" parent="CanvasLayer" instance=ExtResource("8_blessing")]

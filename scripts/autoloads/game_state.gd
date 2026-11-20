@@ -74,6 +74,9 @@ var equipped_weapon: String = "basic_rifle"
 # Contrato elegido para la próxima run.
 var selected_contract: String = "none"
 
+# Bendiciones acumuladas durante la run actual (se pierden al terminar).
+var run_blessings: Dictionary = {}
+
 # Perfil del jugador.
 var profile_name: String = "Jugador"
 var runs_started: int = 0
@@ -180,6 +183,14 @@ func apply_contract_start() -> void:
 	if penalty > 0.0:
 		run_timer = maxf(run_timer - penalty, 5.0)
 		timer_changed.emit(run_timer)
+
+
+func add_blessing(blessing_id: String) -> void:
+	run_blessings[blessing_id] = blessing_count(blessing_id) + 1
+
+
+func blessing_count(blessing_id: String) -> int:
+	return int(run_blessings.get(blessing_id, 0))
 
 
 func is_weapon_unlocked(weapon_id: String) -> bool:
@@ -441,6 +452,7 @@ func start_run() -> void:
 	last_death_penalty = 0
 	runs_started += 1
 	run_timer = base_run_time
+	run_blessings.clear()
 	timer_changed.emit(run_timer)
 	run_started.emit()
 
