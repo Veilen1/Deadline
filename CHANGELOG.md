@@ -11,6 +11,9 @@ Todas las versiones relevantes del prototipo.
 - Transiciones con fade entre escenas, pausa, fin de run, configuración y tooltip.
 - Sonidos de UI (hover/click) auto-conectados a todos los botones.
 - Disparo y pasos regenerados con un timbre más suave y menos agresivo.
+- HUD tematizado con paneles oscuros y etiqueta de arma.
+- Dash (`Shift`), slide (`Ctrl`) y cambio de armas (`1/2/3`).
+- Sonidos de dash, subida de rango y cambio de arma.
 
 ## v0.3.0 — 2026-11-19
 
