@@ -24,6 +24,12 @@ Todas las versiones relevantes del prototipo.
 - Sonidos posicionales de impacto, crítico y muerte, más daño al jugador.
 - Chime de compra y subida de nivel.
 
+### Corregido
+- El menú de fin de run ahora libera el cursor y lo coloca sobre **Reintentar** al aparecer, así el primer click responde sin esperar a mover el mouse.
+- La pausa también deja el cursor sobre **Reanudar**.
+- `Transitions` ya no descarta pedidos mientras hay un fade en curso: los encola y tiene un watchdog de 3 s para liberar el overlay si una transición queda colgada.
+- El guardado de fin de run se difiere al frame siguiente para no demorar el menú.
+
 ## v0.3.0 — 2026-11-19
 
 ### Agregado
