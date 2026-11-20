@@ -333,6 +333,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - El 30% se calcula sobre lo recaudado, no sobre el total acumulado. Se configura con `death_penalty` en `GameState`.
 - Terminar por timer o completar las dos zonas **no** aplica penalización.
 - El fin de run por muerte muestra la penalización aplicada.
+- Antes de volver al lobby o reiniciar desde la pausa, se muestra un aviso con el monto exacto: “Si vuelves al lobby ahora perderás $X (30% de $Y recaudados en esta run)”.
 
 ### Guardado
 

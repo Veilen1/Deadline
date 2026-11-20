@@ -147,15 +147,24 @@ func abandon_run() -> void:
 
 
 func _apply_death_penalty() -> void:
-	last_death_penalty = 0
-	var earned: int = maxi(money - run_start_money, 0)
+	last_death_penalty = get_abandon_penalty()
+	if last_death_penalty > 0:
+		money -= last_death_penalty
+
+
+func get_run_earnings() -> int:
+	if not is_run_active:
+		return 0
+	return maxi(money - run_start_money, 0)
+
+
+func get_abandon_penalty() -> int:
+	var earned: int = get_run_earnings()
 	if earned <= 0:
-		return
+		return 0
 
 	var rate: float = clampf(death_penalty, 0.0, 1.0)
-	var penalty: int = mini(int(round(float(earned) * rate)), money)
-	last_death_penalty = penalty
-	money -= penalty
+	return mini(int(round(float(earned) * rate)), money)
 
 
 func reset_run() -> void:
