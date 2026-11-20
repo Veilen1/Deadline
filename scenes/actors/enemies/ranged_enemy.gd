@@ -30,7 +30,9 @@ var _charge_eye: MeshInstance3D
 
 func _ready() -> void:
 	super._ready()
-	projectile_damage *= Settings.enemy_damage_multiplier()
+	projectile_damage *= (
+		Settings.enemy_damage_multiplier() * GameState.contract_modifier("enemy_damage", 1.0)
+	)
 	_charge_eye = get_node_or_null("ChargeEye") as MeshInstance3D
 	if _charge_eye != null:
 		_charge_eye.hide()

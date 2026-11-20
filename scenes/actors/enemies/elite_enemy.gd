@@ -35,7 +35,9 @@ var _aura: OmniLight3D
 func _ready() -> void:
 	super._ready()
 	add_to_group("elites")
-	jump_damage *= Settings.enemy_damage_multiplier()
+	jump_damage *= (
+		Settings.enemy_damage_multiplier() * GameState.contract_modifier("enemy_damage", 1.0)
+	)
 	_aura = get_node_or_null("Aura") as OmniLight3D
 	EventBus.boss_spawned.emit(self, max_health)
 

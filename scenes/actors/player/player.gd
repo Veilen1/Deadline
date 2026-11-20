@@ -74,10 +74,14 @@ var _dash_fov_kick: float = 0.0
 var _slide_timer: float = 0.0
 var _slide_cooldown_timer: float = 0.0
 var _slide_direction: Vector3 = Vector3.ZERO
+var _contract_damage_taken: float = 1.0
+var _contract_ammo_regen: float = 1.0
 
 
 func _ready() -> void:
 	current_health = max_health
+	_contract_damage_taken = GameState.contract_modifier("player_damage_taken", 1.0)
+	_contract_ammo_regen = GameState.contract_modifier("ammo_regen", 1.0)
 	var equipped_weapon: WeaponData = WeaponRegistry.get_data(GameState.equipped_weapon)
 	if equipped_weapon != null:
 		weapon_data = equipped_weapon
@@ -359,6 +363,7 @@ func take_damage(amount: float) -> void:
 		return
 
 	var final_damage: float = amount * (1.0 - clampf(damage_reduction, 0.0, 0.8))
+	final_damage *= _contract_damage_taken
 	current_health = maxf(current_health - final_damage, 0.0)
 	EventBus.player_damaged.emit(final_damage)
 
@@ -373,6 +378,7 @@ func apply_meta_upgrades(upgrades: Dictionary) -> void:
 	crit_refund += float(upgrades.get("crit_refund", 0.0))
 	damage_reduction += float(upgrades.get("damage_reduction", 0.0))
 	max_health += float(upgrades.get("health_bonus", 0.0))
+	max_health *= GameState.contract_modifier("player_health", 1.0)
 	ammo_capacity_bonus += int(upgrades.get("ammo_capacity_bonus", 0))
 	if weapon_data != null:
 		max_ammo = weapon_data.magazine_size + ammo_capacity_bonus
@@ -392,7 +398,9 @@ func _update_ammo_regen(delta: float) -> void:
 		_regen_delay_timer -= delta
 		return
 
-	var rate: float = maxf(weapon_data.ammo_regen_per_second + ammo_regen_bonus, 0.0)
+	var rate: float = maxf(
+		(weapon_data.ammo_regen_per_second + ammo_regen_bonus) * _contract_ammo_regen, 0.0
+	)
 	if rate <= 0.0:
 		return
 

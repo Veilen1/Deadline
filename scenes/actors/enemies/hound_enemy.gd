@@ -22,7 +22,9 @@ var _fuse_scale: float = 1.0
 
 func _ready() -> void:
 	super._ready()
-	explosion_damage *= Settings.enemy_damage_multiplier()
+	explosion_damage *= (
+		Settings.enemy_damage_multiplier() * GameState.contract_modifier("enemy_damage", 1.0)
+	)
 	_fuse_glow = get_node_or_null("FuseGlow") as MeshInstance3D
 	if _fuse_glow != null:
 		_fuse_glow.hide()
