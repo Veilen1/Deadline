@@ -23,6 +23,7 @@ const ZONE_SCENES = [
 @onready var ammo_bar: ProgressBar = $CanvasLayer/AmmoBar
 @onready var weapon_label: Label = $CanvasLayer/WeaponLabel
 @onready var dash_bar: ProgressBar = $CanvasLayer/DashBar
+@onready var air_dash_label: Label = $CanvasLayer/AirDashLabel
 @onready var weapon_slots: RichTextLabel = $CanvasLayer/WeaponSlots
 @onready var style_label: Label = $CanvasLayer/StyleLabel
 @onready var style_bar: ProgressBar = $CanvasLayer/StyleBar
@@ -85,6 +86,16 @@ func _process(delta: float) -> void:
 		var ratio: float = float(player.call("get_dash_cooldown_ratio"))
 		dash_bar.value = ratio
 		dash_bar.modulate = Color(1, 1, 1, 1) if ratio >= 1.0 else Color(0.75, 0.82, 0.9, 0.85)
+
+		var air_charges: int = int(player.call("get_air_dash_charges"))
+		var air_max: int = maxi(int(player.call("get_max_air_dash_charges")), 0)
+		var dots: String = ""
+		for index in air_max:
+			dots += "●" if index < air_charges else "○"
+		air_dash_label.text = "AIRE " + dots
+		air_dash_label.modulate = (
+			Color(1, 1, 1, 1) if air_charges > 0 else Color(0.6, 0.66, 0.75, 0.8)
+		)
 
 
 func _on_money_changed(new_amount: int) -> void:
