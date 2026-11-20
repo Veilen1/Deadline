@@ -10,11 +10,11 @@ signal run_ended(reason: String)
 
 const VALID_END_REASONS: PackedStringArray = ["timer", "death", "completed"]
 const DEFAULT_SAVE_PATH: String = "user://deadline_progress.cfg"
-const SAVE_VERSION: int = 1
+const SAVE_VERSION: int = 2
 const SAVE_DEBOUNCE: float = 0.5
 
 # Tiempo base por defecto, antes de mejoras.
-@export var default_run_time: float = 60.0
+@export var default_run_time: float = 50.0
 
 # Fracción de la plata recaudada en la run que se pierde al morir o abandonar.
 @export var death_penalty: float = 0.30
@@ -430,6 +430,11 @@ func load_game() -> void:
 
 	var saved_time: float = float(config.get_value("progress", "base_run_time", default_run_time))
 	base_run_time = saved_time if saved_time > 0.0 else default_run_time
+
+	var saved_version: int = int(config.get_value("progress", "version", 1))
+	if saved_version < 2:
+		# v0.5: el timer base pasa de 60 a 50 s. Se conserva el tiempo comprado.
+		base_run_time = maxf(default_run_time, base_run_time - 10.0)
 
 	var saved_upgrades = config.get_value("progress", "upgrades", {})
 	upgrades = saved_upgrades.duplicate() if saved_upgrades is Dictionary else {}

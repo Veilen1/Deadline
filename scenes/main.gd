@@ -9,7 +9,7 @@ const ZONE_SCENES = [
 ]
 
 @export var zone_banner_hold: float = 1.2
-@export var zone_time_bonus: float = 10.0
+@export var zone_time_bonus: float = 5.0
 
 @onready var player: Node = $Player
 @onready var zones_root: Node3D = $Zones
