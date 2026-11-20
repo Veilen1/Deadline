@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scenes/levels/zone.gd" id="1_zone"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/ranged_enemy.tscn" id="2_enemy"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/levels/arena_block.tscn" id="6_block"]
 [ext_resource type="PackedScene" path="res://scenes/levels/jump_pad.tscn" id="7_pad"]
 [ext_resource type="PackedScene" path="res://scenes/levels/core_pickup.tscn" id="8_core"]
+[ext_resource type="PackedScene" path="res://scenes/levels/arena_event.tscn" id="9_event"]
 
 [sub_resource type="Environment" id="Environment_violet"]
 background_mode = 1
@@ -106,5 +107,17 @@ position = Vector3(5, 0.4, 7)
 [node name="Cover4" parent="." instance=ExtResource("6_block")]
 position = Vector3(0, 0.4, -8)
 scale = Vector3(1.5, 1, 1)
+
+[node name="ArenaEvent" parent="." instance=ExtResource("9_event")]
+position = Vector3(0, 0, -4)
+event_kind = "turret"
+title = "Torreta de supresión"
+description = "Dispara proyectiles a distancia mientras siga activa."
+max_health = 220.0
+core_reward = 3
+radius = 8.0
+projectile_damage = 14.0
+projectile_interval = 1.4
+projectile_speed = 20.0
 
 [node name="ArenaBounds" parent="." instance=ExtResource("4_bounds")]
