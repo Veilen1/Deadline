@@ -3,7 +3,7 @@
 > **Estado del documento:** vivo y en construcción. Todo lo que está acá está sujeto a cambios durante el prototipado y el testeo. Las decisiones cerradas se marcan con ✅ y las que están abiertas o en revisión se marcan con 🟡.
 >
 > **Última actualización:** 20/11/2026
-> **Versión:** 0.6.0 — Prototipo jugable
+> **Versión:** 0.6.1 — Prototipo jugable
 
 ---
 
@@ -356,7 +356,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - `main`: releases estables.
 - `dev`: integración de features.
 - Una rama por feature: `feature/<nombre>` desde `dev`, commits atómicos, merge `--no-ff` a `dev`.
-- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos), `v0.5.1` (perfil desplazable, monedas en el árbol y toasts) y `v0.6.0` (arenas verticales, telegrafía y eventos).
+- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos), `v0.5.1` (perfil desplazable, monedas en el árbol y toasts), `v0.6.0` (arenas verticales, telegrafía y eventos) y `v0.6.1` (hitmarker y calaveras por tipo).
 
 ### Limitaciones conocidas
 
@@ -691,6 +691,30 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - Menú principal, pausa y fin de run ahora viven en una tarjeta con una única acción principal.
 - Todas las pantallas usan el mismo header: título, recursos y **← Volver**.
 - El tema global se propaga también a los menús dentro de la partida (CanvasLayer/Node3D), no solo a las escenas de UI.
+
+---
+
+## 23. v0.6.1 — hitmarker y telegrafía por tipo
+
+### Hitmarker
+
+- Una **X sobre la mirilla** confirma cada impacto en enemigos.
+- Color por zona del cuerpo:
+  - **Cabeza:** dorado, con un pequeño golpe de escala extra.
+  - **Torso:** blanco.
+  - **Piernas:** turquesa.
+- Se desvanece en `0.22 s`, tiene contorno oscuro para leerse sobre la arena blanca y se reinicia con cada impacto.
+
+### Calaveras por tipo
+
+- Cada enemigo tiene su calavera en el punto exacto donde va a aparecer, con color y nombre:
+  - **BÁSICO** rojo.
+  - **GUARDIA** verde.
+  - **TIRADOR** violeta.
+  - **SABUESO** naranja.
+  - **ÉLITE** dorado, más grande.
+- El anillo, el haz de luz y la luz del aviso usan el mismo color.
+- Sigue habiendo 2 segundos entre el aviso y la aparición.
 
 ---
 

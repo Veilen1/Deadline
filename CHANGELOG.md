@@ -2,6 +2,14 @@
 
 Todas las versiones relevantes del prototipo.
 
+## v0.6.1 — 2026-11-20
+
+### Agregado
+- Hitmarker en forma de X sobre la mirilla al impactar un enemigo.
+- Colores por zona: cabeza dorada, torso blanco y piernas turquesa.
+- Calaveras de aparición diferenciadas por tipo de enemigo, con color y nombre.
+- Élite con calavera dorada más grande y etiqueta **ÉLITE**.
+
 ## v0.6.0 — 2026-11-20
 
 ### Agregado
