@@ -44,6 +44,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 
+func open_from_focus_loss() -> void:
+	# Al perder el foco del juego en plena run se abre la pausa, para que el
+	# cronómetro no corra y el jugador no vuelva a ciegas a un combate.
+	if visible or _settings_open or leave_dialog.visible:
+		return
+	_pause_game()
+
+
 func _pause_game() -> void:
 	Diagnostics.mark("pause_open")
 	get_tree().paused = true
