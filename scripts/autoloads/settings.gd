@@ -53,7 +53,16 @@ func apply_display() -> void:
 	window.content_scale_factor = clampf(ui_scale, 0.8, 1.4)
 
 	if DisplayServer.get_name() != "headless":
-		window.mode = Window.MODE_FULLSCREEN if fullscreen else Window.MODE_WINDOWED
+		var desired_mode: int = (
+			Window.MODE_FULLSCREEN if fullscreen else Window.MODE_WINDOWED
+		)
+		# Cada cambio de modo de ventana puede costar un hitch en Windows, así
+		# que solo se aplica si hace falta. Si está maximizada se respeta.
+		var keep_maximized: bool = (
+			not fullscreen and window.mode == Window.MODE_MAXIMIZED
+		)
+		if window.mode != desired_mode and not keep_maximized:
+			window.mode = desired_mode
 		DisplayServer.window_set_vsync_mode(
 			DisplayServer.VSYNC_ENABLED if vsync else DisplayServer.VSYNC_DISABLED
 		)
