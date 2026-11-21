@@ -13,6 +13,9 @@ var _active_path: String = ""
 var _active_reload: bool = false
 var _pending_path: String = ""
 var _pending_reload: bool = false
+## Escenas ya cargadas: evita volver a leer el disco en cada transición
+## (útil si el proyecto vive en una carpeta sincronizada tipo OneDrive).
+var _scene_cache: Dictionary = {}
 
 
 func _ready() -> void:
@@ -51,7 +54,7 @@ func change_scene_to_file(path: String) -> void:
 
 	_begin(path, false)
 	await _fade_to(1.0, 0.18)
-	get_tree().change_scene_to_file(path)
+	_change_scene(path)
 	await get_tree().process_frame
 	await _fade_to(0.0, 0.25)
 	_end()
@@ -72,6 +75,28 @@ func reload_current_scene() -> void:
 	await _fade_to(0.0, 0.25)
 	_end()
 	_run_pending()
+
+
+func _change_scene(path: String) -> void:
+	var started_ms: int = Time.get_ticks_msec()
+	var was_cached: bool = _scene_cache.has(path)
+	var packed: PackedScene = _scene_cache.get(path) as PackedScene
+	if packed == null:
+		packed = ResourceLoader.load(path, "PackedScene", ResourceLoader.CACHE_MODE_REUSE) as PackedScene
+		if packed != null:
+			_scene_cache[path] = packed
+
+	if packed != null:
+		get_tree().change_scene_to_packed(packed)
+	else:
+		# Fallback: deja que el árbol resuelva la ruta como siempre.
+		get_tree().change_scene_to_file(path)
+
+	Diagnostics.mark("scene_swap", {
+		"path": path,
+		"cached": was_cached,
+		"ms": Time.get_ticks_msec() - started_ms,
+	})
 
 
 func _begin(path: String, reload: bool) -> void:
