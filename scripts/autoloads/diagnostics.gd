@@ -6,21 +6,27 @@ extends Node
 
 const LOG_PATH: String = "user://deadline_diag.log"
 const STALL_MS: int = 350
+## Con la ventana sin foco el sistema puede frenar el render; esos stalls se
+## registran aparte y solo si son graves, para no ensuciar el diagnóstico.
+const BG_STALL_MS: int = 1000
 const MAX_LINES: int = 800
 
 var _file: FileAccess
 var _start_ms: int = 0
 var _last_ms: int = 0
 var _lines: int = 0
+var _focused: bool = true
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_start_ms = Time.get_ticks_msec()
 	_last_ms = _start_ms
+	_focused = get_window().has_focus()
 	mark("boot", {
 		"version": str(ProjectSettings.get_setting("application/config/name", "")),
 		"window": str(get_window().size),
+		"focused": _focused,
 	})
 	mark("diag_path", {"path": ProjectSettings.globalize_path(LOG_PATH)})
 
@@ -29,17 +35,46 @@ func _process(_delta: float) -> void:
 	var now: int = Time.get_ticks_msec()
 	var elapsed: int = now - _last_ms
 	_last_ms = now
+
+	var focused: bool = get_window().has_focus()
+	if focused != _focused:
+		_focused = focused
+		mark("focus", {
+			"focused": focused,
+			"scene": _scene_name(),
+			"paused": get_tree().paused,
+			"elapsed_ms": mini(elapsed, 60000),
+		})
+
 	if elapsed < STALL_MS:
 		return
+	if not focused and elapsed < BG_STALL_MS:
+		return
 
-	mark("stall", {
+	mark("stall" if focused else "stall_bg", {
 		"ms": elapsed,
 		"scene": _scene_name(),
 		"paused": get_tree().paused,
+		"focused": focused,
+		"nodes": int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT)),
 		"fps": Engine.get_frames_per_second(),
 		"enemies": get_tree().get_nodes_in_group("enemies").size(),
 		"projectiles": get_tree().get_nodes_in_group("enemy_projectiles").size(),
 		"audio3d": _count_audio3d(),
+		# Si process_ms es chico pero el frame es enorme, el bloqueo no está en
+		# los scripts: viene del motor, del driver o del sistema operativo.
+		"process_ms": snappedf(
+			float(Performance.get_monitor(Performance.TIME_PROCESS)) * 1000.0, 0.1
+		),
+		"physics_ms": snappedf(
+			float(Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS)) * 1000.0, 0.1
+		),
+		"draw_calls": int(
+			Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)
+		),
+		"mem_mb": int(
+			float(Performance.get_monitor(Performance.MEMORY_STATIC)) / 1048576.0
+		),
 	})
 
 

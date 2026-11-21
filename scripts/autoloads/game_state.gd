@@ -761,7 +761,7 @@ func save_game() -> void:
 	if error != OK:
 		push_warning("GameState: no se pudo guardar el progreso (%s)" % error)
 	var elapsed: int = Time.get_ticks_msec() - started_ms
-	if elapsed >= 30:
+	if elapsed >= 15:
 		Diagnostics.mark("save_slow", {"ms": elapsed, "path": save_path})
 
 
