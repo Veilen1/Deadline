@@ -2,6 +2,19 @@
 
 Todas las versiones relevantes del prototipo.
 
+## No publicado
+
+### Corregido
+- La run se **pausa automáticamente** al perder el foco de la ventana: el cronómetro deja de correr y no se vuelve a una pelea en curso.
+- La zona anterior se libera **antes** de instanciar la nueva. Antes convivían ambas durante un frame, duplicando geometría, enemigos y luces en el cambio de zona.
+- Las transiciones de escena reutilizan la escena ya cargada en vez de volver a leerla del disco.
+- `Settings.apply_display()` ya no cambia el modo de ventana si no hace falta y respeta una ventana maximizada.
+
+### Agregado
+- El log de diagnóstico ahora distingue **stall** (con foco) de **stall_bg** (sin foco) y registra `focus`, `process_ms`, `physics_ms`, `draw_calls` y `mem_mb`.
+- Se registran `zone_load` y `scene_swap` con su duración en ms.
+- Se registra `save_slow` a partir de `15 ms` en vez de `30 ms`.
+
 ## v0.7.0 — 2026-11-20
 
 ### Agregado

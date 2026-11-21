@@ -349,7 +349,10 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 ### Diagnóstico
 
 - `user://deadline_diag.log` se reescribe en cada arranque y registra hitches de frame mayores a `350 ms` y los hitos de fin de run, pausa y transiciones.
+- Los stalls se separan en `stall` (ventana con foco) y `stall_bg` (sin foco, solo si superan `1 s`), con `process_ms`, `physics_ms`, `draw_calls` y `mem_mb`. Si `process_ms` es chico y el frame es enorme, el bloqueo no está en los scripts.
+- También se registran `focus`, `zone_load`, `scene_swap` y `save_slow` con su duración.
 - Si el juego se traba, ese archivo permite ver en qué etapa ocurrió y cuánto duró el frame bloqueado.
+- Al perder el foco en plena run se abre la pausa automáticamente: el cronómetro no corre mientras la ventana está afuera.
 
 ### Flujo de ramas y versiones
 

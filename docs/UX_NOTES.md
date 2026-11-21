@@ -11,6 +11,7 @@
 - **Consistencia.** Mismos colores para los mismos estados: bloqueado, disponible, desbloqueado, peligro.
 - **Transiciones cortas.** 150–250 ms para cambios de pantalla y aparición de popups; nunca bloquear al jugador más de lo necesario.
 - **Pausa segura.** Menús y avisos deben congelar la run y no permitir dobles acciones.
+- **Pausa al perder foco.** Si el jugador cambia de ventana en plena run, la partida se pausa sola: no se pierde tiempo del cronómetro ni se vuelve a una pelea en curso.
 - **Contraste y accesibilidad.** No depender solo del color; usar texto, forma y posición.
 
 ## Menús y navegación
