@@ -5,6 +5,7 @@ extends RefCounted
 ## usa al empezar la run.
 
 const WEAPONS: Dictionary = {
+	"pistol": "res://resources/weapons/pistol.tres",
 	"basic_rifle": "res://resources/weapons/basic_rifle.tres",
 	"smg": "res://resources/weapons/smg.tres",
 	"shotgun": "res://resources/weapons/shotgun.tres",

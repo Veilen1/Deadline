@@ -52,7 +52,11 @@ func _on_challenge_unlocked(challenge_id: String) -> void:
 		var weapon: WeaponData = WeaponRegistry.get_data(reward_id)
 		var weapon_name: String = weapon.weapon_name if weapon != null else reward_id
 		title = "%s desbloqueada" % weapon_name
-		footer = "Ya está disponible en la tienda."
+		footer = (
+			"Ya está en tu arsenal."
+			if GameState.is_weapon_owned(reward_id)
+			else "Ya está disponible en la tienda."
+		)
 		accent = Color(0.95, 0.75, 0.25, 1)
 	elif reward_type == "cores":
 		footer = "Recompensa: ◈%s · reclamala en Desafíos." % reward_id
