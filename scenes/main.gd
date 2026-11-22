@@ -290,7 +290,7 @@ func _update_weapon_slots() -> void:
 	var current_name: String = current_weapon.weapon_name if current_weapon != null else ""
 	var parts: Array[String] = []
 	var ids: Array = GameState.owned_weapons
-	for index in mini(ids.size(), 3):
+	for index in mini(ids.size(), 4):
 		var data: WeaponData = WeaponRegistry.get_data(str(ids[index]))
 		if data == null:
 			continue
