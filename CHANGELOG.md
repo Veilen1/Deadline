@@ -2,6 +2,13 @@
 
 Todas las versiones relevantes del prototipo.
 
+## No publicado
+
+### Agregado
+- **Enemigo básico con modelo 3D riggeado**: esqueleto humanoide, pesos rígidos por pieza y animaciones `Idle`, `Walk`, `Attack`, `Hit` y `Death`.
+- El enemigo mira al jugador, camina hacia él y reproduce `Attack`/`Hit` según el estado; la muerte reproduce el desplome antes de liberarse.
+- El modelo del básico reemplaza las cajas de su escena, manteniendo las hitboxes de cabeza/torso/piernas.
+
 ## v0.8.1 — 2026-11-22
 
 ### Corregido
