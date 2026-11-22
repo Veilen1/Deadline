@@ -387,8 +387,10 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 ### Armas y munición
 
 - Recurso `WeaponData` con daño, plata por impacto, alcance, cadencia, cargador, regeneración y delay de regeneración.
-- Arma inicial: **Rifle básico** (20 daño, 4 disparos/s, 12 balas, 3 balas/s, delay 0.25 s).
-- Disparo automático manteniendo el click y respuesta inmediata al click.
+- Arma inicial: **Cobra** (pistola semiautomática, 18 daño, 6 disparos/s máx., 8 balas, 3.5 balas/s, delay 0.18 s). Un click por disparo.
+- **AK-47** desbloqueable al terminar la primera run (20 daño, 4 disparos/s, 12 balas, regen 3/s). Es el primer desbloqueo y queda en el arsenal.
+- Disparo automático manteniendo el click; la pistola exige soltar y volver a apretar.
+- Cada disparo lanza una **bala 3D** con estela corta desde la boca del arma hasta el impacto; el daño sigue siendo hitscan.
 - HUD de munición: contador `actual / máximo` y barra.
 - Al quedarse sin balas se puede seguir apuntando; la regeneración repone munición tras el delay.
 - Los bonus de cargador/regeneración/cadencia se aplican al empezar la run.
@@ -416,7 +418,8 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 - Accesible desde el hub.
 - Armas actuales:
-  - **Rifle básico**: 20 daño, 4/s, 12 balas, regen 3/s. Gratis e inicial.
+  - **Cobra** (pistola): 18 daño, 6/s máx., 8 balas, regen 3.5/s. Gratis e inicial, semiautomática.
+  - **AK-47**: 20 daño, 4/s, 12 balas, regen 3/s. Gratis; se desbloquea al terminar la primera run.
   - **Avispa** (SMG): 12 daño, 8/s, 24 balas, regen 5/s. $260.
   - **Trueno** (escopeta slug): 55 daño, 1.1/s, 6 balas, regen 1.2/s. $420.
 - Se compran con plata, se equipan y la próxima run usa el arma equipada.

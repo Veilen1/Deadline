@@ -5,6 +5,14 @@ extends RefCounted
 ## que se reclaman desde la pantalla de Desafíos.
 
 const CHALLENGES: Dictionary = {
+	"rifle_unlock": {
+		"title": "Primer fusil",
+		"description": "Terminá tu primera run para desbloquear el AK-47.",
+		"stat": "runs_started",
+		"target": 1,
+		"reward_type": "weapon",
+		"reward_id": "basic_rifle",
+	},
 	"smg_unlock": {
 		"title": "Puntería de élite",
 		"description": "Acertá 40 headshots para desbloquear la Avispa.",

@@ -77,6 +77,9 @@ func _build(weapon_id: String) -> void:
 	_flash = null
 
 	match weapon_id:
+		"pistol":
+			_muzzle_position = Vector3(0, 0.02, -0.235)
+			_build_pistol()
 		"smg":
 			_muzzle_position = Vector3(0, 0.015, -0.25)
 			_build_smg()
@@ -88,6 +91,20 @@ func _build(weapon_id: String) -> void:
 			_build_rifle()
 
 	_build_flash()
+
+
+func _build_pistol() -> void:
+	# Pistola semiautomática: corredera, armazón, empuñadura y miras turquesa.
+	_add_box(Vector3(0.055, 0.17, 0.055), Vector3(0, 0.02, -0.10), Color(0.14, 0.15, 0.18))
+	_add_box(Vector3(0.022, 0.022, 0.05), Vector3(0, 0.02, -0.20), Color(0.22, 0.23, 0.26))
+	_add_box(Vector3(0.045, 0.10, 0.05), Vector3(0, 0.0, -0.03), Color(0.08, 0.09, 0.11))
+	_add_box(Vector3(0.045, 0.06, 0.12), Vector3(0, -0.07, 0.035), Color(0.06, 0.07, 0.09),
+		0.0, Vector3(-14, 0, 0))
+	_add_box(Vector3(0.046, 0.03, 0.06), Vector3(0, -0.075, 0.04), Color(0.10, 0.42, 0.40),
+		0.35, Vector3(-14, 0, 0))
+	_add_box(Vector3(0.03, 0.04, 0.02), Vector3(0, -0.035, -0.07), Color(0.05, 0.06, 0.08))
+	_add_box(Vector3(0.008, 0.012, 0.012), Vector3(0, 0.082, -0.17), Color(0.3, 0.9, 0.85), 2.0)
+	_add_box(Vector3(0.008, 0.012, 0.012), Vector3(0, 0.082, -0.04), Color(0.3, 0.9, 0.85), 2.0)
 
 
 func _build_rifle() -> void:
@@ -114,7 +131,13 @@ func _build_shotgun() -> void:
 	_add_box(Vector3(0.02, 0.02, 0.12), Vector3(0, 0.07, -0.06), Color(1.0, 0.55, 0.2), 2.2)
 
 
-func _add_box(size: Vector3, offset: Vector3, color: Color, emission_energy: float = 0.0) -> void:
+func _add_box(
+	size: Vector3,
+	offset: Vector3,
+	color: Color,
+	emission_energy: float = 0.0,
+	rotation: Vector3 = Vector3.ZERO
+) -> void:
 	var mesh := BoxMesh.new()
 	mesh.size = size
 
@@ -131,6 +154,7 @@ func _add_box(size: Vector3, offset: Vector3, color: Color, emission_energy: flo
 	instance.mesh = mesh
 	instance.material_override = material
 	instance.position = offset
+	instance.rotation = rotation
 	instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(instance)
 

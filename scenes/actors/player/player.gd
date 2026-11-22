@@ -1,6 +1,6 @@
 extends CharacterBody3D
 
-const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
+const BULLET_SCENE: PackedScene = preload("res://scenes/effects/bullet.tscn")
 
 @export_group("Health")
 @export var max_health: float = 100.0
@@ -433,8 +433,14 @@ func _physics_process(delta: float) -> void:
 
 	_update_footsteps(delta)
 
-	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and Input.is_action_pressed("shoot"):
-		shoot()
+	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		# Las armas semiautomáticas piden un click por disparo; las automáticas
+		# disparan mientras se mantiene apretado.
+		var wants_fire: bool = Input.is_action_pressed("shoot")
+		if weapon_data != null and not weapon_data.automatic:
+			wants_fire = Input.is_action_just_pressed("shoot")
+		if wants_fire:
+			shoot()
 
 
 func _update_footsteps(delta: float) -> void:
@@ -576,17 +582,17 @@ func shoot() -> void:
 								_set_current_ammo(current_ammo + 1)
 					enemy.call("take_hit", hit_zone, damage, weapon_data.money_per_hit, hit_position)
 
-	_spawn_tracer(end_point)
+	_spawn_bullet(end_point)
 	if weapon_view != null and weapon_view.has_method("flash"):
 		weapon_view.call("flash")
 	shoot_player.pitch_scale = randf_range(0.95, 1.05)
 	shoot_player.play()
 
 
-func _spawn_tracer(to: Vector3) -> void:
-	var tracer: Node3D = TRACER_SCENE.instantiate()
-	get_parent().add_child(tracer)
-	tracer.call("fire", shoot_origin.global_position, to)
+func _spawn_bullet(to: Vector3) -> void:
+	var bullet: Node3D = BULLET_SCENE.instantiate() as Node3D
+	get_parent().add_child(bullet)
+	bullet.call("fire", shoot_origin.global_position, to)
 
 
 func _build_ray_exclude_list() -> Array[RID]:

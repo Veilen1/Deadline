@@ -82,9 +82,10 @@ func _build_card(weapon_id: String) -> void:
 	info.add_child(description)
 
 	var stats := Label.new()
-	stats.text = "Daño %d · %d disparos/s · %d balas · regen %.0f/s" % [
+	stats.text = "Daño %d · %d disparos/s (%s) · %d balas · regen %.0f/s" % [
 		int(data.damage),
 		int(round(data.shots_per_second)),
+		"auto" if data.automatic else "semi",
 		data.magazine_size,
 		data.ammo_regen_per_second,
 	]

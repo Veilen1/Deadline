@@ -17,6 +17,14 @@ Todas las versiones relevantes del prototipo.
 
 ### Cambiado
 - Los eventos de arena ya no están fijados en la escena de la zona: se configuran al arrancar desde el pool de la zona.
+- La run empieza con la **pistola Cobra** (semiautomática) en vez del rifle.
+- El **AK-47** (antes Rifle básico) se desbloquea y se agrega al arsenal al terminar la primera run.
+- La tienda muestra el modo de disparo (`auto` / `semi`).
+
+### Agregado
+- **Bala 3D** con proyectil de cobre, anillo emisivo y estela corta; reemplaza el haz de luz.
+- Desafío **Primer fusil** con el progreso de runs iniciadas.
+- Viewmodel provisional de pistola con corredera, armazón, empuñadura turquesa y miras.
 
 ## v0.7.1 — 2026-11-22
 

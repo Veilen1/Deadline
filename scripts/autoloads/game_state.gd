@@ -69,8 +69,8 @@ var skill_levels: Dictionary = {}
 var skill_bonuses: Dictionary = {}
 
 # Armas desbloqueadas y equipada.
-var owned_weapons: Array[String] = ["basic_rifle"]
-var equipped_weapon: String = "basic_rifle"
+var owned_weapons: Array[String] = ["pistol"]
+var equipped_weapon: String = "pistol"
 
 # Contrato elegido para la próxima run.
 var selected_contract: String = "none"
@@ -191,6 +191,10 @@ func _check_challenge_unlocks() -> void:
 			notified_challenges.append(challenge_id)
 			continue
 		notified_challenges.append(challenge_id)
+		# El AK es el primer desbloqueo: se agrega solo al arsenal.
+		if reward_type == "weapon" and reward_id == "basic_rifle" and not is_weapon_owned(reward_id):
+			owned_weapons.append(reward_id)
+			challenges_changed.emit()
 		challenge_unlocked.emit(challenge_id)
 		_queue_save()
 
@@ -318,7 +322,7 @@ func blessing_count(blessing_id: String) -> int:
 
 
 func is_weapon_unlocked(weapon_id: String) -> bool:
-	if weapon_id == "basic_rifle" or is_weapon_owned(weapon_id):
+	if weapon_id == "pistol" or is_weapon_owned(weapon_id):
 		return true
 	var challenge_id: String = ChallengeRegistry.weapon_unlock_for(weapon_id)
 	if challenge_id.is_empty():
@@ -645,6 +649,8 @@ func abandon_run() -> void:
 	_apply_death_penalty()
 	deaths += 1
 	is_run_active = false
+	challenges_changed.emit()
+	_check_challenge_unlocks()
 	save_game.call_deferred()
 
 
@@ -711,8 +717,8 @@ func reset_progress() -> void:
 	skill_levels.clear()
 	skill_bonuses.clear()
 	owned_weapons.clear()
-	owned_weapons.append("basic_rifle")
-	equipped_weapon = "basic_rifle"
+	owned_weapons.append("pistol")
+	equipped_weapon = "pistol"
 	selected_contract = "none"
 	profile_name = "Jugador"
 	runs_started = 0
@@ -823,7 +829,7 @@ func load_game() -> void:
 		skill_levels = _migrate_old_skills(old_skills)
 		_apply_all_skill_effects()
 
-	var saved_weapons = config.get_value("progress", "owned_weapons", ["basic_rifle"])
+	var saved_weapons = config.get_value("progress", "owned_weapons", ["pistol"])
 	owned_weapons.clear()
 	if saved_weapons is Array:
 		for weapon_id in saved_weapons:
@@ -831,12 +837,12 @@ func load_game() -> void:
 	elif saved_weapons is PackedStringArray:
 		for weapon_id in saved_weapons:
 			owned_weapons.append(str(weapon_id))
-	if not owned_weapons.has("basic_rifle"):
-		owned_weapons.push_front("basic_rifle")
+	if not owned_weapons.has("pistol"):
+		owned_weapons.push_front("pistol")
 
-	equipped_weapon = str(config.get_value("progress", "equipped_weapon", "basic_rifle"))
+	equipped_weapon = str(config.get_value("progress", "equipped_weapon", "pistol"))
 	if not owned_weapons.has(equipped_weapon):
-		equipped_weapon = "basic_rifle"
+		equipped_weapon = "pistol"
 
 	selected_contract = str(config.get_value("progress", "selected_contract", "none"))
 	if selected_contract != "none" and ContractRegistry.get_data(selected_contract).is_empty():
@@ -853,6 +859,12 @@ func load_game() -> void:
 	hounds_killed = maxi(int(config.get_value("profile", "hounds_killed", 0)), 0)
 	zones_cleared = maxi(int(config.get_value("profile", "zones_cleared", 0)), 0)
 	lifetime_earned = maxi(int(config.get_value("profile", "lifetime_earned", 0)), 0)
+
+	# Recuperación: si ya corrió al menos una run, el AK ya debería estar.
+	if runs_started >= 1 and not owned_weapons.has("basic_rifle"):
+		owned_weapons.append("basic_rifle")
+		if not owned_weapons.has(equipped_weapon):
+			equipped_weapon = "pistol"
 
 	_is_loading = false
 	_mark_completed_as_notified()

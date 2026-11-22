@@ -4,8 +4,8 @@
 
 [resource]
 script = ExtResource("1_weapon")
-weapon_name = "Rifle básico"
-description = "Equilibrado, preciso y confiable."
+weapon_name = "AK-47"
+description = "Fusil automático de fábrica: preciso, confiable y con cargador generoso."
 price = 0
 damage = 20.0
 money_per_hit = 5
