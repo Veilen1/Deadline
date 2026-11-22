@@ -36,6 +36,7 @@ enemies_per_wave = Array[int]([5, 6, 4])
 wave_delay = 0.7
 completion_bonus = 50
 zone_id = "zona_3"
+event_pool = PackedStringArray("turret", "heal")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_violet")
@@ -110,14 +111,5 @@ scale = Vector3(1.5, 1, 1)
 
 [node name="ArenaEvent" parent="." instance=ExtResource("9_event")]
 position = Vector3(0, 0, -4)
-event_kind = "turret"
-title = "Torreta de supresión"
-description = "Dispara proyectiles a distancia mientras siga activa."
-max_health = 220.0
-core_reward = 3
-radius = 8.0
-projectile_damage = 14.0
-projectile_interval = 1.4
-projectile_speed = 20.0
 
 [node name="ArenaBounds" parent="." instance=ExtResource("4_bounds")]

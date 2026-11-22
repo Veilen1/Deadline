@@ -1,12 +1,16 @@
 extends Node3D
 
-## Evento de arena destructible. Según `event_kind` pulsa daño, ralentiza al
-## jugador o dispara proyectiles. Al destruirlo entrega núcleos extra.
+## Evento de arena destructible. El tipo lo elige la zona al azar de su pool
+## (ver ArenaEventRegistry). Según el tipo pulsa daño, ralentiza, dispara,
+## suelta minas, tira del jugador o cura enemigos. Al destruirlo entrega núcleos.
 
 const PROJECTILE_SCENE: PackedScene = preload("res://scenes/effects/enemy_projectile.tscn")
 const SLAM_WAVE_SCENE: PackedScene = preload("res://scenes/effects/slam_wave.tscn")
+const MINE_SCENE: PackedScene = preload("res://scenes/effects/arena_mine.tscn")
+const DAMAGE_NUMBER_SCENE: PackedScene = preload("res://scenes/effects/damage_number.tscn")
 
 @export var event_kind: String = "pulse"
+@export var auto_start: bool = false
 @export var title: String = "Reactor inestable"
 @export var description: String = "Pulsa daño en el área."
 @export var max_health: float = 150.0
@@ -27,6 +31,20 @@ const SLAM_WAVE_SCENE: PackedScene = preload("res://scenes/effects/slam_wave.tsc
 @export var projectile_interval: float = 1.5
 @export var projectile_speed: float = 20.0
 
+@export_group("Mines")
+@export var mine_interval: float = 3.4
+@export var mine_count: int = 2
+@export var mine_damage: float = 20.0
+@export var mine_explosion_radius: float = 3.4
+
+@export_group("Pull")
+@export var pull_interval: float = 2.6
+@export var pull_force: float = 5.5
+
+@export_group("Heal")
+@export var heal_interval: float = 2.4
+@export var heal_amount: float = 22.0
+
 @onready var _core: MeshInstance3D = $Core
 @onready var _ring: MeshInstance3D = $Ring
 @onready var _label: Label3D = $Label
@@ -36,17 +54,28 @@ var current_health: float
 var _timer: float = 0.0
 var _time: float = 0.0
 var _ring_base_scale: Vector3 = Vector3.ONE
+var _started: bool = false
 
 
 func _ready() -> void:
 	add_to_group("arena_events")
-	max_health *= (
-		GameState.cycle_enemy_health_mult() * GameState.contract_modifier("enemy_health", 1.0)
-	)
-	current_health = max_health
 	_ring_base_scale = _ring.scale
-	pulse_damage *= _enemy_damage_mult()
-	projectile_damage *= _enemy_damage_mult()
+	# Las zonas llaman a start() para elegir el tipo; auto_start queda para
+	# instancias sueltas o pruebas.
+	if auto_start:
+		start(event_kind)
+
+
+func start(kind: String = "") -> void:
+	# Aplica el catálogo y arranca el evento una sola vez.
+	if _started:
+		return
+	_started = true
+
+	if not kind.is_empty():
+		event_kind = kind
+	_apply_registry_data()
+	_apply_scaling()
 	_timer = _initial_interval()
 	_apply_style()
 	_update_label()
@@ -60,8 +89,47 @@ func _ready() -> void:
 	AudioDirector.play_event_spawn(global_position + Vector3.UP * 1.5)
 
 
+func _apply_registry_data() -> void:
+	var data: Dictionary = ArenaEventRegistry.get_data(event_kind)
+	if data.is_empty():
+		return
+
+	title = str(data.get("title", title))
+	description = str(data.get("description", description))
+	max_health = float(data.get("health", max_health))
+	core_reward = int(data.get("reward", core_reward))
+	radius = float(data.get("radius", radius))
+	pulse_damage = float(data.get("pulse_damage", pulse_damage))
+	pulse_interval = float(data.get("pulse_interval", pulse_interval))
+	slow_multiplier = float(data.get("slow_multiplier", slow_multiplier))
+	slow_duration = float(data.get("slow_duration", slow_duration))
+	slow_interval = float(data.get("slow_interval", slow_interval))
+	projectile_damage = float(data.get("projectile_damage", projectile_damage))
+	projectile_interval = float(data.get("projectile_interval", projectile_interval))
+	projectile_speed = float(data.get("projectile_speed", projectile_speed))
+	mine_interval = float(data.get("mine_interval", mine_interval))
+	mine_count = int(data.get("mine_count", mine_count))
+	mine_damage = float(data.get("mine_damage", mine_damage))
+	mine_explosion_radius = float(data.get("mine_explosion_radius", mine_explosion_radius))
+	pull_interval = float(data.get("pull_interval", pull_interval))
+	pull_force = float(data.get("pull_force", pull_force))
+	heal_interval = float(data.get("heal_interval", heal_interval))
+	heal_amount = float(data.get("heal_amount", heal_amount))
+
+
+func _apply_scaling() -> void:
+	max_health *= (
+		GameState.cycle_enemy_health_mult() * GameState.contract_modifier("enemy_health", 1.0)
+	)
+	current_health = max_health
+	var damage_mult: float = _enemy_damage_mult()
+	pulse_damage *= damage_mult
+	projectile_damage *= damage_mult
+	mine_damage *= damage_mult
+
+
 func _physics_process(delta: float) -> void:
-	if not GameState.is_run_active:
+	if not _started or not GameState.is_run_active:
 		return
 
 	_time += delta
@@ -94,6 +162,14 @@ func _trigger() -> void:
 		"turret":
 			if distance <= 26.0:
 				_fire_at(player)
+		"mines":
+			_drop_mines()
+		"pull":
+			if distance <= radius:
+				_pull_player(player)
+				_spawn_wave()
+		"heal":
+			_heal_enemies()
 		_:
 			if distance <= radius:
 				player.call("take_damage", pulse_damage)
@@ -110,6 +186,72 @@ func _fire_at(player: Node3D) -> void:
 	get_parent().add_child(projectile)
 	projectile.call("launch", origin, target, projectile_speed, projectile_damage, 3.5, self)
 	AudioDirector.play_enemy_shot(global_position + Vector3.UP * 1.9)
+
+
+func _pull_player(player: Node3D) -> void:
+	var to_event: Vector3 = global_position - player.global_position
+	to_event.y = 0.0
+	if to_event.length() < 0.5:
+		return
+	player.call("apply_pull", to_event.normalized() * pull_force)
+
+
+func _drop_mines() -> void:
+	var parent: Node = get_parent()
+	if parent == null:
+		return
+	for _index in mine_count:
+		var mine: Node3D = MINE_SCENE.instantiate() as Node3D
+		if mine == null:
+			continue
+		parent.add_child(mine)
+		mine.global_position = _mine_position()
+		mine.call("start", mine_damage, mine_explosion_radius, _accent())
+
+
+func _mine_position() -> Vector3:
+	# No la suelta encima del jugador: busca un punto en el anillo del evento.
+	var player: Node3D = _get_player()
+	var fallback: Vector3 = global_position + Vector3(0.0, 0.15, 2.5)
+	for _attempt in 6:
+		var angle: float = randf() * TAU
+		var distance: float = randf_range(2.5, radius)
+		var position: Vector3 = global_position + Vector3(cos(angle), 0.0, sin(angle)) * distance
+		position.y = 0.15
+		if player == null:
+			return position
+		var to_player: Vector3 = player.global_position - position
+		to_player.y = 0.0
+		if to_player.length() >= 3.0:
+			return position
+	return Vector3(fallback.x, 0.15, fallback.z)
+
+
+func _heal_enemies() -> void:
+	var healed_any: bool = false
+	for node in get_tree().get_nodes_in_group("enemies"):
+		if not node is Node3D:
+			continue
+		var enemy: Node3D = node as Node3D
+		var offset: Vector3 = enemy.global_position - global_position
+		offset.y = 0.0
+		if offset.length() > radius or not enemy.has_method("heal"):
+			continue
+		var healed: float = float(enemy.call("heal", heal_amount))
+		if healed <= 0.0:
+			continue
+		healed_any = true
+		_spawn_heal_number(enemy.global_position + Vector3.UP * 2.0, healed)
+	if healed_any:
+		_spawn_wave()
+
+
+func _spawn_heal_number(world_position: Vector3, amount: float) -> void:
+	var number: Node3D = DAMAGE_NUMBER_SCENE.instantiate() as Node3D
+	if number == null:
+		return
+	get_parent().add_child(number)
+	number.call("show_heal", world_position, amount)
 
 
 func _spawn_wave() -> void:
@@ -191,13 +333,15 @@ func _make_material(color: Color) -> StandardMaterial3D:
 
 
 func _accent() -> Color:
-	match event_kind:
-		"slow":
-			return Color(0.3, 0.8, 1.0, 1)
-		"turret":
-			return Color(1.0, 0.55, 0.15, 1)
-		_:
-			return Color(1.0, 0.16, 0.1, 1)
+	var data: Dictionary = ArenaEventRegistry.get_data(event_kind)
+	if data.has("color"):
+		return data.get("color") as Color
+	return Color(1.0, 0.16, 0.1, 1)
+
+
+func get_accent() -> Color:
+	# Para el minimapa y cualquier UI que necesite el color del evento.
+	return _accent()
 
 
 func _initial_interval() -> float:
@@ -206,6 +350,12 @@ func _initial_interval() -> float:
 			return slow_interval
 		"turret":
 			return maxf(projectile_interval, 2.0)
+		"mines":
+			return maxf(mine_interval, 2.0)
+		"pull":
+			return maxf(pull_interval, 2.0)
+		"heal":
+			return heal_interval
 		_:
 			return maxf(pulse_interval, 2.5)
 
@@ -216,6 +366,12 @@ func _interval() -> float:
 			return slow_interval
 		"turret":
 			return projectile_interval
+		"mines":
+			return mine_interval
+		"pull":
+			return pull_interval
+		"heal":
+			return heal_interval
 		_:
 			return pulse_interval
 
