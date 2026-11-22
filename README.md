@@ -3,7 +3,7 @@
 > **Estado del documento:** vivo y en construcción. Todo lo que está acá está sujeto a cambios durante el prototipado y el testeo. Las decisiones cerradas se marcan con ✅ y las que están abiertas o en revisión se marcan con 🟡.
 >
 > **Última actualización:** 20/11/2026
-> **Versión:** 0.7.0 — Prototipo jugable
+> **Versión:** 0.7.1 — Prototipo jugable
 
 ---
 
@@ -349,14 +349,17 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 ### Diagnóstico
 
 - `user://deadline_diag.log` se reescribe en cada arranque y registra hitches de frame mayores a `350 ms` y los hitos de fin de run, pausa y transiciones.
+- Los stalls se separan en `stall` (ventana con foco) y `stall_bg` (sin foco, solo si superan `1 s`), con `process_ms`, `physics_ms`, `draw_calls` y `mem_mb`. Si `process_ms` es chico y el frame es enorme, el bloqueo no está en los scripts.
+- También se registran `focus`, `zone_load`, `scene_swap` y `save_slow` con su duración.
 - Si el juego se traba, ese archivo permite ver en qué etapa ocurrió y cuánto duró el frame bloqueado.
+- Al perder el foco en plena run se abre la pausa automáticamente: el cronómetro no corre mientras la ventana está afuera.
 
 ### Flujo de ramas y versiones
 
 - `main`: releases estables.
 - `dev`: integración de features.
 - Una rama por feature: `feature/<nombre>` desde `dev`, commits atómicos, merge `--no-ff` a `dev`.
-- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos), `v0.5.1` (perfil desplazable, monedas en el árbol y toasts), `v0.6.0` (arenas verticales, telegrafía y eventos), `v0.6.1` (hitmarker y calaveras por tipo) y `v0.7.0` (mezcla de audio, dash aéreo y combos).
+- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos), `v0.5.1` (perfil desplazable, monedas en el árbol y toasts), `v0.6.0` (arenas verticales, telegrafía y eventos), `v0.6.1` (hitmarker y calaveras por tipo), `v0.7.0` (mezcla de audio, dash aéreo y combos) y `v0.7.1` (pausa por foco, caché de escenas y diagnóstico).
 
 ### Limitaciones conocidas
 
@@ -373,11 +376,10 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Próximos pasos
 
-1. Dash aéreo y combos de movimiento.
-2. Más capas de ambiente y música dedicada por zona.
-3. Más variantes de eventos de arena y combinaciones por run.
-4. Nuevas variantes de enemigo (torreta móvil, corredor con escudo).
-5. Localización y soporte de controller.
+1. Más variantes de eventos de arena y combinaciones por run.
+2. Nuevas variantes de enemigo (torreta móvil, corredor con escudo).
+3. Mezcla fina de audio y variación de la capa de combate.
+4. Localización y soporte de controller.
 
 ---
 
@@ -737,6 +739,15 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - **Aparición de evento**: alarma grave al aparecer un reactor, campo o torreta.
 - **Destrucción de evento**: boom grave al romperlo.
 - **Ambiente por zona**: el loop cambia de tono y sube un poco de volumen en Zona 2 y 3; el hub/menú vuelven al tono neutral.
+
+### Música por zona y capa de combate
+
+- **Menú/Zona 1:** drone neutro original.
+- **Zona 2:** pad frío con shimmer alto.
+- **Zona 3:** drone oscuro con segunda menor y pulso lento.
+- Dos reproductores de ambiente hacen **crossfade de 0.6 s** al cambiar de zona.
+- Una **capa de combate** a `90 BPM` entra con cada oleada y baja cuando la limpiás; suma presión sin tapar los SFX.
+- El hub y el menú principal vuelven al loop neutro y apagan la capa de combate.
 
 ---
 

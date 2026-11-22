@@ -61,6 +61,7 @@ func _ready() -> void:
 	EventBus.boss_health_changed.connect(_on_boss_health_changed)
 	EventBus.boss_defeated.connect(_on_boss_defeated)
 	Settings.settings_changed.connect(_on_settings_changed)
+	get_window().focus_exited.connect(_on_window_focus_exited)
 	var run_upgrades: Dictionary = GameState.upgrades.duplicate()
 	for key in GameState.skill_bonuses:
 		run_upgrades[key] = float(run_upgrades.get(key, 0.0)) + float(GameState.skill_bonuses[key])
@@ -185,16 +186,36 @@ func _load_zone(index: int) -> void:
 	if index < 0 or index >= ZONE_SCENES.size():
 		return
 
-	var scene: PackedScene = ZONE_SCENES[index]
-	var new_zone: Node3D = scene.instantiate() as Node3D
-	zones_root.add_child(new_zone)
+	var started_ms: int = Time.get_ticks_msec()
 
+	# Libera la zona anterior antes de instanciar la nueva: si no, durante un
+	# frame conviven las dos con toda su geometría, enemigos y luces.
 	if _current_zone != null and is_instance_valid(_current_zone):
+		zones_root.remove_child(_current_zone)
 		_current_zone.queue_free()
+		_current_zone = null
+
+	var new_zone: Node3D = ZONE_SCENES[index].instantiate() as Node3D
+	zones_root.add_child(new_zone)
 	_current_zone = new_zone
 
 	zone_label.text = "Zona %d" % (index + 1)
 	AudioDirector.set_zone_mood(index)
+	Diagnostics.mark("zone_load", {
+		"index": index,
+		"ms": Time.get_ticks_msec() - started_ms,
+		"nodes": int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT)),
+	})
+
+
+func _on_window_focus_exited() -> void:
+	# Si el jugador cambia de ventana en plena run, se pausa: el cronómetro
+	# no debe correr afuera del juego y al volver no aparece una pelea a medias.
+	if not GameState.is_run_active or get_tree().paused or _transitioning:
+		return
+	if game_over_menu.visible or blessing_panel.visible or pause_menu.visible:
+		return
+	pause_menu.call("open_from_focus_loss")
 
 
 func _show_zone_banner(text: String) -> void:

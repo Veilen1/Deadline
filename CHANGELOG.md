@@ -2,6 +2,19 @@
 
 Todas las versiones relevantes del prototipo.
 
+## v0.7.1 — 2026-11-22
+
+### Corregido
+- La run se **pausa automáticamente** al perder el foco de la ventana: el cronómetro deja de correr y no se vuelve a una pelea en curso.
+- La zona anterior se libera **antes** de instanciar la nueva. Antes convivían ambas durante un frame, duplicando geometría, enemigos y luces en el cambio de zona.
+- Las transiciones de escena reutilizan la escena ya cargada en vez de volver a leerla del disco.
+- `Settings.apply_display()` ya no cambia el modo de ventana si no hace falta y respeta una ventana maximizada.
+
+### Agregado
+- El log de diagnóstico ahora distingue **stall** (con foco) de **stall_bg** (sin foco) y registra `focus`, `process_ms`, `physics_ms`, `draw_calls` y `mem_mb`.
+- Se registran `zone_load` y `scene_swap` con su duración en ms.
+- Se registra `save_slow` a partir de `15 ms` en vez de `30 ms`.
+
 ## v0.7.0 — 2026-11-20
 
 ### Agregado
@@ -15,12 +28,16 @@ Todas las versiones relevantes del prototipo.
 - Estela turquesa y kick de FOV distintos para el dash aéreo.
 - **Salto potenciado desde slide**: +25% de altura.
 - Salto separado en `try_jump()` para poder testearlo y reutilizarlo.
+- **Música dedicada por zona**: loops frío y oscuro para Zona 2 y 3.
+- **Capa de combate** con pulso rítmico que entra con las oleadas y baja al limpiarlas.
+- Crossfade de `0.6 s` entre ambientes de zona.
 
 ### Cambiado
 - El disparo, los pasos, el dash, el cambio de arma, la UI y los efectos ahora se rutean a **SFX**.
 - El loop ambiente se rutea a **Music**; el hub y el menú principal lo devuelven al tono neutral.
 - Valores por defecto: música `80%`, efectos `100%`, master `100%`.
 - El dash en el aire ahora consume una carga y no depende solo del cooldown del dash terrestre.
+- La música por zona reemplaza la variación de pitch por loops dedicados.
 
 ## v0.6.1 — 2026-11-20
 
