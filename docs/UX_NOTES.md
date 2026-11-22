@@ -59,7 +59,7 @@
 
 1. **Movimiento:** dash aéreo y salto desde slide implementados; falta testear combos encadenados.
 2. **Audio:** sliders de música/efectos y loops dedicados por zona implementados; falta mezcla fina y variación de la capa de combate.
-3. **Eventos de arena:** implementados Reactor, Campo de hielo y Torreta; faltan variantes y combinaciones.
+3. **Eventos de arena:** dos variantes por zona elegidas al azar; faltan combinaciones dentro de una misma arena y eventos que interactúen entre sí.
 4. **Mapas:** seguir iterando layouts verticales, coberturas y legibilidad de la telegrafía.
 5. **Contenido:** torreta móvil y nuevas variantes de enemigo.
 6. **Accesibilidad:** navegación con teclado/controller y resoluciones chicas.

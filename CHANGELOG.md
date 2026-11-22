@@ -2,6 +2,22 @@
 
 Todas las versiones relevantes del prototipo.
 
+## No publicado
+
+### Agregado
+- **Eventos de arena variables:** cada zona elige al azar entre dos eventos al empezar la run.
+  - **Zona 1:** Reactor inestable o **Fábrica de minas**.
+  - **Zona 2:** Campo de hielo o **Ancla gravitatoria**.
+  - **Zona 3:** Torreta de supresión o **Núcleo sanitario**.
+- **Fábrica de minas:** suelta minas que parpadean mientras se arman y explotan al acercarte o al agotar su vida.
+- **Ancla gravitatoria:** tira del jugador hacia el núcleo cada pocos segundos; el empuje se disipa rápido y no anula el control.
+- **Núcleo sanitario:** cura a los enemigos dentro del radio y muestra un `+N` verde sobre cada uno.
+- **Minimapa:** los eventos de arena aparecen como un rombo del color del evento.
+- `ArenaEventRegistry` centraliza títulos, vida, recompensa, radio, colores y tiempos de cada evento.
+
+### Cambiado
+- Los eventos de arena ya no están fijados en la escena de la zona: se configuran al arrancar desde el pool de la zona.
+
 ## v0.7.1 — 2026-11-22
 
 ### Corregido
