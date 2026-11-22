@@ -92,6 +92,15 @@ func _after_move_climb() -> void:
 		_climb_cooldown = 1.0
 
 
+func heal(amount: float) -> float:
+	# Devuelve cuánta vida se recuperó (0 si ya estaba al máximo o muerto).
+	if current_health <= 0.0 or amount <= 0.0:
+		return 0.0
+	var before: float = current_health
+	current_health = minf(current_health + amount, max_health)
+	return current_health - before
+
+
 func take_hit(hit_zone: String, base_damage: float, base_money: int, hit_position: Vector3 = Vector3.INF) -> void:
 	# base_damage y base_money los define el arma; acá solo se aplica el multiplicador de zona.
 	var damage_mult: float = 1.0
