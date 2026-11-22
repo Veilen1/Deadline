@@ -2,7 +2,7 @@
 
 Todas las versiones relevantes del prototipo.
 
-## No publicado
+## v0.8.0 — 2026-11-22
 
 ### Agregado
 - **Eventos de arena variables:** cada zona elige al azar entre dos eventos al empezar la run.
@@ -17,14 +17,21 @@ Todas las versiones relevantes del prototipo.
 
 ### Cambiado
 - Los eventos de arena ya no están fijados en la escena de la zona: se configuran al arrancar desde el pool de la zona.
-- La run empieza con la **pistola Cobra** (semiautomática) en vez del rifle.
+- La run empieza con la **pistola Cobra** (semiautomática, ~5 clicks/s) en vez del rifle.
 - El **AK-47** (antes Rifle básico) se desbloquea y se agrega al arsenal al terminar la primera run.
 - La tienda muestra el modo de disparo (`auto` / `semi`).
 
+### Integrado
+- **Viewmodels 3D**: AK-47, Cobra, Avispa y Trueno reemplazan los modelos de cajas.
+- AK con manos negras y muñequera turquesa; el resto de las armas queda solo con el modelo por ahora.
+- **Bala 3D emisiva** con estela larga y velocidad legible (90 m/s).
+- **Torreta de Zona 3** con base, cabezal, cañón, tambor y ojo emisivo; apunta al jugador.
+- La torreta dispara desde la altura de su cañón y muestra la etiqueta a 1.75 m.
+
 ### Agregado
-- **Bala 3D** con proyectil de cobre, anillo emisivo y estela corta; reemplaza el haz de luz.
+- **Bala 3D** con proyectil, anillo emisivo y estela corta; reemplaza el haz de luz.
 - Desafío **Primer fusil** con el progreso de runs iniciadas.
-- Viewmodel provisional de pistola con corredera, armazón, empuñadura turquesa y miras.
+- Escala y muzzle propios para cada arma integrada.
 
 ## v0.7.1 — 2026-11-22
 
