@@ -31,6 +31,7 @@ script = ExtResource("1_zone")
 enemy_scene = ExtResource("2_enemy")
 elite_scene = ExtResource("3_elite")
 zone_id = "zona_1"
+event_pool = PackedStringArray("pulse", "mines")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_white")
@@ -83,13 +84,5 @@ position = Vector3(0, 0.02, 8)
 position = Vector3(0, 1.5, -5)
 
 [node name="ArenaEvent" parent="." instance=ExtResource("8_event")]
-event_kind = "pulse"
-title = "Reactor inestable"
-description = "Pulsa daño cada 3 s en un radio de 6 m."
-max_health = 150.0
-core_reward = 2
-radius = 6.0
-pulse_damage = 8.0
-pulse_interval = 3.0
 
 [node name="ArenaBounds" parent="." instance=ExtResource("4_bounds")]

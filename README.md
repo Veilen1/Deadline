@@ -363,10 +363,10 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Limitaciones conocidas
 
-- Hay tres zonas: blanca, celeste y violeta. Tienen coberturas, plataformas, torres, telegrafía de spawn y un evento de arena fijo por zona.
+- Hay tres zonas: blanca, celeste y violeta. Tienen coberturas, plataformas, torres, telegrafía de spawn y un evento de arena por zona, elegido al azar entre dos variantes.
 - Hay tres armas con munición independiente y regeneración, pero no recarga manual.
 - El volumen general ya no es la única perilla: hay sliders separados de música y efectos.
-- El ambiente sigue siendo un loop único con variación de tono por zona; falta música dedicada por zona.
+- Cada zona tiene su propio loop de ambiente; la capa de combate es compartida y entra con las oleadas.
 - La dificultad se aplica a los enemigos que aparecen después del cambio; los ya vivos no se recalculan.
 - Los élites comparten mecánicas base; la Zona 3 suma un élite tirador.
 - No hay guardado de run en curso, multijugador, controller ni localización.
@@ -376,10 +376,9 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Próximos pasos
 
-1. Más variantes de eventos de arena y combinaciones por run.
-2. Nuevas variantes de enemigo (torreta móvil, corredor con escudo).
-3. Mezcla fina de audio y variación de la capa de combate.
-4. Localización y soporte de controller.
+1. Nuevas variantes de enemigo (torreta móvil, corredor con escudo).
+2. Mezcla fina de audio y variación de la capa de combate.
+3. Localización y soporte de controller.
 
 ---
 
@@ -665,11 +664,16 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Eventos de arena
 
+- Cada zona elige **al azar entre dos variantes** al empezar la run; la identidad de color se mantiene.
 - **Zona 1 — Reactor inestable:** `150` de vida; pulsa `8` de daño cada `3 s` en un radio de `6 m`. Recompensa `+2 ◈`.
+- **Zona 1 — Fábrica de minas:** `190` de vida; suelta `2` minas cada `3.4 s` que se arman en `0.9 s` y explotan al acercarte (`20` de daño, radio `3.4 m`). Recompensa `+3 ◈`.
 - **Zona 2 — Campo de hielo:** `200` de vida; ralentiza al jugador al `60%` dentro de `7 m`. El dash sigue permitiendo escapar. Recompensa `+2 ◈`.
+- **Zona 2 — Ancla gravitatoria:** `200` de vida; cada `2.6 s` tira del jugador hacia el núcleo dentro de `9 m`. El empuje se disipa en menos de medio segundo. Recompensa `+3 ◈`.
 - **Zona 3 — Torreta de supresión:** `220` de vida; dispara proyectiles cada `1.4 s`. Recompensa `+3 ◈`.
+- **Zona 3 — Núcleo sanitario:** `170` de vida; cura `22` de vida a los enemigos dentro de `8 m` cada `2.4 s`, con un `+N` verde. Recompensa `+3 ◈`.
 - Se pueden destruir disparándoles y muestran nombre y vida en una etiqueta 3D.
 - Al aparecer y al destruirse muestran un toast; su vida/daño escalan con dificultad, ciclo y contrato.
+- El **minimapa** marca cada evento con un rombo del color del evento para priorizar objetivos.
 
 ---
 
