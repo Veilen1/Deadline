@@ -3,7 +3,7 @@
 > **Estado del documento:** vivo y en construcción. Todo lo que está acá está sujeto a cambios durante el prototipado y el testeo. Las decisiones cerradas se marcan con ✅ y las que están abiertas o en revisión se marcan con 🟡.
 >
 > **Última actualización:** 20/11/2026
-> **Versión:** 0.7.1 — Prototipo jugable
+> **Versión:** 0.8.0 — Prototipo jugable
 
 ---
 
@@ -359,14 +359,14 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - `main`: releases estables.
 - `dev`: integración de features.
 - Una rama por feature: `feature/<nombre>` desde `dev`, commits atómicos, merge `--no-ff` a `dev`.
-- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos), `v0.5.1` (perfil desplazable, monedas en el árbol y toasts), `v0.6.0` (arenas verticales, telegrafía y eventos), `v0.6.1` (hitmarker y calaveras por tipo), `v0.7.0` (mezcla de audio, dash aéreo y combos) y `v0.7.1` (pausa por foco, caché de escenas y diagnóstico).
+- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos), `v0.5.1` (perfil desplazable, monedas en el árbol y toasts), `v0.6.0` (arenas verticales, telegrafía y eventos), `v0.6.1` (hitmarker y calaveras por tipo), `v0.7.0` (mezcla de audio, dash aéreo y combos), `v0.7.1` (pausa por foco, caché de escenas y diagnóstico) y `v0.8.0` (eventos variables, pistola/AK, balas 3D y torreta).
 
 ### Limitaciones conocidas
 
-- Hay tres zonas: blanca, celeste y violeta. Tienen coberturas, plataformas, torres, telegrafía de spawn y un evento de arena fijo por zona.
+- Hay tres zonas: blanca, celeste y violeta. Tienen coberturas, plataformas, torres, telegrafía de spawn y un evento de arena por zona, elegido al azar entre dos variantes.
 - Hay tres armas con munición independiente y regeneración, pero no recarga manual.
 - El volumen general ya no es la única perilla: hay sliders separados de música y efectos.
-- El ambiente sigue siendo un loop único con variación de tono por zona; falta música dedicada por zona.
+- Cada zona tiene su propio loop de ambiente; la capa de combate es compartida y entra con las oleadas.
 - La dificultad se aplica a los enemigos que aparecen después del cambio; los ya vivos no se recalculan.
 - Los élites comparten mecánicas base; la Zona 3 suma un élite tirador.
 - No hay guardado de run en curso, multijugador, controller ni localización.
@@ -376,10 +376,9 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Próximos pasos
 
-1. Más variantes de eventos de arena y combinaciones por run.
-2. Nuevas variantes de enemigo (torreta móvil, corredor con escudo).
-3. Mezcla fina de audio y variación de la capa de combate.
-4. Localización y soporte de controller.
+1. Nuevas variantes de enemigo (torreta móvil, corredor con escudo).
+2. Mezcla fina de audio y variación de la capa de combate.
+3. Localización y soporte de controller.
 
 ---
 
@@ -388,8 +387,12 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 ### Armas y munición
 
 - Recurso `WeaponData` con daño, plata por impacto, alcance, cadencia, cargador, regeneración y delay de regeneración.
-- Arma inicial: **Rifle básico** (20 daño, 4 disparos/s, 12 balas, 3 balas/s, delay 0.25 s).
-- Disparo automático manteniendo el click y respuesta inmediata al click.
+- Arma inicial: **Cobra** (pistola semiautomática, 18 daño, 6 disparos/s máx., 8 balas, 3.5 balas/s, delay 0.18 s). Un click por disparo.
+- **AK-47** desbloqueable al terminar la primera run (20 daño, 4 disparos/s, 12 balas, regen 3/s). Es el primer desbloqueo y queda en el arsenal.
+- Disparo automático manteniendo el click; la pistola exige soltar y volver a apretar.
+- Cada disparo lanza una **bala 3D emisiva** con estela larga desde la boca del arma hasta el impacto; el daño sigue siendo hitscan.
+- Los viewmodels son **modelos 3D** (AK-47, Cobra, Avispa, Trueno) con muzzle propio para el flash.
+- La pistola Cobra tiene cooldown de `0.2 s` (~5 clicks/s) para que no se pueda spamear.
 - HUD de munición: contador `actual / máximo` y barra.
 - Al quedarse sin balas se puede seguir apuntando; la regeneración repone munición tras el delay.
 - Los bonus de cargador/regeneración/cadencia se aplican al empezar la run.
@@ -417,7 +420,8 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 - Accesible desde el hub.
 - Armas actuales:
-  - **Rifle básico**: 20 daño, 4/s, 12 balas, regen 3/s. Gratis e inicial.
+  - **Cobra** (pistola): 18 daño, 6/s máx., 8 balas, regen 3.5/s. Gratis e inicial, semiautomática.
+  - **AK-47**: 20 daño, 4/s, 12 balas, regen 3/s. Gratis; se desbloquea al terminar la primera run.
   - **Avispa** (SMG): 12 daño, 8/s, 24 balas, regen 5/s. $260.
   - **Trueno** (escopeta slug): 55 daño, 1.1/s, 6 balas, regen 1.2/s. $420.
 - Se compran con plata, se equipan y la próxima run usa el arma equipada.
@@ -665,11 +669,16 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ### Eventos de arena
 
+- Cada zona elige **al azar entre dos variantes** al empezar la run; la identidad de color se mantiene.
 - **Zona 1 — Reactor inestable:** `150` de vida; pulsa `8` de daño cada `3 s` en un radio de `6 m`. Recompensa `+2 ◈`.
+- **Zona 1 — Fábrica de minas:** `190` de vida; suelta `2` minas cada `3.4 s` que se arman en `0.9 s` y explotan al acercarte (`20` de daño, radio `3.4 m`). Recompensa `+3 ◈`.
 - **Zona 2 — Campo de hielo:** `200` de vida; ralentiza al jugador al `60%` dentro de `7 m`. El dash sigue permitiendo escapar. Recompensa `+2 ◈`.
+- **Zona 2 — Ancla gravitatoria:** `200` de vida; cada `2.6 s` tira del jugador hacia el núcleo dentro de `9 m`. El empuje se disipa en menos de medio segundo. Recompensa `+3 ◈`.
 - **Zona 3 — Torreta de supresión:** `220` de vida; dispara proyectiles cada `1.4 s`. Recompensa `+3 ◈`.
+- **Zona 3 — Núcleo sanitario:** `170` de vida; cura `22` de vida a los enemigos dentro de `8 m` cada `2.4 s`, con un `+N` verde. Recompensa `+3 ◈`.
 - Se pueden destruir disparándoles y muestran nombre y vida en una etiqueta 3D.
 - Al aparecer y al destruirse muestran un toast; su vida/daño escalan con dificultad, ciclo y contrato.
+- El **minimapa** marca cada evento con un rombo del color del evento para priorizar objetivos.
 
 ---
 

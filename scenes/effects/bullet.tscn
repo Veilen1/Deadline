@@ -1,0 +1,77 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scenes/effects/bullet.gd" id="1_bullet"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_body"]
+top_radius = 0.010
+bottom_radius = 0.010
+height = 0.10
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_nose"]
+top_radius = 0.0
+bottom_radius = 0.010
+height = 0.04
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ring"]
+top_radius = 0.0115
+bottom_radius = 0.0115
+height = 0.006
+radial_segments = 8
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_trail"]
+size = Vector3(0.028, 0.028, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="Mat_copper"]
+shading_mode = 0
+albedo_color = Color(1, 0.58, 0.20, 1)
+emission_enabled = true
+emission = Color(1, 0.42, 0.10, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_ring"]
+shading_mode = 0
+albedo_color = Color(1, 0.65, 0.25, 1)
+emission_enabled = true
+emission = Color(1, 0.45, 0.08, 1)
+emission_energy_multiplier = 8.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_trail"]
+transparency = 1
+shading_mode = 0
+cull_mode = 2
+albedo_color = Color(1, 0.55, 0.16, 0.72)
+emission_enabled = true
+emission = Color(1, 0.40, 0.08, 1)
+emission_energy_multiplier = 6.0
+
+[node name="Bullet" type="Node3D"]
+script = ExtResource("1_bullet")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_body")
+material_override = SubResource("Mat_copper")
+
+[node name="Nose" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, -0.07)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_nose")
+material_override = SubResource("Mat_copper")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.053)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_ring")
+material_override = SubResource("Mat_ring")
+
+[node name="Trail" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.45)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_trail")
+material_override = SubResource("Mat_trail")

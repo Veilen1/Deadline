@@ -8,6 +8,7 @@ extends Label3D
 @export var strong_color: Color = Color(1.0, 0.55, 0.15, 1.0)
 @export var strong_threshold: float = 40.0
 @export var random_spread: float = 0.25
+@export var heal_color: Color = Color(0.35, 1.0, 0.55, 1.0)
 
 
 func _ready() -> void:
@@ -21,7 +22,17 @@ func _ready() -> void:
 func show_damage(world_position: Vector3, amount: float) -> void:
 	text = str(int(round(amount)))
 	modulate = strong_color if amount >= strong_threshold else normal_color
+	_animate(world_position)
 
+
+func show_heal(world_position: Vector3, amount: float) -> void:
+	# Curación de enemigos por el evento "Núcleo sanitario".
+	text = "+%d" % int(round(amount))
+	modulate = heal_color
+	_animate(world_position)
+
+
+func _animate(world_position: Vector3) -> void:
 	global_position = world_position + Vector3(
 		randf_range(-random_spread, random_spread),
 		0.0,

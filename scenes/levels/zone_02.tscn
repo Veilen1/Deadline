@@ -33,6 +33,7 @@ script = ExtResource("1_zone")
 enemy_scene = ExtResource("2_enemy")
 enemy_scenes = Array[PackedScene]([ExtResource("2_enemy"), ExtResource("2_enemy"), ExtResource("9_hound")])elite_scene = ExtResource("3_elite")
 zone_id = "zona_2"
+event_pool = PackedStringArray("slow", "pull")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_cold")
@@ -91,13 +92,5 @@ position = Vector3(-6, 0.4, 6)
 
 [node name="ArenaEvent" parent="." instance=ExtResource("10_event")]
 position = Vector3(-11, 0, 0)
-event_kind = "slow"
-title = "Campo de hielo"
-description = "Ralentiza al jugador dentro del radio mientras siga activo."
-max_health = 200.0
-core_reward = 2
-radius = 7.0
-slow_multiplier = 0.6
-slow_duration = 0.8
 
 [node name="ArenaBounds" parent="." instance=ExtResource("4_bounds")]

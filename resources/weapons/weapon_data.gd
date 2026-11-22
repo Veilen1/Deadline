@@ -14,3 +14,5 @@ extends Resource
 @export var magazine_size: int = 12
 @export var ammo_regen_per_second: float = 3.0
 @export var regen_delay: float = 0.25
+## Si es false, hay que soltar y volver a hacer click para cada disparo.
+@export var automatic: bool = true

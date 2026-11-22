@@ -1,6 +1,6 @@
 extends CharacterBody3D
 
-const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
+const BULLET_SCENE: PackedScene = preload("res://scenes/effects/bullet.tscn")
 
 @export_group("Health")
 @export var max_health: float = 100.0
@@ -20,6 +20,7 @@ const TRACER_SCENE: PackedScene = preload("res://scenes/effects/tracer.tscn")
 @export var slide_duration: float = 0.42
 @export var slide_cooldown: float = 1.0
 @export var slide_camera_height: float = 0.9
+@export var pull_max_speed: float = 9.0
 
 @export_group("Camera")
 @export var mouse_sensitivity: float = 0.003
@@ -86,6 +87,7 @@ var _contract_ammo_regen: float = 1.0
 var _launch_ignore_floor: int = 0
 var _slow_timer: float = 0.0
 var _slow_mult: float = 1.0
+var _external_velocity: Vector3 = Vector3.ZERO
 var _blessing_damage_mult: float = 1.0
 var _blessing_fire_rate_mult: float = 1.0
 var _blessing_regen_bonus: float = 0.0
@@ -213,6 +215,12 @@ func apply_slow(multiplier: float, duration: float) -> void:
 	# Campo de hielo de Zona 2: frena el movimiento, no el dash.
 	_slow_mult = minf(_slow_mult, clampf(multiplier, 0.1, 1.0))
 	_slow_timer = maxf(_slow_timer, duration)
+
+
+func apply_pull(push: Vector3) -> void:
+	# Ancla gravitatoria: empuje externo que se suma al movimiento y se disipa.
+	_external_velocity += Vector3(push.x, 0.0, push.z)
+	_external_velocity = _external_velocity.limit_length(maxf(pull_max_speed, 0.0))
 
 
 func try_jump() -> void:
@@ -404,6 +412,14 @@ func _physics_process(delta: float) -> void:
 		velocity.x = direction.x * move_speed * _blessing_move_mult * _slow_mult
 		velocity.z = direction.z * move_speed * _blessing_move_mult * _slow_mult
 
+	# Empujes externos (ancla gravitatoria): se aplican después del input y
+	# se disipan rápido para que el control vuelva enseguida.
+	velocity.x += _external_velocity.x
+	velocity.z += _external_velocity.z
+	_external_velocity = _external_velocity.lerp(
+		Vector3.ZERO, 1.0 - exp(-5.0 * delta)
+	)
+
 	if _launch_ignore_floor > 0:
 		_launch_ignore_floor -= 1
 	elif not is_on_floor():
@@ -417,8 +433,14 @@ func _physics_process(delta: float) -> void:
 
 	_update_footsteps(delta)
 
-	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and Input.is_action_pressed("shoot"):
-		shoot()
+	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		# Las armas semiautomáticas piden un click por disparo; las automáticas
+		# disparan mientras se mantiene apretado.
+		var wants_fire: bool = Input.is_action_pressed("shoot")
+		if weapon_data != null and not weapon_data.automatic:
+			wants_fire = Input.is_action_just_pressed("shoot")
+		if wants_fire:
+			shoot()
 
 
 func _update_footsteps(delta: float) -> void:
@@ -560,17 +582,17 @@ func shoot() -> void:
 								_set_current_ammo(current_ammo + 1)
 					enemy.call("take_hit", hit_zone, damage, weapon_data.money_per_hit, hit_position)
 
-	_spawn_tracer(end_point)
+	_spawn_bullet(end_point)
 	if weapon_view != null and weapon_view.has_method("flash"):
 		weapon_view.call("flash")
 	shoot_player.pitch_scale = randf_range(0.95, 1.05)
 	shoot_player.play()
 
 
-func _spawn_tracer(to: Vector3) -> void:
-	var tracer: Node3D = TRACER_SCENE.instantiate()
-	get_parent().add_child(tracer)
-	tracer.call("fire", shoot_origin.global_position, to)
+func _spawn_bullet(to: Vector3) -> void:
+	var bullet: Node3D = BULLET_SCENE.instantiate() as Node3D
+	get_parent().add_child(bullet)
+	bullet.call("fire", shoot_origin.global_position, to)
 
 
 func _build_ray_exclude_list() -> Array[RID]:

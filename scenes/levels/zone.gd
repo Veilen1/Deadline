@@ -14,6 +14,7 @@ const SPAWN_TELEGRAPH_SCENE: PackedScene = preload("res://scenes/effects/spawn_t
 @export var completion_bonus: int = 35
 @export var spawn_telegraph_time: float = 2.0
 @export var zone_id: String = "zona_1"
+@export var event_pool: PackedStringArray = PackedStringArray()
 
 var current_wave: int = 0
 var _alive_enemies: int = 0
@@ -24,9 +25,20 @@ func _ready() -> void:
 	if spawn_points.is_empty():
 		_collect_spawn_points()
 
+	_start_arena_event()
 	EventBus.enemy_killed.connect(_on_enemy_killed)
 	# Diferido: main ya hizo start_run y conectó las señales del HUD.
 	_start_wave.call_deferred()
+
+
+func _start_arena_event() -> void:
+	# Cada run elige un evento del pool de la zona; si no hay pool, el evento
+	# usa el kind que tenga configurado en la escena.
+	var arena_event: Node = get_node_or_null("ArenaEvent")
+	if arena_event == null or not arena_event.has_method("start"):
+		return
+	var kind: String = ArenaEventRegistry.pick(event_pool)
+	arena_event.call("start", kind)
 
 
 func _start_wave() -> void:

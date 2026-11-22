@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/weapons/weapon_data.gd" id="1_weapon"]
+
+[resource]
+script = ExtResource("1_weapon")
+weapon_name = "Cobra"
+description = "Semiautomática: un disparo por click. Precisa, liviana y siempre confiable."
+price = 0
+damage = 18.0
+money_per_hit = 4
+range = 80.0
+shots_per_second = 5.0
+magazine_size = 8
+ammo_regen_per_second = 3.5
+regen_delay = 0.18
+automatic = false

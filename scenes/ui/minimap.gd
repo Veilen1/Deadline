@@ -15,6 +15,7 @@ extends Control
 @export var guard_color: Color = Color(0.25, 0.95, 0.45, 1)
 @export var elite_color: Color = Color(1, 0.8, 0.2, 1)
 @export var powerup_color: Color = Color(0.3, 0.8, 1, 1)
+@export var event_color: Color = Color(1.0, 0.6, 0.2, 1)
 
 @export_group("Markers")
 @export var enemy_size: float = 5.5
@@ -43,6 +44,7 @@ func _draw() -> void:
 
 	_draw_enemies(player, center, radius)
 	_draw_powerups(player, center, radius)
+	_draw_events(player, center, radius)
 	_draw_player(center)
 
 
@@ -74,6 +76,28 @@ func _draw_powerups(player: Node3D, center: Vector2, radius: float) -> void:
 			continue
 		var marker_position: Vector2 = _to_radar((powerup as Node3D).global_position, player, center, radius)
 		draw_circle(marker_position, 4.0, powerup_color)
+
+
+func _draw_events(player: Node3D, center: Vector2, radius: float) -> void:
+	# Rombo del color del evento: ayuda a priorizar el objetivo en la arena.
+	for node: Node in get_tree().get_nodes_in_group("arena_events"):
+		if not node is Node3D:
+			continue
+		var marker_position: Vector2 = _to_radar(
+			(node as Node3D).global_position, player, center, radius
+		)
+		var color: Color = event_color
+		if node.has_method("get_accent"):
+			color = node.call("get_accent")
+		var half: float = 5.0
+		var points := PackedVector2Array([
+			marker_position + Vector2(0.0, -half),
+			marker_position + Vector2(half, 0.0),
+			marker_position + Vector2(0.0, half),
+			marker_position + Vector2(-half, 0.0),
+		])
+		draw_colored_polygon(points, color)
+		draw_arc(marker_position, half + 2.0, 0.0, TAU, 16, color, 1.0)
 
 
 func _draw_player(center: Vector2) -> void:

@@ -1,0 +1,32 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/effects/arena_mine.gd" id="1_mine"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_core"]
+radius = 0.32
+height = 0.64
+radial_segments = 16
+rings = 8
+
+[sub_resource type="TorusMesh" id="TorusMesh_ring"]
+inner_radius = 0.44
+outer_radius = 0.52
+rings = 32
+ring_segments = 8
+
+[node name="ArenaMine" type="Node3D"]
+script = ExtResource("1_mine")
+
+[node name="Core" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_core")
+cast_shadow = 0
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+mesh = SubResource("TorusMesh_ring")
+cast_shadow = 0
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+light_energy = 0.8
+omni_range = 4.0
