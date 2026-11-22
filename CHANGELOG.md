@@ -2,7 +2,7 @@
 
 Todas las versiones relevantes del prototipo.
 
-## No publicado
+## v0.7.1 — 2026-11-22
 
 ### Corregido
 - La run se **pausa automáticamente** al perder el foco de la ventana: el cronómetro deja de correr y no se vuelve a una pelea en curso.
