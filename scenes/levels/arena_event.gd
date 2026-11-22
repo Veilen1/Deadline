@@ -8,6 +8,7 @@ const PROJECTILE_SCENE: PackedScene = preload("res://scenes/effects/enemy_projec
 const SLAM_WAVE_SCENE: PackedScene = preload("res://scenes/effects/slam_wave.tscn")
 const MINE_SCENE: PackedScene = preload("res://scenes/effects/arena_mine.tscn")
 const DAMAGE_NUMBER_SCENE: PackedScene = preload("res://scenes/effects/damage_number.tscn")
+const TURRET_MODEL: PackedScene = preload("res://assets/models/events/turret.glb")
 
 @export var event_kind: String = "pulse"
 @export var auto_start: bool = false
@@ -55,6 +56,7 @@ var _timer: float = 0.0
 var _time: float = 0.0
 var _ring_base_scale: Vector3 = Vector3.ONE
 var _started: bool = false
+var _turret_model: Node3D
 
 
 func _ready() -> void:
@@ -79,6 +81,8 @@ func start(kind: String = "") -> void:
 	_timer = _initial_interval()
 	_apply_style()
 	_update_label()
+	if event_kind == "turret":
+		_spawn_turret()
 	Toast.show_toast(
 		"EVENTO DE ARENA",
 		title,
@@ -135,10 +139,37 @@ func _physics_process(delta: float) -> void:
 	_time += delta
 	_timer -= delta
 	_update_visuals()
+	_update_turret_aim()
 
 	if _timer <= 0.0:
 		_timer = _interval()
 		_trigger()
+
+
+func _spawn_turret() -> void:
+	# La torreta reemplaza al reactor: base, cabezal y cañón.
+	_turret_model = TURRET_MODEL.instantiate() as Node3D
+	if _turret_model == null:
+		return
+	add_child(_turret_model)
+	_turret_model.position = Vector3.ZERO
+	_turret_model.scale = Vector3.ONE * 1.45
+	_core.visible = false
+	_ring.visible = false
+
+
+func _update_turret_aim() -> void:
+	if event_kind != "turret" or _turret_model == null:
+		return
+	var player: Node3D = _get_player()
+	if player == null:
+		return
+	var direction: Vector3 = player.global_position - global_position
+	direction.y = 0.0
+	if direction.length() < 0.2:
+		return
+	# El modelo apunta a +Z local; el yaw para esa dirección es atan2(x, z).
+	_turret_model.rotation.y = atan2(direction.x, direction.z)
 
 
 func _trigger() -> void:
@@ -179,13 +210,14 @@ func _trigger() -> void:
 func _fire_at(player: Node3D) -> void:
 	var target: Vector3 = player.global_position + Vector3.UP * 1.0
 	var direction: Vector3 = (target - global_position).normalized()
-	var origin: Vector3 = global_position + Vector3.UP * 1.9 + direction * 0.9
+	var muzzle_height: float = 0.75 if event_kind == "turret" else 1.9
+	var origin: Vector3 = global_position + Vector3.UP * muzzle_height + direction * 0.9
 	var projectile: Node3D = PROJECTILE_SCENE.instantiate() as Node3D
 	if projectile == null:
 		return
 	get_parent().add_child(projectile)
 	projectile.call("launch", origin, target, projectile_speed, projectile_damage, 3.5, self)
-	AudioDirector.play_enemy_shot(global_position + Vector3.UP * 1.9)
+	AudioDirector.play_enemy_shot(origin)
 
 
 func _pull_player(player: Node3D) -> void:
@@ -311,7 +343,8 @@ func _update_visuals() -> void:
 	_ring.scale = Vector3(
 		_ring_base_scale.x * pulse, _ring_base_scale.y, _ring_base_scale.z * pulse
 	)
-	_label.position.y = 3.1 + sin(_time * 2.4) * 0.06
+	var label_base: float = 1.75 if event_kind == "turret" else 3.1
+	_label.position.y = label_base + sin(_time * 2.4) * 0.06
 
 
 func _apply_style() -> void:

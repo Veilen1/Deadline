@@ -3,7 +3,7 @@
 > **Estado del documento:** vivo y en construcción. Todo lo que está acá está sujeto a cambios durante el prototipado y el testeo. Las decisiones cerradas se marcan con ✅ y las que están abiertas o en revisión se marcan con 🟡.
 >
 > **Última actualización:** 20/11/2026
-> **Versión:** 0.7.1 — Prototipo jugable
+> **Versión:** 0.8.0 — Prototipo jugable
 
 ---
 
@@ -359,7 +359,7 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - `main`: releases estables.
 - `dev`: integración de features.
 - Una rama por feature: `feature/<nombre>` desde `dev`, commits atómicos, merge `--no-ff` a `dev`.
-- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos), `v0.5.1` (perfil desplazable, monedas en el árbol y toasts), `v0.6.0` (arenas verticales, telegrafía y eventos), `v0.6.1` (hitmarker y calaveras por tipo), `v0.7.0` (mezcla de audio, dash aéreo y combos) y `v0.7.1` (pausa por foco, caché de escenas y diagnóstico).
+- Tags: `v0.1.0` (core loop, zonas, hub, guardado), `v0.2.0` (minimapa, configuración, penalización y límites), `v0.3.0` (tienda, perfil, estilo y árbol), `v0.4.0` (armas con skins, audio, HUD y pulido), `v0.5.0` (núcleos, desafíos, contratos, bendiciones y ciclos), `v0.5.1` (perfil desplazable, monedas en el árbol y toasts), `v0.6.0` (arenas verticales, telegrafía y eventos), `v0.6.1` (hitmarker y calaveras por tipo), `v0.7.0` (mezcla de audio, dash aéreo y combos), `v0.7.1` (pausa por foco, caché de escenas y diagnóstico) y `v0.8.0` (eventos variables, pistola/AK, balas 3D y torreta).
 
 ### Limitaciones conocidas
 
@@ -390,7 +390,9 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 - Arma inicial: **Cobra** (pistola semiautomática, 18 daño, 6 disparos/s máx., 8 balas, 3.5 balas/s, delay 0.18 s). Un click por disparo.
 - **AK-47** desbloqueable al terminar la primera run (20 daño, 4 disparos/s, 12 balas, regen 3/s). Es el primer desbloqueo y queda en el arsenal.
 - Disparo automático manteniendo el click; la pistola exige soltar y volver a apretar.
-- Cada disparo lanza una **bala 3D** con estela corta desde la boca del arma hasta el impacto; el daño sigue siendo hitscan.
+- Cada disparo lanza una **bala 3D emisiva** con estela larga desde la boca del arma hasta el impacto; el daño sigue siendo hitscan.
+- Los viewmodels son **modelos 3D** (AK-47, Cobra, Avispa, Trueno) con muzzle propio para el flash.
+- La pistola Cobra tiene cooldown de `0.2 s` (~5 clicks/s) para que no se pueda spamear.
 - HUD de munición: contador `actual / máximo` y barra.
 - Al quedarse sin balas se puede seguir apuntando; la regeneración repone munición tras el delay.
 - Los bonus de cargador/regeneración/cadencia se aplican al empezar la run.

@@ -4,8 +4,8 @@ extends Node3D
 ## el trayecto desde la boca del arma hasta el punto de impacto y se libera.
 ## Optimizada: sin colisiones, sin luces y con mallas de pocos polígonos.
 
-@export var speed: float = 220.0
-@export var max_lifetime: float = 0.8
+@export var speed: float = 90.0
+@export var max_lifetime: float = 1.5
 
 var _direction: Vector3 = Vector3.FORWARD
 var _remaining: float = 0.0
