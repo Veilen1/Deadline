@@ -3,6 +3,11 @@ extends Node3D
 ## Viewmodel de armas en primera persona. Cambia la skin según el arma y
 ## anima el cambio bajando/rotando el arma. También muestra un muzzle flash.
 
+const MODEL_AK: PackedScene = preload("res://assets/models/weapons/ak47.glb")
+const MODEL_PISTOL: PackedScene = preload("res://assets/models/weapons/pistol.glb")
+const MODEL_SMG: PackedScene = preload("res://assets/models/weapons/smg.glb")
+const MODEL_SHOTGUN: PackedScene = preload("res://assets/models/weapons/shotgun.glb")
+
 @export var switch_drop: float = 0.24
 @export var switch_tilt_deg: float = -38.0
 @export var switch_out_time: float = 0.1
@@ -12,6 +17,7 @@ var _current_id: String = ""
 var _base_position: Vector3
 var _base_rotation: Vector3
 var _muzzle_position: Vector3 = Vector3(0, 0.02, -0.36)
+var _model_muzzle: Node3D
 var _flash: MeshInstance3D
 var _tween: Tween
 var _flash_tween: Tween
@@ -75,36 +81,103 @@ func _build(weapon_id: String) -> void:
 	for child in get_children():
 		child.free()
 	_flash = null
+	_model_muzzle = null
 
 	match weapon_id:
 		"pistol":
 			_muzzle_position = Vector3(0, 0.02, -0.235)
-			_build_pistol()
+			_build_model(MODEL_PISTOL, 1.2)
+		"basic_rifle":
+			_muzzle_position = Vector3(0, 0.015, -0.36)
+			_build_model(MODEL_AK, 0.55)
 		"smg":
 			_muzzle_position = Vector3(0, 0.015, -0.25)
-			_build_smg()
+			_build_model(MODEL_SMG, 0.7)
 		"shotgun":
 			_muzzle_position = Vector3(0, 0.025, -0.44)
-			_build_shotgun()
+			_build_model(MODEL_SHOTGUN, 0.55)
 		_:
 			_muzzle_position = Vector3(0, 0.015, -0.36)
 			_build_rifle()
 
 	_build_flash()
+	_attach_flash_to_muzzle()
+
+
+func _build_model(scene: PackedScene, model_scale: float) -> void:
+	var model: Node3D = scene.instantiate() as Node3D
+	if model == null:
+		return
+	add_child(model)
+	model.scale = Vector3.ONE * model_scale
+	_disable_shadows(model)
+	_hide_forearms(model)
+	if _current_id == "pistol":
+		_hide_pistol_hands(model)
+	_model_muzzle = _find_muzzle(model)
+
+
+func _hide_pistol_hands(node: Node) -> void:
+	# Las manos del prototipo tapaban la pistola; se ocultan hasta la pasada de brazos.
+	if node is Node3D:
+		var node_name: String = node.name
+		if (
+			node_name.begins_with("Pistol_Hand")
+			or node_name.begins_with("Pistol_Finger")
+			or node_name.begins_with("Pistol_Thumb")
+		):
+			(node as Node3D).visible = false
+	for child in node.get_children():
+		_hide_pistol_hands(child)
+
+
+func _hide_forearms(node: Node) -> void:
+	# Los antebrazos largos ocupan demasiada pantalla; por ahora quedan las manos.
+	if node is Node3D:
+		var node_name: String = node.name
+		if (
+			node_name.begins_with("Arm_Forearm")
+			or node_name.begins_with("Arm_WristBand")
+			or node_name.begins_with("Pistol_Arm")
+			or node_name.begins_with("Pistol_Band")
+		):
+			(node as Node3D).visible = false
+	for child in node.get_children():
+		_hide_forearms(child)
+
+
+func _find_muzzle(node: Node) -> Node3D:
+	for child in node.get_children():
+		if child is Node3D and child.name.begins_with("Muzzle"):
+			return child as Node3D
+		var found: Node3D = _find_muzzle(child)
+		if found != null:
+			return found
+	return null
+
+
+func _disable_shadows(node: Node) -> void:
+	if node is MeshInstance3D:
+		(node as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	for child in node.get_children():
+		_disable_shadows(child)
+
+
+func _attach_flash_to_muzzle() -> void:
+	if _flash == null or _model_muzzle == null:
+		return
+	_flash.get_parent().remove_child(_flash)
+	_model_muzzle.add_child(_flash)
+	_flash.position = Vector3.ZERO
 
 
 func _build_pistol() -> void:
-	# Pistola semiautomática: corredera, armazón, empuñadura y miras turquesa.
+	# Fallback de caja si el modelo glTF no está disponible.
 	_add_box(Vector3(0.055, 0.17, 0.055), Vector3(0, 0.02, -0.10), Color(0.14, 0.15, 0.18))
 	_add_box(Vector3(0.022, 0.022, 0.05), Vector3(0, 0.02, -0.20), Color(0.22, 0.23, 0.26))
 	_add_box(Vector3(0.045, 0.10, 0.05), Vector3(0, 0.0, -0.03), Color(0.08, 0.09, 0.11))
 	_add_box(Vector3(0.045, 0.06, 0.12), Vector3(0, -0.07, 0.035), Color(0.06, 0.07, 0.09),
 		0.0, Vector3(-14, 0, 0))
-	_add_box(Vector3(0.046, 0.03, 0.06), Vector3(0, -0.075, 0.04), Color(0.10, 0.42, 0.40),
-		0.35, Vector3(-14, 0, 0))
-	_add_box(Vector3(0.03, 0.04, 0.02), Vector3(0, -0.035, -0.07), Color(0.05, 0.06, 0.08))
-	_add_box(Vector3(0.008, 0.012, 0.012), Vector3(0, 0.082, -0.17), Color(0.3, 0.9, 0.85), 2.0)
-	_add_box(Vector3(0.008, 0.012, 0.012), Vector3(0, 0.082, -0.04), Color(0.3, 0.9, 0.85), 2.0)
 
 
 func _build_rifle() -> void:
