@@ -2,6 +2,12 @@
 
 Todas las versiones relevantes del prototipo.
 
+## v0.8.1 — 2026-11-22
+
+### Corregido
+- El HUD de armas muestra las **4 armas** del arsenal (antes solo 3) y la escopeta equipada ya aparece resaltada.
+- La tecla **4** selecciona la escopeta; los atajos 1–4 coinciden con las cuatro armas.
+
 ## v0.8.0 — 2026-11-22
 
 ### Agregado
