@@ -353,6 +353,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				_switch_weapon(1)
 			KEY_3:
 				_switch_weapon(2)
+			KEY_4:
+				_switch_weapon(3)
 		return
 
 	if event.is_action_pressed("shoot"):

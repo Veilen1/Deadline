@@ -338,7 +338,7 @@ mouse_filter = 2
 theme_override_colors/default_color = Color(0.62, 0.72, 0.82, 1)
 theme_override_font_sizes/normal_font_size = 13
 bbcode_enabled = true
-text = "[color=#f2c040]1 Rifle[/color]  ·  2 Avispa  ·  3 Trueno"
+text = "1 Cobra  ·  2 AK-47  ·  3 Avispa  ·  4 Trueno"
 scroll_active = false
 
 [node name="PanelDash" type="Panel" parent="CanvasLayer"]
