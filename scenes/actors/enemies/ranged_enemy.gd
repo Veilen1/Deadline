@@ -56,6 +56,7 @@ func _physics_process(delta: float) -> void:
 	to_player.y = 0.0
 	var distance: float = to_player.length()
 	var direction: Vector3 = to_player.normalized() if distance > 0.01 else Vector3.ZERO
+	_face_player(player)
 
 	_shot_timer = maxf(_shot_timer - delta, 0.0)
 	_strafe_timer -= delta
@@ -78,6 +79,7 @@ func _physics_process(delta: float) -> void:
 	_apply_vertical(delta)
 	move_and_slide()
 	_after_move_climb()
+	_update_locomotion_anim()
 
 
 func _process_reposition(direction: Vector3, distance: float, player: Node3D) -> void:
@@ -124,6 +126,7 @@ func _process_charge(delta: float, player: Node3D) -> void:
 func _fire(player: Node3D) -> void:
 	if _charge_eye != null:
 		_charge_eye.hide()
+	_play_anim("Shoot", 0.4)
 	if player == null:
 		return
 
