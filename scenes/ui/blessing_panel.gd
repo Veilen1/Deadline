@@ -41,7 +41,7 @@ func choose() -> String:
 
 
 func _on_choose_timeout(generation: int) -> void:
-	if generation != _choice_generation or not visible or _buttons.is_empty():
+	if generation != _choice_generation or _buttons.is_empty():
 		return
 	var blessing_id: String = str(_buttons[0].get_meta("blessing_id", ""))
 	if blessing_id.is_empty():

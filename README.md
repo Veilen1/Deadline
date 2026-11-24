@@ -803,4 +803,23 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ---
 
+## 27. Altares de evento
+
+- Cada evento de arena tiene ahora un modelo propio, salvo la torreta que conserva su glb:
+  - **Reactor inestable:** núcleo vertical con anillos, aletas metálicas y remate.
+  - **Campo de hielo:** cristal doble con anillos orbitales y basa de piedra.
+  - **Fábrica de minas:** horno bajo con banda emisiva, tolva, chimenea y rampa de salida.
+  - **Ancla gravitatoria:** basa con tres postes y núcleo flotante rodeado por anillos.
+  - **Núcleo sanitario:** orbe verde con cruz y anillos sobre un pedestal.
+- Las piezas emisivas respiran con una pulsación suave; los anillos de hielo, ancla y cura giran.
+- La colisión deja de ser una única caja genérica: cada altar usa cilindros, esferas y cajas alineadas con su silueta, incluidas la basa, la chimenea y la rampa.
+
+### Cierre de zona
+
+- Al morir el último enemigo de una zona, el juego espera `0.7 s` antes de abrir la bendición o el resumen de fin de run; así la muerte se ve completa y la pausa no aparece como un congelamiento.
+- La pantalla de bendición tiene una red de seguridad de `30 s`: si no recibe ninguna elección, toma la primera opción para evitar que la run quede trabada.
+- La torreta y su colisión quedan como estaban.
+
+---
+
 *Documento vivo. Cualquier cambio de dirección debe reflejarse acá.*
