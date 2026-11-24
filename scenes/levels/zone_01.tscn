@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scenes/levels/zone.gd" id="1_zone"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/enemy_base.tscn" id="2_enemy"]
@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" path="res://scenes/levels/jump_pad.tscn" id="6_pad"]
 [ext_resource type="PackedScene" path="res://scenes/levels/core_pickup.tscn" id="7_core"]
 [ext_resource type="PackedScene" path="res://scenes/levels/arena_event.tscn" id="8_event"]
+[ext_resource type="PackedScene" path="res://scenes/levels/arena_pillar.tscn" id="9_pillar"]
+[ext_resource type="PackedScene" path="res://scenes/levels/arena_pillar_obelisk.tscn" id="10_obelisk"]
 
 [sub_resource type="Environment" id="Environment_white"]
 background_mode = 1
@@ -71,11 +73,11 @@ scale = Vector3(1.5, 1, 1)
 position = Vector3(5, 0.4, 2)
 scale = Vector3(1, 1, 1.5)
 
-[node name="Cover3" parent="." instance=ExtResource("5_block")]
-position = Vector3(0, 0.4, -5)
+[node name="Pillar1" parent="." instance=ExtResource("9_pillar")]
+position = Vector3(0, 0, -5)
 
-[node name="Cover4" parent="." instance=ExtResource("5_block")]
-position = Vector3(7, 0.4, -6)
+[node name="Obelisk1" parent="." instance=ExtResource("10_obelisk")]
+position = Vector3(7, 0, -6)
 
 [node name="JumpPad1" parent="." instance=ExtResource("6_pad")]
 position = Vector3(0, 0.02, 8)

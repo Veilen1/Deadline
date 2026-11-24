@@ -1,0 +1,90 @@
+[gd_scene load_steps=12 format=3]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_column"]
+top_radius = 0.5
+bottom_radius = 0.56
+height = 2.4
+radial_segments = 14
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_stone"]
+albedo_color = Color(0.42, 0.47, 0.58, 1)
+roughness = 0.85
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_base"]
+top_radius = 0.72
+bottom_radius = 0.82
+height = 0.28
+radial_segments = 14
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_base"]
+albedo_color = Color(0.33, 0.38, 0.48, 1)
+roughness = 0.9
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_capital"]
+top_radius = 0.8
+bottom_radius = 0.68
+height = 0.24
+radial_segments = 14
+rings = 1
+
+[sub_resource type="TorusMesh" id="TorusMesh_ring"]
+inner_radius = 0.5
+outer_radius = 0.59
+rings = 20
+ring_segments = 6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ring"]
+shading_mode = 0
+albedo_color = Color(1, 0.78, 0.36, 1)
+emission_enabled = true
+emission = Color(1, 0.72, 0.28, 1)
+emission_energy_multiplier = 1.6
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_column"]
+height = 2.4
+radius = 0.56
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_base"]
+height = 0.28
+radius = 0.82
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_capital"]
+height = 0.24
+radius = 0.8
+
+[node name="ArenaPillar" type="StaticBody3D"]
+
+[node name="Column" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("CylinderMesh_column")
+surface_material_override/0 = SubResource("StandardMaterial3D_stone")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 0)
+mesh = SubResource("CylinderMesh_base")
+surface_material_override/0 = SubResource("StandardMaterial3D_base")
+
+[node name="Capital" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.52, 0)
+mesh = SubResource("CylinderMesh_capital")
+surface_material_override/0 = SubResource("StandardMaterial3D_base")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+mesh = SubResource("TorusMesh_ring")
+material_override = SubResource("StandardMaterial3D_ring")
+cast_shadow = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+shape = SubResource("CylinderShape3D_column")
+
+[node name="CollisionBase" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 0)
+shape = SubResource("CylinderShape3D_base")
+
+[node name="CollisionCapital" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.52, 0)
+shape = SubResource("CylinderShape3D_capital")

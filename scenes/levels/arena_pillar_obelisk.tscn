@@ -1,0 +1,87 @@
+[gd_scene load_steps=10 format=3]
+
+[sub_resource type="BoxMesh" id="BoxMesh_base"]
+size = Vector3(1.2, 0.32, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_base"]
+albedo_color = Color(0.3, 0.35, 0.45, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_column"]
+size = Vector3(0.82, 2.2, 0.82)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_column"]
+albedo_color = Color(0.4, 0.45, 0.56, 1)
+roughness = 0.82
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_cap"]
+top_radius = 0.0
+bottom_radius = 0.58
+height = 0.42
+radial_segments = 4
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_rune"]
+size = Vector3(0.5, 0.09, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rune"]
+shading_mode = 0
+albedo_color = Color(1, 0.82, 0.42, 1)
+emission_enabled = true
+emission = Color(1, 0.75, 0.3, 1)
+emission_energy_multiplier = 1.8
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_base"]
+size = Vector3(1.2, 0.32, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_column"]
+size = Vector3(0.82, 2.2, 0.82)
+
+[node name="ArenaPillarObelisk" type="StaticBody3D"]
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+mesh = SubResource("BoxMesh_base")
+surface_material_override/0 = SubResource("StandardMaterial3D_base")
+
+[node name="Column" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.42, 0)
+mesh = SubResource("BoxMesh_column")
+surface_material_override/0 = SubResource("StandardMaterial3D_column")
+
+[node name="Cap" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.72, 0)
+mesh = SubResource("CylinderMesh_cap")
+surface_material_override/0 = SubResource("StandardMaterial3D_base")
+
+[node name="RuneFront" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, -0.42)
+mesh = SubResource("BoxMesh_rune")
+material_override = SubResource("StandardMaterial3D_rune")
+cast_shadow = 0
+
+[node name="RuneBack" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 0.42)
+mesh = SubResource("BoxMesh_rune")
+material_override = SubResource("StandardMaterial3D_rune")
+cast_shadow = 0
+
+[node name="RuneLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -0.42, 1.65, 0)
+mesh = SubResource("BoxMesh_rune")
+material_override = SubResource("StandardMaterial3D_rune")
+cast_shadow = 0
+
+[node name="RuneRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.42, 1.65, 0)
+mesh = SubResource("BoxMesh_rune")
+material_override = SubResource("StandardMaterial3D_rune")
+cast_shadow = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.42, 0)
+shape = SubResource("BoxShape3D_column")
+
+[node name="CollisionBase" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+shape = SubResource("BoxShape3D_base")
