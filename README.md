@@ -817,8 +817,12 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 ### Cierre de zona
 
 - Al morir el último enemigo de una zona, el juego espera `0.7 s` antes de abrir la bendición o el resumen de fin de run; así la muerte se ve completa y la pausa no aparece como un congelamiento.
-- La pantalla de bendición tiene una red de seguridad de `30 s`: si no recibe ninguna elección, toma la primera opción para evitar que la run quede trabada.
+- La pantalla de bendición muestra una cuenta regresiva de `10 s`; si no recibe ninguna elección, toma la primera opción para evitar que la run quede trabada.
 - La torreta y su colisión quedan como estaban.
+
+### Renderer
+
+- En Windows el juego usa **Vulkan** (con fallback a D3D12/OpenGL). D3D12 provocaba stalls largos en los cierres de zona y en Reintentar; Vulkan, con caché de pipelines, no los reproduce.
 
 ---
 

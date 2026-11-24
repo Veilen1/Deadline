@@ -6,8 +6,9 @@ Todas las versiones relevantes del prototipo.
 
 ### Corregido
 - El cierre de zona ya no pausa en el mismo frame de la muerte del último élite: espera `0.7 s` para que se vea la caída y recién después abre la bendición o el fin de run.
-- La pantalla de bendición tiene una red de seguridad: si queda sin input durante `30 s`, elige la primera opción para que la run no quede congelada.
+- La pantalla de bendición muestra una cuenta regresiva de `10 s` y, si no recibe input, elige la primera opción para que la run no quede congelada.
 - Los altares de evento ya no comparten el mismo bloque de colisión: cada uno usa formas alineadas con su modelo.
+- **Windows usa Vulkan en vez de D3D12.** D3D12 acumulaba stalls de `0,7–15 s` en los cierres de zona y al reintentar (y podía terminar en crash); Vulkan con su caché de pipelines no registró stalls en una run completa con reintento.
 
 ### Agregado
 - **Altares de evento con modelos propios:** reactor inestable, campo de hielo, fábrica de minas, ancla gravitatoria y núcleo sanitario. La torreta conserva su modelo 3D.
