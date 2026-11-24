@@ -10,6 +10,7 @@ const ZONE_SCENES = [
 
 @export var zone_banner_hold: float = 1.2
 @export var zone_time_bonus: float = 5.0
+@export var zone_clear_delay: float = 0.7
 
 @onready var player: Node = $Player
 @onready var zones_root: Node3D = $Zones
@@ -120,6 +121,12 @@ func _on_zone_completed(_zone_id: String) -> void:
 		return
 	_transitioning = true
 	Diagnostics.mark("zone_completed", {"zone": _zone_id, "index": _zone_index})
+
+	# Deja que la muerte del último enemigo se vea antes de abrir la pausa.
+	await get_tree().create_timer(zone_clear_delay, false).timeout
+	if not GameState.is_run_active:
+		_transitioning = false
+		return
 
 	if _zone_index + 1 >= ZONE_SCENES.size():
 		GameState.end_run("completed")

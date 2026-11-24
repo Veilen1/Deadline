@@ -57,6 +57,10 @@ var _time: float = 0.0
 var _ring_base_scale: Vector3 = Vector3.ONE
 var _started: bool = false
 var _turret_model: Node3D
+var _altar: Node3D
+var _label_base: float = 3.1
+var _glow_materials: Array[StandardMaterial3D] = []
+var _spin_nodes: Array[Node3D] = []
 
 
 func _ready() -> void:
@@ -81,8 +85,11 @@ func start(kind: String = "") -> void:
 	_timer = _initial_interval()
 	_apply_style()
 	_update_label()
+	_label_base = 1.75 if event_kind == "turret" else 3.1
 	if event_kind == "turret":
 		_spawn_turret()
+	else:
+		_build_altar()
 	Toast.show_toast(
 		"EVENTO DE ARENA",
 		title,
@@ -138,7 +145,7 @@ func _physics_process(delta: float) -> void:
 
 	_time += delta
 	_timer -= delta
-	_update_visuals()
+	_update_visuals(delta)
 	_update_turret_aim()
 
 	if _timer <= 0.0:
@@ -156,6 +163,308 @@ func _spawn_turret() -> void:
 	_turret_model.scale = Vector3.ONE * 1.45
 	_core.visible = false
 	_ring.visible = false
+
+
+# --- Altares: cada evento tiene su propia silueta y su propia colisión. ---
+
+func _build_altar() -> void:
+	_core.hide()
+	_ring.hide()
+	_altar = Node3D.new()
+	_altar.name = "Altar"
+	add_child(_altar)
+
+	var accent: Color = _accent()
+	match event_kind:
+		"slow":
+			_build_ice(accent)
+		"mines":
+			_build_mines(accent)
+		"pull":
+			_build_pull(accent)
+		"heal":
+			_build_heal(accent)
+		_:
+			_build_reactor(accent)
+
+	_setup_hitbox()
+	_label.position.y = _label_base
+
+
+func _build_reactor(accent: Color) -> void:
+	var stone := _stone_material()
+	var dark := _metal_material(Color(0.18, 0.21, 0.28))
+	var glow := _glow_material(accent)
+
+	_add_cylinder(0.95, 1.05, 0.3, Vector3(0, 0.15, 0), stone)
+	_add_cylinder(0.42, 0.5, 1.8, Vector3(0, 1.2, 0), glow, 12)
+	for height in [0.52, 1.2, 1.88]:
+		_add_torus(0.58, 0.7, Vector3(0, height, 0), Vector3.ZERO, glow)
+	for index in 4:
+		var angle: float = float(index) * PI * 0.5
+		_add_box(
+			Vector3(0.14, 1.5, 0.34),
+			Vector3(cos(angle) * 0.68, 1.15, sin(angle) * 0.68),
+			dark,
+			Vector3(0, rad_to_deg(angle), 0)
+		)
+	_add_cone(0.32, 0.5, Vector3(0, 2.3, 0), glow)
+	_label_base = 2.9
+
+
+func _build_ice(accent: Color) -> void:
+	var stone := _stone_material()
+	var dark := _metal_material(Color(0.16, 0.22, 0.3))
+	var glow := _glow_material(accent, 1.9)
+
+	_add_cylinder(0.9, 0.98, 0.26, Vector3(0, 0.13, 0), stone)
+	_add_cylinder(0.48, 0.56, 0.5, Vector3(0, 0.5, 0), dark)
+	_add_cone(0.6, 1.2, Vector3(0, 1.65, 0), glow, 6)
+	_add_cone(0.6, 1.0, Vector3(0, 0.55, 0), glow, 6, Vector3(180, 0, 0))
+	_add_spin_torus(0.7, 0.82, Vector3(0, 1.2, 0), Vector3(90, 0, 18), glow)
+	_add_spin_torus(0.94, 1.04, Vector3(0, 1.2, 0), Vector3(74, 0, -24), glow)
+	_label_base = 2.7
+
+
+func _build_mines(accent: Color) -> void:
+	var stone := _stone_material()
+	var dark := _metal_material(Color(0.26, 0.2, 0.16))
+	var glow := _glow_material(accent, 2.3)
+
+	_add_cylinder(1.0, 1.06, 0.4, Vector3(0, 0.2, 0), stone)
+	_add_cylinder(0.72, 0.8, 1.0, Vector3(0, 0.9, 0), dark)
+	_add_torus(0.8, 0.9, Vector3(0, 0.9, 0), Vector3.ZERO, glow)
+	_add_cylinder(0.8, 0.4, 0.5, Vector3(0, 1.65, 0), stone)
+	_add_cylinder(0.22, 0.26, 1.2, Vector3(0.52, 1.75, 0), dark, 10)
+	_add_cone(0.32, 0.35, Vector3(0.52, 2.42, 0), glow)
+	_add_box(Vector3(0.5, 0.3, 0.6), Vector3(0, 0.45, -0.95), dark)
+	_add_box(Vector3(0.85, 0.06, 0.5), Vector3(0, 0.3, -1.18), glow)
+	_label_base = 2.9
+
+
+func _build_pull(accent: Color) -> void:
+	var dark := _metal_material(Color(0.14, 0.12, 0.2))
+	var glow := _glow_material(accent, 2.1)
+
+	_add_cylinder(0.88, 0.96, 0.2, Vector3(0, 0.1, 0), dark, 20)
+	_add_torus(0.55, 0.64, Vector3(0, 0.9, 0), Vector3.ZERO, dark)
+	for index in 3:
+		var angle: float = float(index) * TAU / 3.0
+		_add_cylinder(
+			0.07,
+			0.1,
+			0.95,
+			Vector3(cos(angle) * 0.55, 0.55, sin(angle) * 0.55),
+			dark,
+			8
+		)
+	_add_cone(0.55, 0.8, Vector3(0, 1.9, 0), glow, 4)
+	_add_cone(0.55, 0.7, Vector3(0, 1.15, 0), glow, 4, Vector3(180, 0, 0))
+	_add_spin_torus(0.7, 0.82, Vector3(0, 1.5, 0), Vector3(90, 0, 0), glow)
+	_add_spin_torus(0.92, 1.04, Vector3(0, 1.5, 0), Vector3(66, 0, 34), glow)
+	_label_base = 2.7
+
+
+func _build_heal(accent: Color) -> void:
+	var stone := _stone_material()
+	var dark := _metal_material(Color(0.16, 0.26, 0.2))
+	var glow := _glow_material(accent, 2.0)
+
+	_add_cylinder(0.85, 0.92, 0.28, Vector3(0, 0.14, 0), dark)
+	_add_cylinder(0.22, 0.3, 0.8, Vector3(0, 0.65, 0), stone, 10)
+	_add_sphere(0.5, Vector3(0, 1.35, 0), glow)
+	_add_box(Vector3(0.14, 0.9, 0.14), Vector3(0, 1.35, 0), glow)
+	_add_box(Vector3(0.9, 0.14, 0.14), Vector3(0, 1.35, 0), glow)
+	_add_spin_torus(0.7, 0.8, Vector3(0, 1.35, 0), Vector3(90, 0, 0), glow)
+	_add_spin_torus(0.92, 1.02, Vector3(0, 1.35, 0), Vector3(72, 0, 26), glow)
+	_label_base = 2.6
+
+
+func _setup_hitbox() -> void:
+	var hitbox: Area3D = $TorsoHitbox
+	for child in hitbox.get_children():
+		child.free()
+	hitbox.position = Vector3.ZERO
+
+	match event_kind:
+		"slow":
+			_add_hitbox_cylinder(1.0, 0.3, Vector3(0, 0.15, 0))
+			_add_hitbox_cylinder(0.6, 2.2, Vector3(0, 1.2, 0))
+		"mines":
+			_add_hitbox_cylinder(1.06, 0.42, Vector3(0, 0.21, 0))
+			_add_hitbox_cylinder(0.8, 1.9, Vector3(0, 1.0, 0))
+			_add_hitbox_cylinder(0.3, 1.4, Vector3(0.52, 1.8, 0))
+			_add_hitbox_box(Vector3(0.55, 0.35, 0.62), Vector3(0, 0.45, -0.95))
+		"pull":
+			_add_hitbox_cylinder(0.96, 0.24, Vector3(0, 0.12, 0))
+			_add_hitbox_sphere(0.78, Vector3(0, 1.5, 0))
+		"heal":
+			_add_hitbox_cylinder(0.92, 0.3, Vector3(0, 0.15, 0))
+			_add_hitbox_cylinder(0.3, 0.9, Vector3(0, 0.65, 0))
+			_add_hitbox_sphere(0.8, Vector3(0, 1.35, 0))
+		_:
+			_add_hitbox_cylinder(1.05, 0.32, Vector3(0, 0.16, 0))
+			_add_hitbox_cylinder(0.72, 2.6, Vector3(0, 1.3, 0))
+
+
+func _add_hitbox_cylinder(radius: float, height: float, position: Vector3) -> void:
+	var shape := CylinderShape3D.new()
+	shape.radius = radius
+	shape.height = height
+	var collision := CollisionShape3D.new()
+	collision.shape = shape
+	collision.position = position
+	$TorsoHitbox.add_child(collision)
+
+
+func _add_hitbox_sphere(radius: float, position: Vector3) -> void:
+	var shape := SphereShape3D.new()
+	shape.radius = radius
+	var collision := CollisionShape3D.new()
+	collision.shape = shape
+	collision.position = position
+	$TorsoHitbox.add_child(collision)
+
+
+func _add_hitbox_box(size: Vector3, position: Vector3) -> void:
+	var shape := BoxShape3D.new()
+	shape.size = size
+	var collision := CollisionShape3D.new()
+	collision.shape = shape
+	collision.position = position
+	$TorsoHitbox.add_child(collision)
+
+
+func _stone_material() -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color(0.34, 0.38, 0.47, 1)
+	material.roughness = 0.82
+	return material
+
+
+func _metal_material(color: Color) -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.metallic = 0.65
+	material.roughness = 0.38
+	return material
+
+
+func _glow_material(color: Color, energy: float = 2.4) -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.albedo_color = color
+	material.emission_enabled = true
+	material.emission = color
+	material.emission_energy_multiplier = energy
+	_glow_materials.append(material)
+	return material
+
+
+func _add_mesh(
+	mesh: Mesh,
+	position: Vector3,
+	material: Material,
+	rotation_degrees: Vector3 = Vector3.ZERO,
+	parent: Node3D = null
+) -> MeshInstance3D:
+	var instance := MeshInstance3D.new()
+	instance.mesh = mesh
+	instance.material_override = material
+	instance.position = position
+	instance.rotation_degrees = rotation_degrees
+	(parent if parent != null else _altar).add_child(instance)
+	return instance
+
+
+func _add_cylinder(
+	top_radius: float,
+	bottom_radius: float,
+	height: float,
+	position: Vector3,
+	material: Material,
+	segments: int = 16
+) -> void:
+	var mesh := CylinderMesh.new()
+	mesh.top_radius = top_radius
+	mesh.bottom_radius = bottom_radius
+	mesh.height = height
+	mesh.radial_segments = segments
+	_add_mesh(mesh, position, material)
+
+
+func _add_cone(
+	radius: float,
+	height: float,
+	position: Vector3,
+	material: Material,
+	segments: int = 8,
+	rotation_degrees: Vector3 = Vector3.ZERO
+) -> void:
+	var mesh := CylinderMesh.new()
+	mesh.top_radius = 0.0
+	mesh.bottom_radius = radius
+	mesh.height = height
+	mesh.radial_segments = segments
+	_add_mesh(mesh, position, material, rotation_degrees)
+
+
+func _add_box(
+	size: Vector3,
+	position: Vector3,
+	material: Material,
+	rotation_degrees: Vector3 = Vector3.ZERO
+) -> void:
+	var mesh := BoxMesh.new()
+	mesh.size = size
+	_add_mesh(mesh, position, material, rotation_degrees)
+
+
+func _add_sphere(radius: float, position: Vector3, material: Material) -> void:
+	var mesh := SphereMesh.new()
+	mesh.radius = radius
+	mesh.height = radius * 2.0
+	mesh.radial_segments = 16
+	mesh.rings = 8
+	_add_mesh(mesh, position, material)
+
+
+func _add_torus(
+	inner_radius: float,
+	outer_radius: float,
+	position: Vector3,
+	rotation_degrees: Vector3,
+	material: Material
+) -> void:
+	var mesh := TorusMesh.new()
+	mesh.inner_radius = inner_radius
+	mesh.outer_radius = outer_radius
+	mesh.rings = 32
+	mesh.ring_segments = 8
+	_add_mesh(mesh, position, material, rotation_degrees)
+
+
+func _add_spin_torus(
+	inner_radius: float,
+	outer_radius: float,
+	position: Vector3,
+	rotation_degrees: Vector3,
+	material: Material
+) -> void:
+	var pivot := Node3D.new()
+	pivot.position = position
+	_altar.add_child(pivot)
+	var mesh := TorusMesh.new()
+	mesh.inner_radius = inner_radius
+	mesh.outer_radius = outer_radius
+	mesh.rings = 32
+	mesh.ring_segments = 8
+	var instance := MeshInstance3D.new()
+	instance.mesh = mesh
+	instance.material_override = material
+	instance.rotation_degrees = rotation_degrees
+	pivot.add_child(instance)
+	_spin_nodes.append(pivot)
 
 
 func _update_turret_aim() -> void:
@@ -338,13 +647,19 @@ func _flash() -> void:
 	tween.parallel().tween_property(_light, "light_energy", 0.8, 0.15)
 
 
-func _update_visuals() -> void:
+func _update_visuals(delta: float) -> void:
 	var pulse: float = 1.0 + sin(_time * 6.0) * 0.06
-	_ring.scale = Vector3(
-		_ring_base_scale.x * pulse, _ring_base_scale.y, _ring_base_scale.z * pulse
-	)
-	var label_base: float = 1.75 if event_kind == "turret" else 3.1
-	_label.position.y = label_base + sin(_time * 2.4) * 0.06
+	if _ring.visible:
+		_ring.scale = Vector3(
+			_ring_base_scale.x * pulse, _ring_base_scale.y, _ring_base_scale.z * pulse
+		)
+	_label.position.y = _label_base + sin(_time * 2.4) * 0.06
+
+	for material in _glow_materials:
+		material.emission_energy_multiplier = 2.2 + sin(_time * 3.0) * 0.7
+	for node in _spin_nodes:
+		if node != null:
+			node.rotation.y += delta * 0.8
 
 
 func _apply_style() -> void:

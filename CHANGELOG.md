@@ -2,6 +2,17 @@
 
 Todas las versiones relevantes del prototipo.
 
+## No publicado
+
+### Corregido
+- El cierre de zona ya no pausa en el mismo frame de la muerte del último élite: espera `0.7 s` para que se vea la caída y recién después abre la bendición o el fin de run.
+- La pantalla de bendición tiene una red de seguridad: si queda sin input durante `30 s`, elige la primera opción para que la run no quede congelada.
+- Los altares de evento ya no comparten el mismo bloque de colisión: cada uno usa formas alineadas con su modelo.
+
+### Agregado
+- **Altares de evento con modelos propios:** reactor inestable, campo de hielo, fábrica de minas, ancla gravitatoria y núcleo sanitario. La torreta conserva su modelo 3D.
+- Cada altar tiene su silueta propia (núcleo con anillos y aletas, cristal, horno con chimenea, trípode con núcleo flotante y orbe sanador) y una o varias formas de colisión que coinciden con las partes sólidas.
+
 ## v0.9.0 — 2026-11-24
 
 ### Agregado
