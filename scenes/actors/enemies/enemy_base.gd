@@ -71,9 +71,7 @@ func _physics_process(delta: float) -> void:
 		velocity.x = 0.0
 		velocity.z = 0.0
 
-	var flat_target := Vector3(player.global_position.x, global_position.y, player.global_position.z)
-	if flat_target.distance_squared_to(global_position) > 0.01:
-		look_at(flat_target, Vector3.UP)
+	_face_player(player)
 
 	_apply_vertical(delta)
 	move_and_slide()
@@ -167,11 +165,19 @@ func _update_locomotion_anim() -> void:
 	_play_anim("Walk" if speed > 0.2 else "Idle")
 
 
+func _face_player(player: Node3D) -> void:
+	# Orienta el cuerpo hacia el jugador sin inclinarlo; el modelo mira con -Z.
+	if player == null:
+		return
+	var target := Vector3(player.global_position.x, global_position.y, player.global_position.z)
+	if target.distance_squared_to(global_position) > 0.01:
+		look_at(target, Vector3.UP)
+
+
 func _die(hit_zone: String) -> void:
 	if _dying:
 		return
 	_dying = true
-	_play_anim("Death", 1.2)
 	EventBus.enemy_killed.emit(self, hit_zone)
 	remove_from_group("enemies")
 	collision_layer = 0
@@ -181,6 +187,10 @@ func _die(hit_zone: String) -> void:
 			(child as Area3D).monitorable = false
 			(child as Area3D).monitoring = false
 	set_physics_process(false)
+	if _anim == null:
+		queue_free()
+		return
+	_play_anim("Death", 1.2)
 	await get_tree().create_timer(1.4, false).timeout
 	queue_free()
 

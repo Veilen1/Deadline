@@ -44,6 +44,7 @@ func _physics_process(delta: float) -> void:
 func _process_guard(delta: float) -> void:
 	velocity.x = 0.0
 	velocity.z = 0.0
+	_face_player(get_tree().get_first_node_in_group("player") as Node3D)
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 	else:
@@ -64,6 +65,7 @@ func _set_guarding(value: bool) -> void:
 		_shield.visible = value
 		_shield.scale = _shield_base_scale
 	_guard_timer = guard_duration if value else guard_interval
+	_play_anim("Guard" if value else "Idle")
 
 
 func take_hit(hit_zone: String, base_damage: float, base_money: int, hit_position: Vector3 = Vector3.INF) -> void:
@@ -73,3 +75,7 @@ func take_hit(hit_zone: String, base_damage: float, base_money: int, hit_positio
 		base_money = int(base_money * guard_money_multiplier)
 
 	super.take_hit(hit_zone, base_damage, base_money, hit_position)
+	if current_health <= 0.0:
+		_guarding = false
+		if _shield != null:
+			_shield.hide()

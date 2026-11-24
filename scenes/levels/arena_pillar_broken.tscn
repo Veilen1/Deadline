@@ -1,0 +1,66 @@
+[gd_scene load_steps=9 format=3]
+
+[sub_resource type="BoxMesh" id="BoxMesh_column"]
+size = Vector3(1.05, 1.1, 1.05)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_stone"]
+albedo_color = Color(0.42, 0.47, 0.58, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="BoxMesh_jag"]
+size = Vector3(0.72, 0.26, 0.72)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rubble"]
+size = Vector3(0.38, 0.3, 0.34)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rubble"]
+albedo_color = Color(0.3, 0.35, 0.45, 1)
+roughness = 0.95
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_column"]
+size = Vector3(1.05, 1.1, 1.05)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jag"]
+size = Vector3(0.72, 0.26, 0.72)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rubble"]
+size = Vector3(0.38, 0.3, 0.34)
+
+[node name="ArenaPillarBroken" type="StaticBody3D"]
+
+[node name="Column" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+mesh = SubResource("BoxMesh_column")
+surface_material_override/0 = SubResource("StandardMaterial3D_stone")
+
+[node name="Jag" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.978, -0.173, 0.121, 0.174, 0.985, 0, -0.119, 0.021, 0.993, 0, 1.2, 0)
+mesh = SubResource("BoxMesh_jag")
+surface_material_override/0 = SubResource("StandardMaterial3D_rubble")
+
+[node name="RubbleA" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, 0, 0.342, 0, 1, 0, -0.342, 0, 0.94, 0.82, 0.15, 0.36)
+mesh = SubResource("BoxMesh_rubble")
+surface_material_override/0 = SubResource("StandardMaterial3D_rubble")
+
+[node name="RubbleB" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.866, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866, -0.7, 0.15, 0.62)
+mesh = SubResource("BoxMesh_rubble")
+surface_material_override/0 = SubResource("StandardMaterial3D_rubble")
+
+[node name="RubbleC" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.15, -0.82)
+mesh = SubResource("BoxMesh_rubble")
+surface_material_override/0 = SubResource("StandardMaterial3D_rubble")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+shape = SubResource("BoxShape3D_column")
+
+[node name="CollisionJag" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+shape = SubResource("BoxShape3D_jag")
+
+[node name="CollisionRubble" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.82, 0.15, 0.36)
+shape = SubResource("BoxShape3D_rubble")

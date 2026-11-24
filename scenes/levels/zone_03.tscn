@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scenes/levels/zone.gd" id="1_zone"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/ranged_enemy.tscn" id="2_enemy"]
@@ -9,6 +9,8 @@
 [ext_resource type="PackedScene" path="res://scenes/levels/jump_pad.tscn" id="7_pad"]
 [ext_resource type="PackedScene" path="res://scenes/levels/core_pickup.tscn" id="8_core"]
 [ext_resource type="PackedScene" path="res://scenes/levels/arena_event.tscn" id="9_event"]
+[ext_resource type="PackedScene" path="res://scenes/levels/arena_pillar.tscn" id="10_pillar"]
+[ext_resource type="PackedScene" path="res://scenes/levels/arena_pillar_broken.tscn" id="11_broken"]
 
 [sub_resource type="Environment" id="Environment_violet"]
 background_mode = 1
@@ -102,12 +104,11 @@ scale = Vector3(1.5, 1, 1)
 [node name="Cover2" parent="." instance=ExtResource("6_block")]
 position = Vector3(-5, 0.4, 7)
 
-[node name="Cover3" parent="." instance=ExtResource("6_block")]
-position = Vector3(5, 0.4, 7)
+[node name="Pillar1" parent="." instance=ExtResource("10_pillar")]
+position = Vector3(5, 0, 7)
 
-[node name="Cover4" parent="." instance=ExtResource("6_block")]
-position = Vector3(0, 0.4, -8)
-scale = Vector3(1.5, 1, 1)
+[node name="BrokenPillar1" parent="." instance=ExtResource("11_broken")]
+position = Vector3(0, 0, -8)
 
 [node name="ArenaEvent" parent="." instance=ExtResource("9_event")]
 position = Vector3(0, 0, -4)

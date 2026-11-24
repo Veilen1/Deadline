@@ -773,4 +773,34 @@ La escena inicial es el menú principal. **F5** desde Godot abre el menú.
 
 ---
 
+## 26. Enemigos 3D, élites y pilares
+
+### Modelos y animaciones
+
+- Los cuatro enemigos humanoides y el sabueso usan modelos 3D riggeados en Blender.
+- **Básico:** `Idle`, `Walk`, `Attack`, `Hit`, `Death`.
+- **Guardia:** las anteriores más `Guard`, con escudo físico a dos manos.
+- **Cowboy/tirador:** las anteriores más `Shoot`, con capa animada por huesos (`cape_1/2/3`).
+- **Sabueso:** rig cuadrupedal con cola, cuatro patas y mecha; `Idle`, `Run`, `Fuse`, `Hit`, `Death`.
+- Todos miran al jugador en el plano, caminan/corren hacia él y se desploman al morir antes de liberarse.
+- La mecha del sabueso queda encendida siempre; al entrar en rango se agranda el brillo rojo y detona.
+
+### Élites
+
+- **Verdugo (Zona 1):** salto telegrafiado con diana en el piso y onda de impacto; a media vida entra en furia y salta más seguido.
+- **Bastión (Zona 2):** embestida con escudo. Marca la carga con la burbuja encendida, arranca en línea recta y cierra con una onda; el escudo reduce el daño al cuerpo salvo en la cabeza.
+- **Alcaide (Zona 3):** ráfaga de tres proyectiles en abanico, con el mismo telegraph del tirador.
+- Cada élite tiene armadura procedural propia y tinte dorado: cuernos y púas (verdugo), cresta y hombreras grandes (bastión), ala de sombrero, bandolera y tercer ojo (alcaide).
+- Los tres alimentan la barra de élite del HUD y comparten la etiqueta `ELITE`.
+
+### Pilares
+
+- Tres variantes de pilar reemplazan parte de las coberturas planas:
+  - **Columna** redonda con basa, capitel y anillo dorado.
+  - **Obelisco** cuadrado con runas emisivas en las cuatro caras.
+  - **Columna rota** baja, con escombros y remate irregular.
+- La colisión de cada pilar coincide con su silueta (cilindros y cajas), incluida la basa y el remate.
+
+---
+
 *Documento vivo. Cualquier cambio de dirección debe reflejarse acá.*

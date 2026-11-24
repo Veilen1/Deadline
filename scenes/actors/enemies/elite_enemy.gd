@@ -21,6 +21,9 @@ enum State { CHASE, TELEGRAPH, JUMP, RECOVER }
 @export var min_telegraph_time: float = 1.5
 @export var aura_idle_energy: float = 0.7
 @export var aura_charge_energy: float = 3.0
+@export var enraged_jump_multiplier: float = 0.6
+@export var enraged_damage_multiplier: float = 1.2
+@export var enraged_aura_color: Color = Color(1.0, 0.35, 0.08, 1.0)
 
 var _state: State = State.CHASE
 var _state_timer: float = 0.0
@@ -30,6 +33,7 @@ var _jump_target: Vector3
 var _telegraph_time: float = 1.5
 var _target_indicator: Node3D
 var _aura: OmniLight3D
+var _enraged: bool = false
 
 
 func _ready() -> void:
@@ -48,9 +52,23 @@ func take_hit(hit_zone: String, base_damage: float, base_money: int, hit_positio
 	super.take_hit(hit_zone, base_damage, base_money, hit_position)
 
 	if current_health > 0.0:
+		_check_enrage()
 		EventBus.boss_health_changed.emit(current_health, max_health)
 	else:
 		EventBus.boss_defeated.emit()
+
+
+func _check_enrage() -> void:
+	# A media vida el verdugo salta más seguido y golpea más fuerte.
+	if _enraged or current_health > max_health * 0.5:
+		return
+	_enraged = true
+	jump_interval *= enraged_jump_multiplier
+	jump_damage *= enraged_damage_multiplier
+	_cooldown = minf(_cooldown, 0.6)
+	if _aura != null:
+		_aura.light_color = enraged_aura_color
+		_aura.light_energy = aura_charge_energy
 
 
 func _physics_process(delta: float) -> void:
@@ -92,6 +110,8 @@ func _process_chase(delta: float, player: Node3D) -> void:
 	var direction: Vector3 = to_player.normalized() if distance > 0.01 else Vector3.ZERO
 	velocity.x = direction.x * move_speed
 	velocity.z = direction.z * move_speed
+	_face_player(player)
+	_update_locomotion_anim()
 
 	_cooldown = maxf(_cooldown - delta, 0.0)
 	if _cooldown <= 0.0 and distance <= jump_trigger_range:
@@ -104,6 +124,8 @@ func _begin_telegraph(player: Node3D) -> void:
 	_cooldown = jump_interval
 	_telegraph_time = _compute_telegraph_time()
 	_state_timer = _telegraph_time
+	_face_player(player)
+	_play_anim("Attack", 1.2)
 
 	var target: Vector3 = player.global_position
 	_jump_target = Vector3(target.x, global_position.y, target.z)
@@ -150,6 +172,7 @@ func _land() -> void:
 func _process_recover(delta: float) -> void:
 	velocity.x = 0.0
 	velocity.z = 0.0
+	_face_player(_get_player())
 	_state_timer -= delta
 	if _state_timer <= 0.0:
 		_state = State.CHASE
