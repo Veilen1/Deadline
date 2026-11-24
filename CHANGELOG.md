@@ -8,6 +8,21 @@ Todas las versiones relevantes del prototipo.
 - **Enemigo básico con modelo 3D riggeado**: esqueleto humanoide, pesos rígidos por pieza y animaciones `Idle`, `Walk`, `Attack`, `Hit` y `Death`.
 - El enemigo mira al jugador, camina hacia él y reproduce `Attack`/`Hit` según el estado; la muerte reproduce el desplome antes de liberarse.
 - El modelo del básico reemplaza las cajas de su escena, manteniendo las hitboxes de cabeza/torso/piernas.
+- **Guardia y cowboy riggeados**: `guard.glb` y `ranged.glb` con todas las acciones humanoides más `Guard` y `Shoot`; la capa del cowboy tiene huesos `cape_1/2/3` y balanceo en `Idle`/`Walk`.
+- **Sabueso riggeado**: `hound.glb` con columna, cuello, cabeza, cola y cuatro patas; acciones `Idle`, `Run`, `Fuse`, `Hit` y `Death`. La mecha pulsa al detonar.
+- **Élites con modelo y habilidad propios**:
+  - **Verdugo:** salto/slam y furia a media vida (salta más seguido y golpea más fuerte).
+  - **Bastión:** embestida con escudo telegrafiada, daño de contacto, onda de impacto y reducción de daño al cuerpo durante la carga.
+  - **Alcaide:** ráfaga de tres proyectiles en abanico.
+  - Armadura procedural y tinte dorado distintos por élite; los tres alimentan la barra de élite.
+- **Pilares con tres variantes**: columna, obelisco y columna rota, con colisión que coincide con la silueta.
+
+### Corregido
+- El élite ya no camina de costado: todos los enemigos giran hacia el jugador sin inclinarse.
+- La muerte se resuelve al instante en enemigos sin animación y con `Death` cuando el modelo la tiene.
+- La Zona 2 vuelve a spawnear su élite (la propiedad `elite_scene` estaba pegada a `enemy_scenes` en la escena).
+- La burbuja del escudo del guardia se centra en el cuerpo en vez de quedar enterrada.
+- El sabueso usa collider y hitboxes de cuadrúpedo alineados con el modelo, sin las cajas humanoides.
 
 ## v0.8.1 — 2026-11-22
 
