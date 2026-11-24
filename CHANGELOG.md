@@ -2,7 +2,7 @@
 
 Todas las versiones relevantes del prototipo.
 
-## No publicado
+## v0.9.0 — 2026-11-24
 
 ### Agregado
 - **Enemigo básico con modelo 3D riggeado**: esqueleto humanoide, pesos rígidos por pieza y animaciones `Idle`, `Walk`, `Attack`, `Hit` y `Death`.
