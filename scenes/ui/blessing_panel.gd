@@ -3,11 +3,15 @@ extends Control
 signal chosen(blessing_id: String)
 
 const OPTION_HEIGHT: float = 78.0
+# Red de seguridad: si el panel queda abierto sin input (foco, ventana, etc.)
+# elige la primera opción para que la run nunca quede congelada.
+const AUTO_CHOOSE_TIME: float = 30.0
 
 @onready var options: VBoxContainer = $CenterContainer/VBox/Options
 @onready var subtitle: Label = $CenterContainer/VBox/Subtitle
 
 var _buttons: Array[Button] = []
+var _choice_generation: int = 0
 
 
 func _ready() -> void:
@@ -16,6 +20,8 @@ func _ready() -> void:
 
 
 func choose() -> String:
+	_choice_generation += 1
+	var generation: int = _choice_generation
 	_build_options()
 	subtitle.text = "Elegí una mejora para el resto de la run."
 	show()
@@ -28,7 +34,19 @@ func choose() -> String:
 		_buttons[0].grab_focus()
 		if DisplayServer.get_name() != "headless":
 			Input.warp_mouse(_buttons[0].get_global_rect().get_center())
+
+	var timeout: SceneTreeTimer = get_tree().create_timer(AUTO_CHOOSE_TIME, true)
+	timeout.timeout.connect(_on_choose_timeout.bind(generation))
 	return await chosen
+
+
+func _on_choose_timeout(generation: int) -> void:
+	if generation != _choice_generation or not visible or _buttons.is_empty():
+		return
+	var blessing_id: String = str(_buttons[0].get_meta("blessing_id", ""))
+	if blessing_id.is_empty():
+		return
+	_on_option_pressed(blessing_id)
 
 
 func _build_options() -> void:
@@ -48,6 +66,7 @@ func _build_options() -> void:
 			str(data.get("description", "")),
 		]
 		button.pressed.connect(_on_option_pressed.bind(blessing_id))
+		button.set_meta("blessing_id", blessing_id)
 		options.add_child(button)
 		_buttons.append(button)
 
