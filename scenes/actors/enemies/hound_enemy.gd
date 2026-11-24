@@ -49,18 +49,21 @@ func _physics_process(delta: float) -> void:
 	to_player.y = 0.0
 	var distance: float = to_player.length()
 	var direction: Vector3 = to_player.normalized() if distance > 0.01 else Vector3.ZERO
+	_face_player(player)
 
 	if _state == State.FUSE:
 		velocity.x = 0.0
 		velocity.z = 0.0
 		_fuse_timer -= delta
 		_update_fuse()
+		_play_anim("Fuse", 0.2)
 		if _fuse_timer <= 0.0:
 			_explode(player)
 			return
 	else:
 		velocity.x = direction.x * move_speed
 		velocity.z = direction.z * move_speed
+		_play_anim("Run")
 		if distance <= fuse_range:
 			_start_fuse()
 

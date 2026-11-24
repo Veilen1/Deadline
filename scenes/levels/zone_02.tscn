@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scenes/levels/zone.gd" id="1_zone"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/guard_enemy.tscn" id="2_enemy"]
@@ -10,6 +10,8 @@
 [ext_resource type="PackedScene" path="res://scenes/levels/core_pickup.tscn" id="8_core"]
 [ext_resource type="PackedScene" path="res://scenes/actors/enemies/hound_enemy.tscn" id="9_hound"]
 [ext_resource type="PackedScene" path="res://scenes/levels/arena_event.tscn" id="10_event"]
+[ext_resource type="PackedScene" path="res://scenes/levels/arena_pillar_obelisk.tscn" id="11_obelisk"]
+[ext_resource type="PackedScene" path="res://scenes/levels/arena_pillar_broken.tscn" id="12_broken"]
 
 [sub_resource type="Environment" id="Environment_cold"]
 background_mode = 1
@@ -31,7 +33,8 @@ size = Vector3(40, 0.2, 40)
 [node name="Zone02" type="Node3D"]
 script = ExtResource("1_zone")
 enemy_scene = ExtResource("2_enemy")
-enemy_scenes = Array[PackedScene]([ExtResource("2_enemy"), ExtResource("2_enemy"), ExtResource("9_hound")])elite_scene = ExtResource("3_elite")
+enemy_scenes = Array[PackedScene]([ExtResource("2_enemy"), ExtResource("2_enemy"), ExtResource("9_hound")])
+elite_scene = ExtResource("3_elite")
 zone_id = "zona_2"
 event_pool = PackedStringArray("slow", "pull")
 
@@ -84,11 +87,11 @@ scale = Vector3(1, 1, 1.5)
 position = Vector3(8, 0.4, 3)
 scale = Vector3(1.5, 1, 1)
 
-[node name="Cover3" parent="." instance=ExtResource("5_block")]
-position = Vector3(0, 0.4, -7)
+[node name="Obelisk1" parent="." instance=ExtResource("11_obelisk")]
+position = Vector3(0, 0, -7)
 
-[node name="Cover4" parent="." instance=ExtResource("5_block")]
-position = Vector3(-6, 0.4, 6)
+[node name="BrokenPillar1" parent="." instance=ExtResource("12_broken")]
+position = Vector3(-6, 0, 6)
 
 [node name="ArenaEvent" parent="." instance=ExtResource("10_event")]
 position = Vector3(-11, 0, 0)

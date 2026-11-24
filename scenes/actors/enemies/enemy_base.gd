@@ -25,6 +25,11 @@ var current_health: float
 var _attack_timer: float = 0.0
 var _climb_air: float = 0.0
 var _climb_cooldown: float = 0.0
+var _anim: AnimationPlayer
+var _anim_lock: float = 0.0
+var _dying: bool = false
+
+@onready var model: Node3D = get_node_or_null("Model") as Node3D
 
 
 func _ready() -> void:
@@ -42,9 +47,15 @@ func _ready() -> void:
 		GameState.contract_modifier("enemy_speed", 1.0) * GameState.cycle_enemy_speed_mult()
 	)
 	current_health = max_health
+	if model != null:
+		_anim = model.find_child("AnimationPlayer", true, false) as AnimationPlayer
+	_play_anim("Idle")
 
 
 func _physics_process(delta: float) -> void:
+	if _dying:
+		return
+
 	var player: Node3D = get_tree().get_first_node_in_group("player") as Node3D
 	if player == null:
 		return
@@ -60,6 +71,8 @@ func _physics_process(delta: float) -> void:
 		velocity.x = 0.0
 		velocity.z = 0.0
 
+	_face_player(player)
+
 	_apply_vertical(delta)
 	move_and_slide()
 	_after_move_climb()
@@ -67,8 +80,12 @@ func _physics_process(delta: float) -> void:
 	_attack_timer = maxf(_attack_timer - delta, 0.0)
 	if to_player.length() <= attack_range and _attack_timer <= 0.0:
 		_attack_timer = attack_cooldown
+		_play_anim("Attack", 0.55)
 		if player.has_method("take_damage"):
 			player.call("take_damage", attack_damage)
+
+	_anim_lock = maxf(_anim_lock - delta, 0.0)
+	_update_locomotion_anim()
 
 	# TODO: Fase 4 — comportamiento por zona (élites, composición de oleadas).
 
@@ -102,6 +119,8 @@ func heal(amount: float) -> float:
 
 
 func take_hit(hit_zone: String, base_damage: float, base_money: int, hit_position: Vector3 = Vector3.INF) -> void:
+	if _dying:
+		return
 	# base_damage y base_money los define el arma; acá solo se aplica el multiplicador de zona.
 	var damage_mult: float = 1.0
 	var money_mult: float = 1.0
@@ -124,8 +143,56 @@ func take_hit(hit_zone: String, base_damage: float, base_money: int, hit_positio
 		EventBus.critical_hit.emit(effect_position, final_damage)
 
 	if current_health <= 0.0:
-		EventBus.enemy_killed.emit(self, hit_zone)
+		_die(hit_zone)
+	else:
+		_play_anim("Hit", 0.25)
+
+
+func _play_anim(anim_name: String, lock_time: float = 0.0) -> void:
+	if _anim == null or not _anim.has_animation(anim_name):
+		return
+	if lock_time > 0.0:
+		_anim_lock = lock_time
+	if _anim.current_animation == anim_name and _anim.is_playing():
+		return
+	_anim.play(anim_name, 0.12)
+
+
+func _update_locomotion_anim() -> void:
+	if _dying or _anim_lock > 0.0:
+		return
+	var speed: float = Vector2(velocity.x, velocity.z).length()
+	_play_anim("Walk" if speed > 0.2 else "Idle")
+
+
+func _face_player(player: Node3D) -> void:
+	# Orienta el cuerpo hacia el jugador sin inclinarlo; el modelo mira con -Z.
+	if player == null:
+		return
+	var target := Vector3(player.global_position.x, global_position.y, player.global_position.z)
+	if target.distance_squared_to(global_position) > 0.01:
+		look_at(target, Vector3.UP)
+
+
+func _die(hit_zone: String) -> void:
+	if _dying:
+		return
+	_dying = true
+	EventBus.enemy_killed.emit(self, hit_zone)
+	remove_from_group("enemies")
+	collision_layer = 0
+	collision_mask = 0
+	for child in get_children():
+		if child is Area3D:
+			(child as Area3D).monitorable = false
+			(child as Area3D).monitoring = false
+	set_physics_process(false)
+	if _anim == null:
 		queue_free()
+		return
+	_play_anim("Death", 1.2)
+	await get_tree().create_timer(1.4, false).timeout
+	queue_free()
 
 
 func _hitbox_position(hit_zone: String) -> Vector3:
